@@ -1,0 +1,7 @@
+# Store text files with LF line endings so Windows, macOS, Linux CI and Docker agree
+* text=auto eol=lf
+
+*.webp binary
+*.png binary
+*.jpg binary
+*.ico binary
