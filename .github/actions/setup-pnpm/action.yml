@@ -1,0 +1,21 @@
+name: Set up pnpm and Node.js
+description: Install pnpm (version from packageManager), Node.js (version from engines) and the workspace dependencies
+
+runs:
+  using: composite
+  steps:
+    # No `version` input: pnpm/action-setup reads it from `packageManager` in package.json
+    - name: Set up pnpm
+      uses: pnpm/action-setup@v6
+      with:
+        run_install: false
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v7
+      with:
+        node-version-file: package.json
+        cache: pnpm
+
+    - name: Install dependencies
+      shell: bash
+      run: pnpm install --frozen-lockfile
