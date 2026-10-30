@@ -19,7 +19,7 @@ CodeHired is a web platform that helps developers find and apply for programming
 | --- | --- |
 | **Frontend** (`apps/web`) | React 19, React Router, Vite, CSS Modules |
 | **Backend** (`apps/api`) | Node.js, Express 5, TypeScript, Zod |
-| **Database** | SQLite (better-sqlite3) |
+| **Database** | SQLite via libSQL (`@libsql/client`): a local file in development, [Turso](https://turso.tech) in production |
 | **Tooling** | pnpm workspaces, ESLint, node:test + Supertest, GitHub Actions |
 
 ## Getting Started
@@ -53,7 +53,7 @@ pnpm dev
 This starts both apps:
 
 - Web: <http://localhost:5173>
-- API: <http://localhost:3000> (the SQLite database is created and seeded on first run)
+- API: <http://localhost:3000> (the local database file is created, migrated and seeded on first run)
 
 ### Useful scripts
 
@@ -61,10 +61,33 @@ This starts both apps:
 | --- | --- |
 | `pnpm dev` | Run API and web in watch mode |
 | `pnpm dev:api` / `pnpm dev:web` | Run only one of them |
-| `pnpm db:seed` | Reset the database with the sample jobs |
+| `pnpm db:migrate` | Apply pending migrations (`apps/api/src/db/migrations/*.sql`) |
+| `pnpm db:seed` | Reset a **local** database with the sample jobs (refuses hosted databases) |
 | `pnpm build` | Production build of both apps |
 | `pnpm lint` / `pnpm typecheck` | Static checks |
 | `pnpm test` | API tests (node:test + Supertest, in-memory database) |
+
+### Database
+
+The API talks to SQLite through [libSQL](https://github.com/tursodatabase/libsql), so the same code works with a local file and with a hosted [Turso](https://turso.tech) database (free plan):
+
+| `DATABASE_URL` | Used for |
+| --- | --- |
+| `file:codehired.db` (default) | Local development |
+| `:memory:` | Tests |
+| `libsql://<database>-<user>.turso.io` + `DATABASE_AUTH_TOKEN` | Production |
+
+Schema changes are numbered `.sql` files in `apps/api/src/db/migrations/`. They are applied in order, each in its own transaction, and recorded in the `schema_migrations` table. The API applies pending migrations on start; `pnpm db:migrate` does it on demand.
+
+To try a free Turso database with the [Turso CLI](https://docs.turso.tech/cli/introduction):
+
+```bash
+turso db create codehired
+turso db show codehired --url
+turso db tokens create codehired
+```
+
+Put the URL and token in `apps/api/.env` as `DATABASE_URL` and `DATABASE_AUTH_TOKEN`, then run `pnpm db:migrate`.
 
 ## API
 
@@ -91,7 +114,7 @@ CodeHired/
 │   │   │   ├── routes/
 │   │   │   ├── schemas/      # Zod validation schemas
 │   │   │   ├── middlewares/
-│   │   │   └── db/           # Connection, schema, seed data
+│   │   │   └── db/           # libSQL client, migrations, seed data
 │   │   └── test/             # API tests (node:test + Supertest)
 │   └── web/                  # React + Vite frontend
 │       └── src/

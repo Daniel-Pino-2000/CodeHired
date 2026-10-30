@@ -3,7 +3,7 @@ import { describe, test } from 'node:test'
 import request from 'supertest'
 import { createTestApp } from './helpers.js'
 
-const app = createTestApp()
+const app = await createTestApp()
 const ALLOWED_ORIGIN = 'http://localhost:5173'
 
 describe('app', () => {

@@ -1,10 +1,10 @@
 import { createApp } from '../src/app.js'
-import { initDatabase } from '../src/db/database.js'
+import { runMigrations } from '../src/db/migrations.js'
 import { seedJobs } from '../src/db/seed.js'
 
-// App backed by a freshly created and seeded in-memory database
-export function createTestApp () {
-  initDatabase()
-  seedJobs()
+// App backed by a freshly migrated and seeded in-memory database
+export async function createTestApp () {
+  await runMigrations()
+  await seedJobs()
   return createApp()
 }
