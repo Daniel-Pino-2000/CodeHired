@@ -20,7 +20,7 @@ CodeHired is a web platform that helps developers find and apply for programming
 | **Frontend** (`apps/web`) | React 19, React Router, Vite, CSS Modules |
 | **Backend** (`apps/api`) | Node.js, Express 5, TypeScript, Zod |
 | **Database** | SQLite (better-sqlite3) |
-| **Tooling** | pnpm workspaces, ESLint, GitHub Actions |
+| **Tooling** | pnpm workspaces, ESLint, node:test + Supertest, GitHub Actions |
 
 ## Getting Started
 
@@ -64,6 +64,7 @@ This starts both apps:
 | `pnpm db:seed` | Reset the database with the sample jobs |
 | `pnpm build` | Production build of both apps |
 | `pnpm lint` / `pnpm typecheck` | Static checks |
+| `pnpm test` | API tests (node:test + Supertest, in-memory database) |
 
 ## API
 
@@ -81,16 +82,17 @@ This starts both apps:
 CodeHired/
 ├── apps/
 │   ├── api/                  # Express + TypeScript REST API
-│   │   └── src/
-│   │       ├── app.ts        # Express app (routes + middlewares)
-│   │       ├── server.ts     # Starts the server
-│   │       ├── config.ts
-│   │       ├── controllers/  # HTTP layer: validate input, shape responses
-│   │       ├── models/       # Data access (SQL)
-│   │       ├── routes/
-│   │       ├── schemas/      # Zod validation schemas
-│   │       ├── middlewares/
-│   │       └── db/           # Connection, schema, seed data
+│   │   ├── src/
+│   │   │   ├── app.ts        # Express app (routes + middlewares)
+│   │   │   ├── server.ts     # Starts the server
+│   │   │   ├── config.ts
+│   │   │   ├── controllers/  # HTTP layer: validate input, shape responses
+│   │   │   ├── models/       # Data access (SQL)
+│   │   │   ├── routes/
+│   │   │   ├── schemas/      # Zod validation schemas
+│   │   │   ├── middlewares/
+│   │   │   └── db/           # Connection, schema, seed data
+│   │   └── test/             # API tests (node:test + Supertest)
 │   └── web/                  # React + Vite frontend
 │       └── src/
 │           ├── components/
