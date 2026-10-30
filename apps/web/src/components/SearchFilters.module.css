@@ -1,0 +1,34 @@
+.filters {
+  display: grid;
+  grid-template-columns: 2fr repeat(3, 1fr) auto;
+  gap: 10px;
+  padding: 16px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.textField {
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+  .filters {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .textField {
+    grid-column: 1 / -1;
+  }
+
+  .filters button {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 560px) {
+  .filters {
+    grid-template-columns: 1fr;
+  }
+}
