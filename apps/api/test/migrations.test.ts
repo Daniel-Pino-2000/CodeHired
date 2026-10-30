@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { mkdtemp, rm, writeFile } from 'node:fs/promises'
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
@@ -38,6 +38,33 @@ describe('runMigrations', () => {
     assert.ok((await tableNames(client)).includes('jobs'))
     const { rows } = await client.execute('SELECT version FROM schema_migrations ORDER BY version')
     assert.deepEqual(rows.map((row) => row.version), applied)
+  })
+
+  test('002 gives jobs that already exist sensible source defaults', async () => {
+    const client = createClient({ url: ':memory:' })
+    const realDir = new URL('../src/db/migrations/', import.meta.url)
+    const onlyFirst = await migrationsDir({
+      '001_create_jobs.sql': await readFile(new URL('001_create_jobs.sql', realDir), 'utf8')
+    })
+    await runMigrations(client, onlyFirst)
+    await client.execute(`
+      INSERT INTO jobs (id, title, company, location, workplace, level, description, created_at)
+      VALUES ('job-1', 'Engineer', 'Acme', 'Remote', 'remote', 'mid', 'A job created before 002', '2026-01-01T00:00:00Z')
+    `)
+
+    assert.deepEqual(await runMigrations(client), ['002_ingestion.sql'])
+
+    const { rows: [job] } = await client.execute("SELECT * FROM jobs WHERE id = 'job-1'")
+    assert.equal(job.source, 'seed')
+    assert.equal(job.source_id, 'job-1')
+    assert.equal(job.remote, 1)
+    assert.equal(job.posted_at, '2026-01-01T00:00:00Z')
+    assert.equal(job.description_text, 'A job created before 002')
+    assert.ok((await tableNames(client)).includes('ingestion_runs'))
+    await assert.rejects(client.execute(`
+      INSERT INTO jobs (id, source, source_id, title, company, location, workplace, level, description_text)
+      VALUES ('job-2', 'seed', 'job-1', 'Engineer', 'Acme', 'Remote', 'remote', 'mid', 'Same source and source_id')
+    `), /UNIQUE/)
   })
 
   test('is idempotent: a second run applies nothing', async () => {

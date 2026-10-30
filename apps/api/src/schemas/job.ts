@@ -14,8 +14,8 @@ export const jobFiltersSchema = z.object({
   offset: z.coerce.number().int().min(0).default(0)
 })
 
-// Body for creating a job (used by the seed today, and by POST /jobs later)
-export const jobSchema = z.object({
+// Fields every job has, wherever it comes from. Kept without refinements so it can be extended.
+export const jobFieldsSchema = z.object({
   title: z.string().trim().min(3).max(120),
   company: z.string().trim().min(2).max(80),
   location: z.string().trim().min(2).max(80),
@@ -27,9 +27,17 @@ export const jobSchema = z.object({
   currency: z.string().length(3).default('USD'),
   technologies: z.array(z.string().trim().min(1)).max(15).default([]),
   description: z.string().trim().min(20)
-}).refine(
-  (job) => job.salaryMin === null || job.salaryMax === null || job.salaryMin <= job.salaryMax,
-  { message: 'salaryMin must be less than or equal to salaryMax', path: ['salaryMin'] }
-)
+})
+
+// Shared by every schema built on `jobFieldsSchema`
+export function withValidSalaryRange<T extends z.ZodType<{ salaryMin: number | null, salaryMax: number | null }>> (schema: T) {
+  return schema.refine(
+    (job) => job.salaryMin === null || job.salaryMax === null || job.salaryMin <= job.salaryMax,
+    { message: 'salaryMin must be less than or equal to salaryMax', path: ['salaryMin'] }
+  )
+}
+
+// Body for creating a job (used by the seed today, and by POST /jobs later)
+export const jobSchema = withValidSalaryRange(jobFieldsSchema)
 
 export type JobInput = z.infer<typeof jobSchema>
