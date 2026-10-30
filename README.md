@@ -53,7 +53,7 @@ pnpm dev
 This starts both apps:
 
 - Web: <http://localhost:5173>
-- API: <http://localhost:3000> (the local database file is created, migrated and seeded on first run)
+- API: <http://localhost:3000> (the local database file is created, migrated and filled with fictional sample jobs on first run; with `NODE_ENV=production` it is never seeded)
 
 ### Useful scripts
 
@@ -62,7 +62,8 @@ This starts both apps:
 | `pnpm dev` | Run API and web in watch mode |
 | `pnpm dev:api` / `pnpm dev:web` | Run only one of them |
 | `pnpm db:migrate` | Apply pending migrations (`apps/api/src/db/migrations/*.sql`) |
-| `pnpm db:seed` | Reset a **local** database with the sample jobs (refuses hosted databases) |
+| `pnpm db:seed` | Replace the sample jobs in a **local** database (refuses hosted databases, keeps ingested jobs) |
+| `pnpm ingest` | Fetch jobs from every source. `--source=<id>` runs only that source, `--dry-run` writes nothing |
 | `pnpm build` | Production build of both apps |
 | `pnpm lint` / `pnpm typecheck` | Static checks |
 | `pnpm test` | API tests (node:test + Supertest, in-memory database) |
@@ -88,6 +89,17 @@ turso db tokens create codehired
 ```
 
 Put the URL and token in `apps/api/.env` as `DATABASE_URL` and `DATABASE_AUTH_TOKEN`, then run `pnpm db:migrate`.
+
+### Ingestion
+
+Jobs come from external sources through small adapters in `apps/api/src/ingest/sources/`. Each one implements the `Source` interface (`apps/api/src/ingest/types.ts`): it fetches raw postings and maps them to a normalized job. The runner then validates every job with Zod (invalid ones are logged and skipped), inserts new jobs, updates a job only when its content hash changed, touches `last_seen_at` on every job it sees, and records each run in `ingestion_runs`.
+
+Adapters fetch through `apps/api/src/ingest/http.ts`, which adds timeouts, retries with exponential backoff, a concurrency limit and a `User-Agent` that identifies CodeHired.
+
+```bash
+pnpm ingest --source=fixture   # fictional jobs from apps/api/test/fixtures/jobs.json (local databases only)
+pnpm ingest --dry-run          # fetch and validate everything, write nothing
+```
 
 ## API
 

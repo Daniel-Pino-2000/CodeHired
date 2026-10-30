@@ -15,6 +15,7 @@
     "typecheck": "pnpm -r --if-present typecheck",
     "test": "pnpm -r --if-present test",
     "db:migrate": "pnpm --filter @codehired/api db:migrate",
-    "db:seed": "pnpm --filter @codehired/api db:seed"
+    "db:seed": "pnpm --filter @codehired/api db:seed",
+    "ingest": "pnpm --filter @codehired/api ingest"
   }
 }

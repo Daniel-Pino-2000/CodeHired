@@ -1,4 +1,4 @@
-// `pnpm db:seed`: wipe the jobs table and fill it again with the seed data
+// `pnpm db:seed`: replace the fictional seed jobs. Jobs from `pnpm ingest` are kept.
 import { CONFIG } from '../config.js'
 import { db } from './database.js'
 import { runMigrations } from './migrations.js'
@@ -11,7 +11,7 @@ if (!CONFIG.IS_LOCAL_DATABASE) {
 }
 
 await runMigrations()
-await db.execute('DELETE FROM jobs')
+await db.execute("DELETE FROM jobs WHERE source = 'seed'")
 
 const inserted = await seedJobs()
 console.log(`Seeded ${inserted} jobs`)
