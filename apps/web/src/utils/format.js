@@ -36,3 +36,4 @@ export function timeAgo (isoDate) {
   if (days > -30) return relativeTime.format(Math.trunc(days / 7), 'week')
   return relativeTime.format(Math.trunc(days / 30), 'month')
 }
+const unusedThing = 1
