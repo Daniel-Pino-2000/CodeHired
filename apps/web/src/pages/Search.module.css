@@ -1,0 +1,24 @@
+.page {
+  padding-top: 40px;
+}
+
+.header {
+  margin-bottom: 24px;
+}
+
+.header h1 {
+  font-size: clamp(28px, 4vw, 36px);
+}
+
+.subtitle {
+  margin-top: 6px;
+  color: var(--color-text-muted);
+}
+
+.count {
+  min-height: 24px;
+  margin: 20px 0 12px;
+  color: var(--color-text-muted);
+  font-size: 14px;
+  font-weight: 500;
+}
