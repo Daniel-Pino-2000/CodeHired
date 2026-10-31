@@ -59,6 +59,32 @@ describe('runMigrations', () => {
     assert.deepEqual(await runMigrations(client, dir), ['001_create_a.sql', '002_add_b.sql'])
   })
 
+  test('succeeds when another instance applied the migration first', async () => {
+    const client = createClient({ url: ':memory:' })
+    // Not idempotent on purpose: running it twice fails with "table a already exists"
+    const dir = await migrationsDir({ '001_create_a.sql': 'CREATE TABLE a (id INTEGER PRIMARY KEY);' })
+    await runMigrations(client, dir)
+
+    // Same database, but the list of applied versions was read before the other instance
+    // committed: this instance still believes 001 is pending
+    const lateInstance = new Proxy(client, {
+      get (target, property, receiver) {
+        if (property === 'execute') {
+          return (statement: Parameters<typeof client.execute>[0]) =>
+            statement === 'SELECT version FROM schema_migrations'
+              ? Promise.resolve({ rows: [] })
+              : target.execute(statement)
+        }
+        const value = Reflect.get(target, property, receiver)
+        return typeof value === 'function' ? value.bind(target) : value
+      }
+    })
+
+    assert.deepEqual(await runMigrations(lateInstance, dir), [])
+    const { rows } = await client.execute('SELECT version FROM schema_migrations')
+    assert.deepEqual(rows.map((row) => row.version), ['001_create_a.sql'])
+  })
+
   test('rolls back a failing migration and stops there', async () => {
     const client = createClient({ url: ':memory:' })
     const dir = await migrationsDir({

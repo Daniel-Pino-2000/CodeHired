@@ -77,7 +77,7 @@ The API talks to SQLite through [libSQL](https://github.com/tursodatabase/libsql
 | `:memory:` | Tests |
 | `libsql://<database>-<user>.turso.io` + `DATABASE_AUTH_TOKEN` | Production |
 
-Schema changes are numbered `.sql` files in `apps/api/src/db/migrations/`. They are applied in order, each in its own transaction, and recorded in the `schema_migrations` table. The API applies pending migrations on start; `pnpm db:migrate` does it on demand.
+Schema changes are numbered `.sql` files in `apps/api/src/db/migrations/`. They are applied in order, each in its own transaction (so a file must not contain `BEGIN`/`COMMIT` itself), and recorded in the `schema_migrations` table. The API applies pending migrations on start, which is safe when several instances start at once; `pnpm db:migrate` does it on demand.
 
 To try a free Turso database with the [Turso CLI](https://docs.turso.tech/cli/introduction):
 
