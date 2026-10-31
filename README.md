@@ -104,7 +104,7 @@ After each run:
 
 Adapters fetch through `apps/api/src/ingest/http.ts`, which adds timeouts, retries with exponential backoff, a concurrency limit and a `User-Agent` that identifies CodeHired.
 
-The real sources today are company career boards on **Greenhouse**, **Lever** and **Ashby**: one source per platform, reading every company listed in [`apps/api/src/ingest/companies.json`](apps/api/src/ingest/companies.json). They keep only tech roles in the US or remote from the US. A company whose board fails is logged and skipped; the run goes on. Which sources CodeHired uses, and under what terms, is recorded in [`docs/data-sources.md`](docs/data-sources.md).
+The real sources today are company career boards on **Greenhouse**, **Lever** and **Ashby**: one source per platform, reading every company listed in [`apps/api/src/ingest/companies.json`](apps/api/src/ingest/companies.json). They keep only tech roles in the US or remote from the US. A company whose board fails is logged and skipped; the run goes on. Remote jobs open to US-based applicants also come from three remote job boards whose terms allow it: **Remote OK**, **Himalayas** and **Jobicy**. Every job shows where it was found and links to the original posting, as the sources' terms require. Which sources CodeHired uses, and under what terms, is recorded in [`docs/data-sources.md`](docs/data-sources.md).
 
 ```bash
 pnpm ingest --source=fixture   # fictional jobs from apps/api/test/fixtures/jobs.json (local databases only)
@@ -120,7 +120,7 @@ pnpm ingest --dry-run          # fetch and validate everything, write nothing
 | `GET` | `/jobs` | List jobs. Query: `text`, `technology`, `level` (`intern`, `junior`, `mid`, `senior`, `staff`, `lead`), `workplace` (`remote`, `hybrid`, `onsite`), `limit` (max 50), `offset` |
 | `GET` | `/jobs/:id` | Get one job |
 
-`GET /jobs` responds with `{ data, total, limit, offset }`.
+`GET /jobs` responds with `{ data, total, limit, offset }`. Each job has a `source` (`{ name, url }`, with the original posting) when it was ingested from an external source, and `null` for jobs created here.
 
 ## Project Structure
 

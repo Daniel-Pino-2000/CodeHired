@@ -63,7 +63,7 @@ function mentionsUsCountry (text: string) {
 }
 
 // "Multiple Locations", "United States and Canada", "Remote from the US", "Central - United States": not a city
-const NOT_A_CITY = /\b(locations?|anywhere|multiple|various|select|nationwide|any|cities|states|region|and|friendly|from|the|in|central|(north|south)(east|west)|midwest|(east|west) coast)\b/i
+const NOT_A_CITY = /\b(locations?|anywhere|multiple|various|select|nationwide|any|cities|states|region|and|friendly|from|the|in|your|home|central|(north|south)(east|west)|midwest|(east|west) coast)\b/i
 const looksLikeCity = (text: string) => /^[\p{L} .'’-]{2,40}$/u.test(text) &&
   !NOT_A_CITY.test(text) && !NON_US.test(text) && !US_ELIGIBLE_REGION.test(text)
 
@@ -174,6 +174,16 @@ export function formatUsLocation ({ city, state, country, remote }: UsPlace) {
   const place = city && state ? `${city}, ${state}` : city ?? (state ? US_STATES[state] : null)
   if (remote) return place ? `Remote (${place})` : country === 'US' ? 'Remote (US)' : 'Remote'
   return place ?? 'United States'
+}
+
+// Remote boards list only remote jobs. A job is kept when it is open to US-based applicants: the
+// location names a US place or the US, or puts no limit at all ("", "Worldwide", "Anywhere").
+const NO_RESTRICTION = /^\s*(remote|worldwide|anywhere|global)?\s*$/i
+
+export function parseRemoteLocation (text: string | null | undefined): UsPlace | null {
+  if (!text || NO_RESTRICTION.test(text)) return { city: null, state: null, country: null, remote: true }
+  const place = parseUsLocation(text)
+  return place ? { ...place, remote: true } : null
 }
 
 // A place that names a country or city outside the US and does not mention the US: "Portugal",

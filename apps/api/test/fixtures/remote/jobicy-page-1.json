@@ -1,0 +1,47 @@
+{
+  "apiVersion": "2.2.19",
+  "jobCount": 2,
+  "hasMore": true,
+  "nextCursor": "cursor-2",
+  "jobs": [
+    {
+      "id": 158129,
+      "url": "https://jobicy.com/jobs/158129-senior-fullstack-engineer-be-leaning",
+      "jobSlug": "158129-senior-fullstack-engineer-be-leaning",
+      "jobTitle": "Senior Fullstack Engineer (BE-leaning)",
+      "companyName": "TeamSnap",
+      "companyLogo": "https://jobicy.com/data/server-nyc0409/galaxy/mercury/2021/01/WRILS-210112010303-582315.png",
+      "jobIndustry": [
+        "Software Engineering"
+      ],
+      "jobType": [
+        "Full-Time"
+      ],
+      "jobGeo": "USA",
+      "jobLevel": "Senior",
+      "jobDescription": "<p><strong> About Us</strong></p>\n<p>At <a href=\"https://jobicy.com/company/teamsnap\" target=\"_blank\" rel=\"noopener\">TeamSnap</a>, we believe when the world connects through sports; the world becomes better. TeamSnap is a sports and communication platform dedicated to taking the work out of play in youth sports. We also believe our jobs should excite us, our teammates should support us and our bosses should inspire us. We empower our people to bring big ideas and tiny egos, landing us on Outside Magazine’s list of “<strong>Best Places to Work\" </strong>and Built In’s “<strong>100 Best Remote-First Places to Work.\"</strong></p>",
+      "pubDate": "2026-10-30T18:07:40+00:00",
+      "salaryMin": 150000,
+      "salaryCurrency": "USD",
+      "salaryPeriod": "yearly"
+    },
+    {
+      "id": 158064,
+      "url": "https://jobicy.com/jobs/158064-senior-staff-software-engineer-ai",
+      "jobSlug": "158064-senior-staff-software-engineer-ai",
+      "jobTitle": "Senior Staff Software Engineer (AI)",
+      "companyName": "Juniper Square",
+      "companyLogo": "https://jobicy.com/data/server-nyc0409/galaxy/mercury/2022/01/90c359a8bed816e81ea39fa33a8314f3.png",
+      "jobIndustry": [
+        "DevOps & Infrastructure"
+      ],
+      "jobType": [
+        "Full-Time"
+      ],
+      "jobGeo": "Canada,  USA",
+      "jobLevel": "Director",
+      "jobDescription": "<h3><strong>About <a href=\"https://jobicy.com/company/juniper-square\" target=\"_blank\" rel=\"noopener\">Juniper Square</a></strong></h3>\n<p>Private markets are one of the largest, most complex, and most underserved corners of global finance. Our mission at Juniper Square is to unlock their full potential. We’re the Operations Partner trusted by 2,300+ GPs, unifying technology, data, and fund administration services into a single platform that helps GPs move faster, make better decisions, and scale with precision. With $300B+ under administration and 700,000+ LPs on platform, we’ve built the scale to match our ambition. And with JunieAI, our purpose-built AI platform, we’re reimagining how private markets operate, embedding intelligence across every workflow. Founder-led since 2014, backed by $350M+ in funding, and now 1,000+ employees strong, we’re building a company designed to shape the future of private markets for decades to come.</p>",
+      "pubDate": "2026-10-30T17:36:54+00:00"
+    }
+  ]
+}
