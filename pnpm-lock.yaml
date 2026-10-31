@@ -10,6 +10,9 @@ importers:
 
   apps/api:
     dependencies:
+      '@codehired/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
       '@libsql/client':
         specifier: ^0.18.0
         version: 0.18.0
@@ -41,6 +44,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@codehired/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
       react:
         specifier: ^19.3.1
         version: 19.3.1
@@ -78,6 +84,8 @@ importers:
       vite:
         specifier: ^8.3.5
         version: 8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(tsx@4.23.15)
+
+  packages/shared: {}
 
 packages:
 

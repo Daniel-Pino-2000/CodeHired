@@ -8,6 +8,8 @@ export interface RunCounts {
   inserted: number
   updated: number
   failed: number
+  // Jobs of this source closed after the run: not seen lately, or too old
+  closed: number
 }
 
 export interface IngestionRun extends RunCounts {
@@ -30,6 +32,7 @@ function toRun (row: Row): IngestionRun {
     inserted: Number(row.inserted),
     updated: Number(row.updated),
     failed: Number(row.failed),
+    closed: Number(row.closed),
     error: row.error as string | null
   }
 }
@@ -49,7 +52,7 @@ export class IngestionRunModel {
       sql: `
         UPDATE ingestion_runs
         SET status = @status, finished_at = @finishedAt, fetched = @fetched, inserted = @inserted,
-            updated = @updated, failed = @failed, error = @error
+            updated = @updated, failed = @failed, closed = @closed, error = @error
         WHERE id = @id
       `,
       args: { id, ...result }

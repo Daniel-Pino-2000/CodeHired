@@ -9,6 +9,7 @@ import {
   inferWorkplace,
   usdYearlySalary
 } from '../normalize.js'
+import { SOURCE_PRIORITY } from '../dedupe.js'
 import type { NormalizedJobInput } from '../schema.js'
 import { boardPath, createBoardSource, expectArray, type BoardPosting, type BoardSourceOptions } from './board.js'
 
@@ -113,6 +114,7 @@ export function createLeverSource ({ companies = companiesOn('lever'), http }: B
     id: 'lever',
     name: 'Company boards on Lever',
     attribution: { label: 'Lever', url: 'https://www.lever.co' },
+    priority: SOURCE_PRIORITY.companyAts,
     companies,
     http,
     fetchBoard,

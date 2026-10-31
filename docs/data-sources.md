@@ -20,7 +20,7 @@ These three APIs exist so companies can show their own openings on their own sit
 - **Credit the company.** The company name comes from [`companies.json`](../apps/api/src/ingest/companies.json), not from the board, and is shown on every job. The `Source.attribution` of each adapter ("Greenhouse", "Lever", "Ashby") is there for a "via ..." line in the UI (#32).
 - **Be a light client.** One full run a day at most. The shared HTTP client (`apps/api/src/ingest/http.ts`) sends a `User-Agent` that names CodeHired and links this repository, keeps at most 4 requests in flight per platform, times out after 15 seconds and backs off exponentially on `429` and `5xx`, honoring `Retry-After`. One request per company board: the list endpoints return every posting at once, so no per-job requests are made.
 - **Keep only what we list.** Postings outside the US (and not open to US-based remote applicants), and non-tech roles, are dropped before they reach the database.
-- **Drop what disappears.** A job no longer on its board must be closed and later deleted (expiry lands with #31), so CodeHired does not keep advertising filled roles.
+- **Drop what disappears.** A job that the last 3 runs did not see is closed (hidden from the site) and deleted 60 days later, so CodeHired does not keep advertising filled roles.
 - **Respect opt-outs.** A company that asks not to be listed is removed from `companies.json` and its jobs are deleted.
 
 ### Notes per platform

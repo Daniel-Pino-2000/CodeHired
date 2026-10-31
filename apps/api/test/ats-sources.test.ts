@@ -77,9 +77,10 @@ describe('companies.json', () => {
     assert.equal(companiesSchema.safeParse([company('lever', 'acme'), company('ashby', 'acme')]).success, true)
   })
 
-  test('a full run includes the three ATS sources', () => {
-    const ids = resolveSources([], { isLocalDatabase: false }).map((source) => source.id)
-    assert.deepEqual(ids, ['greenhouse', 'lever', 'ashby'])
+  test('a full run includes the three ATS sources, which only list open jobs', () => {
+    const sources = resolveSources([], { isLocalDatabase: false })
+    assert.deepEqual(sources.map((source) => source.id), ['greenhouse', 'lever', 'ashby'])
+    assert.ok(sources.every((source) => source.listsOnlyOpenJobs && source.priority === 0))
   })
 })
 

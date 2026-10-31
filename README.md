@@ -94,6 +94,14 @@ Put the URL and token in `apps/api/.env` as `DATABASE_URL` and `DATABASE_AUTH_TO
 
 Jobs come from external sources through small adapters in `apps/api/src/ingest/sources/`. Each one implements the `Source` interface (`apps/api/src/ingest/types.ts`): it fetches raw postings and maps them to a normalized job. The runner then validates every job with Zod (invalid ones are logged and skipped), inserts new jobs, updates a job only when its content hash changed, touches `last_seen_at` on every job it sees, and records each run in `ingestion_runs`.
 
+On the way, every job is tagged with the technologies its title and description mention, using the dictionary in [`packages/shared/technologies.json`](packages/shared/technologies.json) (the web app reads its labels from the same file). Its level (intern, junior, mid, senior, staff, lead) is inferred from the title.
+
+After each run:
+
+- **Expiry.** A job that the last 3 successful runs of its source did not see is closed. So is a job posted more than 45 days ago, except on company boards, which remove filled roles themselves. Closed jobs disappear from `GET /jobs` and are deleted 60 days later.
+- **Deduplication.** The same opening often comes from several sources. Jobs with the same fingerprint (company, title and place, normalized: `Acme, Inc.` = `Acme`, `Sr.` = `Senior`, `NYC` = `New York`) are listed once, from the source with the highest priority: company boards, then USAJobs, Adzuna, JSearch and remote boards. Every place a job appears is recorded in `job_sources`.
+- **Free-tier check.** The CLI prints how many jobs are listed, duplicated and closed, and the database size against Turso's free 5 GB.
+
 Adapters fetch through `apps/api/src/ingest/http.ts`, which adds timeouts, retries with exponential backoff, a concurrency limit and a `User-Agent` that identifies CodeHired.
 
 The real sources today are company career boards on **Greenhouse**, **Lever** and **Ashby**: one source per platform, reading every company listed in [`apps/api/src/ingest/companies.json`](apps/api/src/ingest/companies.json). They keep only tech roles in the US or remote from the US. A company whose board fails is logged and skipped; the run goes on. Which sources CodeHired uses, and under what terms, is recorded in [`docs/data-sources.md`](docs/data-sources.md).
@@ -109,7 +117,7 @@ pnpm ingest --dry-run          # fetch and validate everything, write nothing
 | Method | Endpoint | Description |
 | --- | --- | --- |
 | `GET` | `/health` | Health check |
-| `GET` | `/jobs` | List jobs. Query: `text`, `technology`, `level` (`junior`, `mid`, `senior`, `lead`), `workplace` (`remote`, `hybrid`, `onsite`), `limit` (max 50), `offset` |
+| `GET` | `/jobs` | List jobs. Query: `text`, `technology`, `level` (`intern`, `junior`, `mid`, `senior`, `staff`, `lead`), `workplace` (`remote`, `hybrid`, `onsite`), `limit` (max 50), `offset` |
 | `GET` | `/jobs/:id` | Get one job |
 
 `GET /jobs` responds with `{ data, total, limit, offset }`.
@@ -138,6 +146,8 @@ CodeHired/
 │           ├── hooks/
 │           ├── services/     # API client
 │           └── utils/
+├── packages/
+│   └── shared/               # Data both apps use: the technology dictionary
 ├── package.json              # Workspace scripts
 └── pnpm-workspace.yaml
 ```

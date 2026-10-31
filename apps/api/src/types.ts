@@ -1,4 +1,4 @@
-export const LEVELS = ['junior', 'mid', 'senior', 'lead'] as const
+export const LEVELS = ['intern', 'junior', 'mid', 'senior', 'staff', 'lead'] as const
 export const WORKPLACES = ['remote', 'hybrid', 'onsite'] as const
 export const EMPLOYMENT_TYPES = ['full-time', 'part-time', 'contract', 'internship'] as const
 
