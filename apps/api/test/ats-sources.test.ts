@@ -139,6 +139,23 @@ describe('Greenhouse source', () => {
     assert.equal(manager.level, 'lead')
     assert.deepEqual([manager.salaryMin, manager.salaryMax], [272000, 340000])
   })
+
+  test('trusts a location name abroad over a US office attached to every posting', async () => {
+    const job = (id: number, name: string) => ({
+      id,
+      title: 'Principal Software Engineer',
+      absolute_url: `https://job-boards.greenhouse.io/discord/jobs/${id}`,
+      location: { name },
+      offices: [{ name: 'US', location: 'United States' }],
+      content: '&lt;p&gt;Build search infrastructure for everyone.&lt;/p&gt;'
+    })
+    const body = JSON.stringify({ jobs: [job(1, 'Portugal'), job(2, 'United States'), job(3, 'Anywhere we hire')] })
+    const { fetch } = fakeFetch({ [url]: jsonResponse(body) })
+
+    const jobs = await collect(createGreenhouseSource({ companies: [discord], http: testHttp(fetch) }))
+
+    assert.deepEqual(jobs.map((kept) => [kept.sourceId, kept.location]), [['discord:2', 'United States'], ['discord:3', 'United States']])
+  })
 })
 
 describe('Lever source', () => {

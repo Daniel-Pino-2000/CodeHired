@@ -1,7 +1,7 @@
 // Company boards hosted on Greenhouse. Public Job Board API, no key:
 // https://developers.greenhouse.io/job-board.html
 import { companiesOn, type Company } from '../companies.js'
-import { formatUsLocation, isTechRole, parseUsLocation, type UsPlace } from '../filters.js'
+import { formatUsLocation, isNonUsPlace, isTechRole, parseUsLocation, type UsPlace } from '../filters.js'
 import type { HttpClient } from '../http.js'
 import {
   decodeEntities,
@@ -50,6 +50,8 @@ function greenhousePlace (job: GreenhouseJob): UsPlace | null {
   const name = job.location?.name
   const fromName = parseUsLocation(name)
   if (fromName) return fromName
+  // Some companies attach a US office to every posting, even "Portugal": the name wins
+  if (isNonUsPlace(name)) return null
 
   for (const office of job.offices ?? []) {
     const place = parseUsLocation(office.location) ?? parseUsLocation(office.name)

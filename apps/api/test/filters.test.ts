@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { describe, test } from 'node:test'
-import { formatUsLocation, isTechRole, isUsCountry, parseUsLocation } from '../src/ingest/filters.js'
+import { formatUsLocation, isNonUsPlace, isTechRole, isUsCountry, parseUsLocation } from '../src/ingest/filters.js'
 import { usdYearlySalary } from '../src/ingest/normalize.js'
 
 describe('parseUsLocation', () => {
@@ -53,6 +53,11 @@ describe('formatUsLocation', () => {
     assert.equal(formatUsLocation(place), 'United States')
     assert.equal(formatUsLocation({ ...place, country: null, remote: true }), 'Remote')
   })
+})
+
+test('isNonUsPlace spots places abroad unless the US is named too', () => {
+  for (const text of ['Portugal', 'London, UK', 'Remote - Norway', 'Bengaluru']) assert.equal(isNonUsPlace(text), true, text)
+  for (const text of ['Austin, TX', 'Remote', 'US or Canada', '', null]) assert.equal(isNonUsPlace(text), false, String(text))
 })
 
 test('isUsCountry accepts the spellings the sources use', () => {

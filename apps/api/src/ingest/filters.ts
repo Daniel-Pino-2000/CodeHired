@@ -68,7 +68,7 @@ const looksLikeCity = (text: string) => /^[\p{L} .'’-]{2,40}$/u.test(text) &&
   !NOT_A_CITY.test(text) && !NON_US.test(text) && !US_ELIGIBLE_REGION.test(text)
 
 // Places that would otherwise look American: "Bengaluru, IN" reads as Indiana, "Remote - CA" as California
-const NON_US = /\b(canada|toronto|vancouver|montr[eé]al|ottawa|calgary|ontario|qu[eé]bec|british columbia|mexico|brazil|argentina|colombia|united kingdom|uk|england|scotland|london|ireland|dublin|germany|berlin|munich|france|paris|spain|madrid|barcelona|portugal|lisbon|netherlands|amsterdam|poland|warsaw|switzerland|zurich|sweden|stockholm|denmark|copenhagen|europe|emea|apac|latam|india|bengaluru|bangalore|hyderabad|pune|chennai|mumbai|delhi|gurgaon|gurugram|noida|singapore|japan|tokyo|korea|seoul|china|beijing|shanghai|hong kong|taiwan|australia|sydney|melbourne|new zealand|israel|tel aviv|philippines|manila|vietnam|indonesia|uae|dubai)\b/i
+const NON_US = /\b(canada|toronto|vancouver|montr[eé]al|ottawa|calgary|ontario|qu[eé]bec|british columbia|mexico|brazil|argentina|colombia|united kingdom|uk|england|scotland|london|ireland|dublin|germany|berlin|munich|france|paris|spain|madrid|barcelona|portugal|lisbon|netherlands|amsterdam|poland|warsaw|switzerland|zurich|sweden|stockholm|denmark|copenhagen|europe|emea|apac|latam|india|bengaluru|bangalore|hyderabad|pune|chennai|mumbai|delhi|gurgaon|gurugram|noida|singapore|japan|tokyo|korea|seoul|china|beijing|shanghai|hong kong|taiwan|australia|sydney|melbourne|new zealand|israel|tel aviv|philippines|manila|vietnam|indonesia|uae|dubai|greece|romania|bucharest|norway|oslo|finland|helsinki|italy|milan|rome|austria|vienna|belgium|brussels|czech|prague|hungary|budapest|serbia|belgrade|ukraine|kyiv|turkey|istanbul|south africa|nigeria|egypt|kenya|chile|peru|costa rica|uruguay|thailand|malaysia|pakistan|saudi arabia|qatar|luxembourg|slovenia|estonia|lithuania|latvia|croatia|bulgaria)\b/i
 
 // Remote roles open to more than the US, which US applicants can take
 const US_ELIGIBLE_REGION = /\b(global|worldwide|anywhere|americas?|amer|namer|north america)\b/i
@@ -174,6 +174,12 @@ export function formatUsLocation ({ city, state, country, remote }: UsPlace) {
   const place = city && state ? `${city}, ${state}` : city ?? (state ? US_STATES[state] : null)
   if (remote) return place ? `Remote (${place})` : country === 'US' ? 'Remote (US)' : 'Remote'
   return place ?? 'United States'
+}
+
+// A place that names a country or city outside the US and does not mention the US: "Portugal",
+// "London, UK". Used to distrust other fields of the same posting that say otherwise.
+export function isNonUsPlace (text: string | null | undefined) {
+  return !!text && NON_US.test(text) && !mentionsUsCountry(text)
 }
 
 // Country names and codes the sources use for the US
