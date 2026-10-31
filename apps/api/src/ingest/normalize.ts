@@ -102,3 +102,27 @@ export function toWholeNumber (value: unknown) {
 export function contentHash (job: NormalizedJob) {
   return createHash('sha256').update(JSON.stringify(job)).digest('hex')
 }
+
+// Below this a "salary" is an hourly or monthly rate, which the `jobs` columns do not hold
+const MIN_YEARLY_SALARY = 10_000
+// Above these the numbers are a typo in the posting, not a salary
+const MAX_YEARLY_SALARY = 2_000_000
+const MAX_RANGE_RATIO = 4
+
+const NO_SALARY = { salaryMin: null, salaryMax: null, currency: 'USD' }
+
+// A yearly range in US dollars, or no salary at all: CodeHired lists US jobs, so a range in
+// another currency belongs to another location of the same posting
+export function usdYearlySalary (min: unknown, max: unknown, currency: string | null | undefined = 'USD') {
+  if ((currency ?? 'USD').toUpperCase() !== 'USD') return NO_SALARY
+  const yearly = (value: unknown) => {
+    const number = toWholeNumber(value)
+    return number !== null && number >= MIN_YEARLY_SALARY && number <= MAX_YEARLY_SALARY ? number : null
+  }
+  const salaryMin = yearly(min)
+  const salaryMax = yearly(max)
+  if (salaryMin !== null && salaryMax !== null && (salaryMin > salaryMax || salaryMax > salaryMin * MAX_RANGE_RATIO)) {
+    return NO_SALARY
+  }
+  return { salaryMin, salaryMax, currency: 'USD' }
+}

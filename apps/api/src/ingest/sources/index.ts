@@ -1,9 +1,15 @@
 import type { Source } from '../types.js'
+import { createAshbySource } from './ashby.js'
 import { createFixtureSource } from './fixture.js'
+import { createGreenhouseSource } from './greenhouse.js'
+import { createLeverSource } from './lever.js'
 
 // Every source `pnpm ingest` knows about. New adapters are added here.
 export const SOURCES: readonly Source[] = [
-  createFixtureSource()
+  createFixtureSource(),
+  createGreenhouseSource(),
+  createLeverSource(),
+  createAshbySource()
 ]
 
 // The sources named on the command line, or every real source when none is named

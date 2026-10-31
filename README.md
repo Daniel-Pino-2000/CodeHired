@@ -96,8 +96,11 @@ Jobs come from external sources through small adapters in `apps/api/src/ingest/s
 
 Adapters fetch through `apps/api/src/ingest/http.ts`, which adds timeouts, retries with exponential backoff, a concurrency limit and a `User-Agent` that identifies CodeHired.
 
+The real sources today are company career boards on **Greenhouse**, **Lever** and **Ashby**: one source per platform, reading every company listed in [`apps/api/src/ingest/companies.json`](apps/api/src/ingest/companies.json). They keep only tech roles in the US or remote from the US. A company whose board fails is logged and skipped; the run goes on. Which sources CodeHired uses, and under what terms, is recorded in [`docs/data-sources.md`](docs/data-sources.md).
+
 ```bash
 pnpm ingest --source=fixture   # fictional jobs from apps/api/test/fixtures/jobs.json (local databases only)
+pnpm ingest --source=lever     # one source
 pnpm ingest --dry-run          # fetch and validate everything, write nothing
 ```
 
@@ -157,7 +160,7 @@ The roadmap lives in [GitHub Issues](https://github.com/Daniel-Pino-2000/CodeHir
 
 ## Contributing
 
-Contributions, issues, and feature requests are welcome. Feel free to check the [issues page](https://github.com/Daniel-Pino-2000/CodeHired/issues) if you'd like to contribute.
+Contributions, issues, and feature requests are welcome. Feel free to check the [issues page](https://github.com/Daniel-Pino-2000/CodeHired/issues) if you'd like to contribute, and read [CONTRIBUTING.md](CONTRIBUTING.md) first (it explains, among other things, how to add a company to the job sources).
 
 ## Acknowledgements
 
