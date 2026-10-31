@@ -6,9 +6,9 @@ import { JobModel } from '../models/job.js'
 import { toIsoSeconds } from '../utils/dates.js'
 import { contentHash } from './normalize.js'
 import { normalizedJobSchema, type NormalizedJob } from './schema.js'
-import type { Source } from './types.js'
+import type { Logger, Source } from './types.js'
 
-export type Logger = Pick<Console, 'info' | 'warn' | 'error'>
+export type { Logger }
 
 export interface IngestOptions {
   // Fetch, normalize and compare with the database, but write nothing (not even the run)
@@ -79,7 +79,7 @@ export async function ingestSource<RawJob> (source: Source<RawJob>, options: Ing
     const storedHashes = await JobModel.getContentHashes(source.id)
     const seen = new Set<string>()
 
-    for await (const raw of source.fetchJobs()) {
+    for await (const raw of source.fetchJobs({ logger })) {
       counts.fetched++
       const job = normalizeJob(source, raw, counts.fetched, logger)
       if (!job) {

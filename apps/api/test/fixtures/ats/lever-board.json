@@ -1,0 +1,148 @@
+[
+  {
+    "additional": "<div>Estimated annual salary range: $150,000 - $189,000 plus generous equity and a discretionary bonus.</div>\n<p>Benefits include medical, vision, dental, 401K matching, Employee Stock Purchase Plan, generous time off, parental leave, wellness reimbursements, professional development, employee investing discount, and more!</p><div><br></div>",
+    "categories": {
+      "commitment": "Full-time",
+      "department": "Engineering",
+      "location": "Palo Alto, CA",
+      "team": "Engineering - Android",
+      "allLocations": [
+        "Palo Alto, CA",
+        "Seattle, WA",
+        "San Francisco, CA",
+        "New York City, NY"
+      ]
+    },
+    "createdAt": 1694463796009,
+    "description": "<div>\n<p>We’re looking for Android Engineers to join our team. As part of a cross-functional scrum team you will design and develop new investment account and cash account functionality within our Android app. In addition to development on the app itself, you will write automated tests and integrate with our in-house design systems and our backend API. Come help us achieve our vision to make investing delightfully easy and understandable for our clients and prospective clients!</p>\n</div>\n<div>\n<p><strong style=\"font-size: 10.5pt;\">About Wealthfront Engineering</strong></p>\n<div><span style=\"font-size: 10.5pt;\">Wealthfront’s culture centers around continuous learning, innovation, and quality-driven software development. With high quality software as our ultimate engineering objective, our key tactic is automation: </span></div>",
+    "id": "78d6f6d5-1f08-4d5d-87be-c4250567bfb5",
+    "lists": [
+      {
+        "text": "As a core member of the team, you will:",
+        "content": "\n<li>Build a premier native Android application</li>\n<li>Collaborate with other engineers and designers to build new features and enhance existing features for our world-class app</li>\n<li>Work with frontend and backend engineers to design, build and test reusable REST APIs</li>\n<li>Design and build high-quality infrastructure; making the right tradeoffs for risk and long-term maintainability</li>\n<li>Collaborate with design and product to define a delightful Android experience using material design</li>\n<li>Get an opportunity to work with leadership to define the team's priorities and initiatives</li>\n<li>Work independently, use available resources to get unblocked, and complete tasks on schedule by exercising strong judgment and problem-solving skills</li>\n<li>Provide technical guidance and mentorship to peers</li>\n"
+      }
+    ],
+    "text": "Android Engineer",
+    "country": "US",
+    "workplaceType": "hybrid",
+    "hostedUrl": "https://jobs.lever.co/wealthfront/78d6f6d5-1f08-4d5d-87be-c4250567bfb5",
+    "applyUrl": "https://jobs.lever.co/wealthfront/78d6f6d5-1f08-4d5d-87be-c4250567bfb5/apply"
+  },
+  {
+    "additional": "<div><strong><span style=\"font-size: 18px;\">Life at Palantir</span></strong></div>\n<div>&nbsp;</div>\n<div>We want every Palantirian to achieve their best outcomes, that’s why we celebrate individuals’ strengths, skills, and interests, from your first interview to your longterm growth, rather than rely on traditional career ladders. Paying attention to the needs of our community enables us to optimize our opportunities to grow and helps ensure many pathways to success at Palantir. Promoting health and well-being across all areas of Palantirians’ lives is just one of the ways we’re investing in our community. Learn more at <a href=\"https://www.palantir.com/careers/life-at-palantir/\">Life at Palantir</a> and note that our offerings may vary by region.</div>",
+    "categories": {
+      "commitment": "Full-time",
+      "location": "London, United Kingdom",
+      "team": "Dev",
+      "allLocations": [
+        "London, United Kingdom"
+      ]
+    },
+    "createdAt": 1710188707256,
+    "description": "<div><strong><span style=\"font-size: 18px;\">A World-Changing Company</span></strong></div>\n<div>&nbsp;</div>\n<div>Palantir builds the world’s leading software for data-driven decisions and operations. By bringing the right data to the people who need it, our platforms empower our partners to develop lifesaving drugs, forecast supply chain disruptions, locate missing children, and more.</div><div><br></div><div><strong style=\"font-size: 18px;\">The Role</strong></div>\n<div>&nbsp;</div>\n<div><strong>Backend Software Engineers</strong> at Palantir build software at scale to transform how organisations use data. Our Software Engineers are involved throughout the product lifecycle, from idea generation, design, prototyping, and production delivery. You will collaborate closely with technical and non-technical teammates to understand our customers' problems and build products that solve them. We encourage movement across teams to share context, skills, and experience, so you'll learn about many different technologies and aspects of each product. Engineers work autonomously and make decisions independently, within a community that will support and challenge you as you grow and develop, becoming a strong technical contributor and engineering leader.</div>",
+    "id": "10dfc8bc-99ad-4ca2-ab76-853cb90a92c2",
+    "lists": [
+      {
+        "text": "Core Responsiblities",
+        "content": "\n<li>Architecting, developing, and maintaining high-performance, scalable backend services that underpin our our operational data and AI systems</li>\n<li>Maintaining high coding standards through the development of guidelines, active participation in code reviews, and fostering a culture of continuous improvement and knowledge sharing among your team</li>\n<li>Building robust APIs for use by front-end developers and interfacing external systems, and collaborating with front-end developers to integrate user-facing elements with server-side logic</li>\n<li>Designing efficient data structures and algorithms to manage large-scale and high throughput data</li>\n<li>Optimizing applications for speed and scalability through performance analysis</li>\n<li>Actively improve user workflows by collaborating with cross-functional teams, ensuring seamless experiences across product boundaries and a cohesive user experience</li>\n"
+      }
+    ],
+    "text": "Backend Software Engineer - Application Development",
+    "country": "GB",
+    "workplaceType": "hybrid",
+    "hostedUrl": "https://jobs.lever.co/palantir/10dfc8bc-99ad-4ca2-ab76-853cb90a92c2",
+    "applyUrl": "https://jobs.lever.co/palantir/10dfc8bc-99ad-4ca2-ab76-853cb90a92c2/apply"
+  },
+  {
+    "additional": "<h3><strong>Salary</strong></h3>\n<div>The estimated salary range for this position is estimated to be $60,000 - $97,000/year. Total compensation for this position may also include Restricted Stock units, sign-on bonus and other potential future incentives. Further note that total compensation for this position will be determined by each individual’s relevant qualifications, work experience, skills, and other factors. This estimate excludes the value of any potential sign-on bonus; the value of any benefits offered; and the potential future value of any long-term incentives.</div>",
+    "categories": {
+      "commitment": "Full-time",
+      "location": "Washington, D.C.",
+      "team": "Administrative",
+      "allLocations": [
+        "Washington, D.C."
+      ]
+    },
+    "createdAt": 1781771660468,
+    "description": "<div><strong><span style=\"font-size: 18px;\">A World-Changing Company</span></strong></div>\n<div>&nbsp;</div>\n<div>Palantir builds the world’s leading software for data-driven decisions and operations. By bringing the right data to the people who need it, our platforms empower our partners to develop lifesaving drugs, forecast supply chain disruptions, locate missing children, and more.</div><div><br></div><h3><strong>The Role</strong></h3>\n<div>ShipOS is Palantir's partnership with the U.S. Navy to modernize the American maritime industrial base — accelerating submarine production, shipyard operations, and supplier coordination across the country. It's one of the highest-priority programs at the company, and it moves fast.<br><br>Our Administrative Business Partners don't just support leaders — they're the backbone of the busiest people on the team. You'll work directly with the leads running our Shipbuilder, Suppliers, and Shipyards workstreams and anticipate needs before they're voiced, own the details no one else sees, and make a high-performing team run even faster. This is a strategic role, requiring the ability to forecast and plan for changing circumstances with complicated data inputs.</div>",
+    "id": "a237973c-cb29-41fe-9c80-416e6f42e087",
+    "lists": [
+      {
+        "text": "Core Responsibilities",
+        "content": "\n<li>Own calendar management and deconfliction across multiple workstream leads — onsites, supplier visits, internal syncs, and Navy stakeholder meetings</li>\n<li>Schedule and track supplier engagements end-to-end: who's rolling on and off, when they're available, and which team member is covering each slot</li>\n<li>Drive the weekly update process — gather inputs from leads, write the narrative, make it look sharp, and distribute to the broader team</li>\n<li>Chase follow-ups and action items so leads don't have to</li>\n<li>Manage onboarding logistics: track hard badge and laptop requests and follow up on access issues until they're resolved</li>\n<li>Book domestic travel arrangements and process expense reports</li>\n<li>Help plan and support team events and external gatherings</li>\n<li>Work autonomously and in close collaboration with teammates, government counterparts, and external partners.</li>\n<li>Manage team calendars, prioritizing conflicting meeting requests, navigating team travel and out of office restrictions</li>\n<li>Arrange business and other travel itineraries for core team events and members (includes coordinating team travel, tracking who is going onsite, calendaring, conference room bookings)</li>\n<li>Support in-office customer visits and any on-site customer events (includes reserving of conference rooms, catering requests, badging, communications, scheduling, and more)</li>\n<li>Support external event planning and coordination</li>\n<li>Maintain records of business and personal transactions and submit expense reports for key team members</li>\n<li>Handle various matters with discretion and diplomacy (making reservations, running errands, scheduling appointments, completing paperwork, property upkeep, communicating with vendors, etc.)</li>\n<li>On &amp; off-boarding new joiners\n\n</li><li>includes tracking and scheduling of 30/60/90 process (scheduling meetings between peep, people lead, and team lead)</li>\n<li>citizenship verification and customer badging process</li>\n<li>Adding new joiners to team wide meetings and calendar events</li>\n\n\n<li>Maintain on-boarding resources and team documentation</li>\n<li>Understand the team and client landscape</li>\n"
+      }
+    ],
+    "text": "Administrative Business Partner - ShipOS",
+    "country": "US",
+    "workplaceType": "hybrid",
+    "hostedUrl": "https://jobs.lever.co/palantir/a237973c-cb29-41fe-9c80-416e6f42e087",
+    "applyUrl": "https://jobs.lever.co/palantir/a237973c-cb29-41fe-9c80-416e6f42e087/apply"
+  },
+  {
+    "additional": "<div><b>About Zoox</b></div><div>Zoox is developing the first ground-up, fully autonomous vehicle fleet and the supporting ecosystem required to bring this technology to market. Sitting at the intersection of robotics, machine learning, and design, Zoox aims to provide the next generation of mobility-as-a-service in urban environments. We’re looking for top talent that shares our passion and wants to be part of a fast-moving and highly execution-oriented team.</div>",
+    "categories": {
+      "commitment": "Full-time",
+      "department": "Vehicle Development",
+      "level": "All Levels",
+      "location": "Foster City, CA",
+      "team": "Body, Closures and Chassis",
+      "allLocations": [
+        "Foster City, CA"
+      ]
+    },
+    "createdAt": 1789072867958,
+    "description": "<div>\n<p>At Zoox, you’ll collaborate with a team of world-class engineers with diverse backgrounds in areas such as AI, robotics, mechatronics, planning, machine learning, control, localization, computer vision, rendering, simulation, distributed computing, design, and automated testing. You will be challenged to rethink what it means for hardware design to arrive at elegant and efficient systems now that a robot is in control. Working at a startup gives you the chance to manifest your creativity and make a big difference in the final product.<br>&nbsp;<br>As an individual, or as the lead, you will work to ensure successful delivery of systems and assemblies, from conception through to start of production. Crucial to this success will be driving and managing key relationships with Zoox’s supplier network while Zoox maintains a lean and agile cross functional team in-house. You will use your knowledge to direct the technical effort, your expertise to ground the team and your excellent communication and interpersonal skills to motivate and lead as we take a new path to redefine a traditional and well established industry.</p>\n<p>As a member of the Body Systems team, you will have the opportunity to come on board at the start of the development of the next generation of mobility vehicles. As the Body Structures Engineer, you will work across all aspects of the body including the body-in-white structures, crash structures, underbody, surface technologies and the integration of these systems into a brand new vehicle architecture.</p>\n</div>",
+    "id": "7980e9a3-99f3-4988-ae6d-355c9199d8fb",
+    "lists": [
+      {
+        "text": "In this role, you will: ",
+        "content": "\n<li>Conceptualize, design (2D and 3D), and lead development/release of vehicle body components/assemblies to meet cost, weight, performance requirements&nbsp;</li>\n<li>Develop short and long term schedule/plans for component development, release, delivery, and validation</li>\n<li>Define/negotiate requirements and specifications for body systems to achieve best in class performance in structural, NVH, and crash performance; including DFMEAs, DVP’s and PVP’s, APQP</li>\n<li>Support validation testing for component/vehicle&nbsp;</li>\n<li>Support material and manufacturing process decisions both internally and externally</li>\n<li>Work cross functionally and collaborate with peers, styling studio, packaging, CAE/attribute/test teams, management, manufacturing, suppliers</li>\n<li>Develop processes, procedures and best practices for Body design and development</li>\n"
+      }
+    ],
+    "salaryRange": {
+      "currency": "USD",
+      "interval": "per-year-salary",
+      "min": 170000,
+      "max": 204000
+    },
+    "salaryDescription": "<div><strong>Base Salary Range</strong><br>&nbsp;<br>There are three major components to compensation for this position: salary, Amazon Restricted Stock Units (RSUs), and Zoox Stock Appreciation Rights. A sign-on bonus may be offered as part of the compensation package. The listed range applies only to the base salary. Compensation will vary based on geographic location and level. Leveling, as well as positioning within a level, is determined by a range of factors, including, but not limited to, a candidate's relevant years of experience, domain knowledge, and interview performance. The salary range listed in this posting is representative of the range of levels Zoox is considering for this position.</div>",
+    "salaryDescriptionPlain": "Base Salary Range\n \nThere are three major components to compensation for this position: salary, Amazon Restricted Stock Units (RSUs), and Zoox Stock Appreciation Rights. A sign-on bonus may be offered as part of the compensation package. The listed range applies only to the base salary. Compensation will vary based on geographic location and level. Leveling, as well as positioning within a level, is determined by a range of factors, including, but not limited to, a candidate's relevant years of experience, domain knowledge, and interview performance. The salary range listed in this posting is representative of the range of levels Zoox is considering for this position.\n",
+    "text": "Body Structures Engineer",
+    "country": "US",
+    "workplaceType": "onsite",
+    "hostedUrl": "https://jobs.lever.co/zoox/7980e9a3-99f3-4988-ae6d-355c9199d8fb",
+    "applyUrl": "https://jobs.lever.co/zoox/7980e9a3-99f3-4988-ae6d-355c9199d8fb/apply"
+  },
+  {
+    "additional": "<div><strong>Compensation</strong></div>\n<div>There are three major components to compensation for this position: salary, Amazon Restricted Stock Units (RSUs), and Zoox Stock Appreciation Rights. A sign-on bonus may be offered as part of the compensation package. Compensation will vary based on geographic location and level. Leveling, as well as positioning within a level, is determined by a range of factors, including, but not limited to, a candidate's relevant years of experience, domain knowledge, and interview performance. The salary range listed in this posting is representative of the range of levels Zoox is considering for this position.</div>",
+    "categories": {
+      "commitment": "Full-time",
+      "department": "Software",
+      "location": "San Diego, CA",
+      "team": "Software Platforms and Product",
+      "allLocations": [
+        "San Diego, CA"
+      ]
+    },
+    "createdAt": 1781123252051,
+    "description": "<div><span style=\"font-size: 16px;\">Zoox is looking for an embedded software engineer to join our Firmware Platforms team. In this role, you will be responsible for developing, extending, and maintaining support for multiple embedded platforms for the Zoox vehicle. You will work closely with electrical engineers, embedded software engineers, and validation engineers to enable support for new advanced platforms and accelerate application development across multiple projects. We are looking for people who are passionate about diving deep into the hardware and creating robust and reusable software.</span></div>",
+    "id": "0dd5de4b-4e98-4808-85fd-e739e7fc5bba",
+    "lists": [
+      {
+        "text": "Responsibilities",
+        "content": "\n<li>Architect, develop, debug, optimize, review, and test software for multiple real-time embedded platforms</li>\n<li>Develop and maintain board support packages for multiple platforms, including compiler, bootloader, drivers, and real-time operating system</li>\n<li>Build low-level frameworks, interfaces, and infrastructure to make our embedded application development faster, simpler, more portable, and more testable</li>\n<li>Bring-up of new embedded platforms by working with electrical engineers, suppliers, and vendors to identify and solve hardware and low-level software issues</li>\n<li>Contribute to all phases of the software development cycle, including prototyping, requirements capture, design, implementation, and validation</li>\n"
+      }
+    ],
+    "salaryRange": {
+      "currency": "USD",
+      "interval": "per-year-salary",
+      "min": 164000,
+      "max": 223000
+    },
+    "text": "Embedded Software Engineer",
+    "country": "US",
+    "workplaceType": "hybrid",
+    "hostedUrl": "https://jobs.lever.co/zoox/0dd5de4b-4e98-4808-85fd-e739e7fc5bba",
+    "applyUrl": "https://jobs.lever.co/zoox/0dd5de4b-4e98-4808-85fd-e739e7fc5bba/apply"
+  }
+]

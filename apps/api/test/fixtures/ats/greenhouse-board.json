@@ -1,0 +1,277 @@
+{
+  "jobs": [
+    {
+      "absolute_url": "https://job-boards.greenhouse.io/discord/jobs/8703614002",
+      "data_compliance": [
+        {
+          "type": "gdpr",
+          "requires_consent": false,
+          "requires_processing_consent": false,
+          "requires_retention_consent": false,
+          "retention_period": null,
+          "demographic_data_consent_applies": true
+        }
+      ],
+      "internal_job_id": 6449765002,
+      "location": {
+        "name": "San Francisco Bay Area or Remote (U.S.)"
+      },
+      "metadata": [
+        {
+          "id": 4105571002,
+          "name": "Featured on Website",
+          "value": [],
+          "value_type": "multi_select"
+        },
+        {
+          "id": 96196709002,
+          "name": "Careers Site Department",
+          "value": null,
+          "value_type": "single_select"
+        }
+      ],
+      "id": 8703614002,
+      "updated_at": "2026-10-21T14:48:51-04:00",
+      "requisition_id": "R-107344",
+      "title": "QA/DevOps Engineer",
+      "pay_input_ranges": [
+        {
+          "min_cents": 15600000,
+          "max_cents": 17550000,
+          "currency_type": "USD",
+          "title": "Base Salary",
+          "blurb": "<p><em>The base salary range for this full-time position is listed below. This position will also be eligible for equity and benefits. Our salary ranges are determined by role and level. Within the range, individual pay is determined by additional factors, including job-related skills, experience, and relevant education or training. Please note that the compensation details listed in role postings reflect the base salary only, and do not include equity, or benefits.</em></p>"
+        }
+      ],
+      "company_name": "Discord",
+      "first_published": "2026-08-13T23:27:33-04:00",
+      "language": "en",
+      "application_deadline": null,
+      "content": "&lt;div class=&quot;content-intro&quot;&gt;&lt;p&gt;Discord has a highly engaged community of millions of daily active users who use the platform for many different reasons, but there’s one thing that nearly everyone does: &lt;strong&gt;play video games.&lt;/strong&gt; Discord plays a uniquely important role in the future of gaming, and we are focused on making it easier and more fun for people to hang out before, during, and after playing games.&lt;/p&gt;&lt;/div&gt;&lt;p&gt;We are seeking a QA/DevOps Engineer&amp;nbsp;to join Discord’s Business Systems team. In this role, you will own automated test suite development and maintenance across Oracle ERP Cloud (Fusion) and Salesforce, with a focus on Tosca-based regression and progression testing. You will embed automated testing into CI/CD pipelines and partner closely with ERP Functional, Technical, and DevOps teams to ensure every release is tested consistently and defects are caught early.&lt;/p&gt;",
+      "departments": [
+        {
+          "id": 4095033002,
+          "name": "Business Systems",
+          "child_ids": [],
+          "parent_id": 4094262002
+        }
+      ],
+      "offices": [
+        {
+          "id": 4082816002,
+          "name": "Remote (US)",
+          "location": null,
+          "child_ids": [],
+          "parent_id": null
+        }
+      ],
+      "ai_disclaimer": null,
+      "include_ai_disclaimer": false,
+      "ai_opt_out_request_url": "http://app2.greenhouse.io/ai_opt_out_request/job_post/8703614002/ai_opt_out"
+    },
+    {
+      "absolute_url": "https://job-boards.greenhouse.io/discord/jobs/8722538002",
+      "data_compliance": [
+        {
+          "type": "gdpr",
+          "requires_consent": false,
+          "requires_processing_consent": false,
+          "requires_retention_consent": false,
+          "retention_period": null,
+          "demographic_data_consent_applies": true
+        }
+      ],
+      "education": "education_optional",
+      "internal_job_id": 6486826002,
+      "location": {
+        "name": "Remote (US)"
+      },
+      "metadata": [
+        {
+          "id": 4105571002,
+          "name": "Featured on Website",
+          "value": [],
+          "value_type": "multi_select"
+        },
+        {
+          "id": 96196709002,
+          "name": "Careers Site Department",
+          "value": null,
+          "value_type": "single_select"
+        }
+      ],
+      "id": 8722538002,
+      "updated_at": "2026-10-29T14:21:36-04:00",
+      "requisition_id": "R-107381",
+      "title": "Engineering Manager, Machine Learning (Safety)",
+      "pay_input_ranges": [
+        {
+          "min_cents": 27200000,
+          "max_cents": 34000000,
+          "currency_type": "USD",
+          "title": "Base Salary",
+          "blurb": "<p><em>The base salary range for this full-time position is listed below. This position will also be eligible for equity and benefits. Our salary ranges are determined by role and level. Within the range, individual pay is determined by additional factors, including job-related skills, experience, and relevant education or training. Please note that the compensation details listed in role postings reflect the base salary only, and do not include equity, or benefits.</em></p>"
+        }
+      ],
+      "company_name": "Discord",
+      "first_published": "2026-08-20T13:43:23-04:00",
+      "language": "en",
+      "application_deadline": null,
+      "content": "&lt;div class=&quot;content-intro&quot;&gt;&lt;p&gt;Discord has a highly engaged community of millions of daily active users who use the platform for many different reasons, but there’s one thing that nearly everyone does: &lt;strong&gt;play video games.&lt;/strong&gt; Discord plays a uniquely important role in the future of gaming, and we are focused on making it easier and more fun for people to hang out before, during, and after playing games.&lt;/p&gt;&lt;/div&gt;&lt;p&gt;Discord&#39;s Safety ML team builds the machine learning systems that protect 200M+ users. The team&#39;s mission is to make Discord a place where people can build genuine friendships without exposure to harm, at a scale where manual review alone can never keep up.&lt;/p&gt;",
+      "departments": [
+        {
+          "id": 4107920002,
+          "name": "Developers",
+          "child_ids": [],
+          "parent_id": 4094266002
+        }
+      ],
+      "offices": [
+        {
+          "id": 4082816002,
+          "name": "Remote (US)",
+          "location": null,
+          "child_ids": [],
+          "parent_id": null
+        }
+      ],
+      "ai_disclaimer": null,
+      "include_ai_disclaimer": false,
+      "ai_opt_out_request_url": "http://app2.greenhouse.io/ai_opt_out_request/job_post/8722538002/ai_opt_out"
+    },
+    {
+      "absolute_url": "https://job-boards.greenhouse.io/discord/jobs/8847080002",
+      "data_compliance": [
+        {
+          "type": "gdpr",
+          "requires_consent": false,
+          "requires_processing_consent": false,
+          "requires_retention_consent": false,
+          "retention_period": null,
+          "demographic_data_consent_applies": true
+        }
+      ],
+      "education": "education_optional",
+      "internal_job_id": 6541926002,
+      "location": {
+        "name": "San Francisco Bay Area"
+      },
+      "metadata": [
+        {
+          "id": 4105571002,
+          "name": "Featured on Website",
+          "value": [],
+          "value_type": "multi_select"
+        },
+        {
+          "id": 96196709002,
+          "name": "Careers Site Department",
+          "value": null,
+          "value_type": "single_select"
+        }
+      ],
+      "id": 8847080002,
+      "updated_at": "2026-10-23T16:58:26-04:00",
+      "requisition_id": "R-107439",
+      "title": "Group Product Manager, Data/ML",
+      "pay_input_ranges": [
+        {
+          "min_cents": 30400000,
+          "max_cents": 38000000,
+          "currency_type": "USD",
+          "title": "Base Salary",
+          "blurb": "<p><em>The base salary range for this full-time position is listed below. This position will also be eligible for equity and benefits. Our salary ranges are determined by role and level. Within the range, individual pay is determined by additional factors, including job-related skills, experience, and relevant education or training. Please note that the compensation details listed in role postings reflect the base salary only, and do not include equity, or benefits.</em></p>"
+        }
+      ],
+      "company_name": "Discord",
+      "first_published": "2026-10-23T16:58:26-04:00",
+      "language": "en",
+      "application_deadline": null,
+      "content": "&lt;div class=&quot;content-intro&quot;&gt;&lt;p&gt;Discord has a highly engaged community of millions of daily active users who use the platform for many different reasons, but there’s one thing that nearly everyone does: &lt;strong&gt;play video games.&lt;/strong&gt; Discord plays a uniquely important role in the future of gaming, and we are focused on making it easier and more fun for people to hang out before, during, and after playing games.&lt;/p&gt;&lt;/div&gt;&lt;p&gt;As Group Product Manager for Data/ML, you&#39;ll drive the vision, strategy, and roadmap for Discord&#39;s Machine Learning Platform and its applications, particularly to Advertising, while also championing how the broader company uses data to make product decisions. This is a horizontal role reporting to the VP of Product, Business that touches nearly every product team at Discord, as well as core technical teams, so you&#39;ll need to be comfortable driving alignment across stakeholders whose goals are sometimes in tension.&lt;/p&gt;",
+      "departments": [
+        {
+          "id": 4074056002,
+          "name": "Product Management",
+          "child_ids": [],
+          "parent_id": 4094267002
+        }
+      ],
+      "offices": [
+        {
+          "id": 4000383002,
+          "name": "San Francisco, CA",
+          "location": "San Francisco, California, United States",
+          "child_ids": [],
+          "parent_id": null
+        }
+      ],
+      "ai_disclaimer": null,
+      "include_ai_disclaimer": false,
+      "ai_opt_out_request_url": "http://app2.greenhouse.io/ai_opt_out_request/job_post/8847080002/ai_opt_out"
+    },
+    {
+      "absolute_url": "https://stripe.com/jobs/search?gh_jid=8274893",
+      "data_compliance": [
+        {
+          "type": "gdpr",
+          "requires_consent": false,
+          "requires_processing_consent": false,
+          "requires_retention_consent": false,
+          "retention_period": null,
+          "demographic_data_consent_applies": false
+        }
+      ],
+      "internal_job_id": 3574471,
+      "location": {
+        "name": "Toronto, CA"
+      },
+      "metadata": null,
+      "id": 8274893,
+      "updated_at": "2026-10-29T10:42:09-04:00",
+      "requisition_id": "See Opening ID",
+      "title": "Android Engineer, Terminal - CA",
+      "pay_input_ranges": [],
+      "company_name": "Stripe",
+      "first_published": "2026-10-12T15:16:00-04:00",
+      "language": "en",
+      "application_deadline": null,
+      "content": "&lt;h2&gt;&lt;strong&gt;Who we are&lt;/strong&gt;&lt;/h2&gt;\n&lt;h3&gt;&lt;strong&gt;About Stripe&lt;/strong&gt;&lt;/h3&gt;\n&lt;p&gt;Stripe is a financial infrastructure platform for businesses. Millions of companies—from the world’s largest enterprises to the most ambitious startups—use Stripe to accept payments, grow their revenue, and accelerate new business opportunities. Our mission is to increase the GDP of the internet, and we have a staggering amount of work ahead. That means you have an unprecedented opportunity to put the global economy within everyone’s reach while doing the most important work of your career.&lt;/p&gt;\n&lt;h3&gt;&lt;strong&gt;About the team&lt;/strong&gt;&lt;/h3&gt;\n&lt;p&gt;Stripe Terminal helps our users extend their online presence to the physical world. The Terminal team’s mission is to make it as easy for businesses to accept in-person payments as the Stripe API has done for online payments. Stripe was founded to make it easier for developers to accept payments. We’ve solved a small part of that problem, but our ambition is to go much further.&amp;nbsp;&lt;/p&gt;",
+      "departments": [
+        {
+          "id": 66157,
+          "name": "8512 Terminal - Eng",
+          "child_ids": [],
+          "parent_id": 340723
+        }
+      ],
+      "offices": [
+        {
+          "id": 87006,
+          "name": "Canada Locations",
+          "location": null,
+          "child_ids": [
+            93355,
+            212396,
+            243441,
+            264677,
+            83765,
+            83863,
+            80164,
+            80439,
+            83762,
+            83763,
+            83766,
+            83764
+          ],
+          "parent_id": 673
+        }
+      ],
+      "ai_disclaimer": null,
+      "include_ai_disclaimer": false,
+      "ai_opt_out_request_url": "http://app.greenhouse.io/ai_opt_out_request/job_post/8274893/ai_opt_out"
+    }
+  ],
+  "meta": {
+    "total": 4
+  }
+}
