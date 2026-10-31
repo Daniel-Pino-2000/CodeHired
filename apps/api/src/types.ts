@@ -20,6 +20,9 @@ export interface Job {
   technologies: string[]
   description: string
   createdAt: string
+  // Where the job was found, with a link to the original posting; null for jobs created here.
+  // Showing it is what the sources' terms ask for (docs/data-sources.md).
+  source: { name: string, url: string } | null
 }
 
 export interface JobFilters {

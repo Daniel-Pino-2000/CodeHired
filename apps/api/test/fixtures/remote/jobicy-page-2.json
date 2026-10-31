@@ -1,0 +1,44 @@
+{
+  "apiVersion": "2.2.19",
+  "jobCount": 2,
+  "hasMore": false,
+  "nextCursor": null,
+  "jobs": [
+    {
+      "id": 158130,
+      "url": "https://jobicy.com/jobs/158130-senior-strategic-account-executive-automotive",
+      "jobSlug": "158130-senior-strategic-account-executive-automotive",
+      "jobTitle": "Senior Strategic Account Executive, Automotive",
+      "companyName": "Conversica",
+      "companyLogo": "https://jobicy.com/data/server-nyc0409/galaxy/mercury/2025/08/7901f028-221.jpg",
+      "jobIndustry": [
+        "Sales"
+      ],
+      "jobType": [
+        "Full-Time"
+      ],
+      "jobGeo": "USA",
+      "jobLevel": "Director",
+      "jobDescription": "<p><a href=\"https://jobicy.com/company/conversica\" target=\"_blank\" rel=\"noopener\">Conversica</a> is seeking a <strong>Senior Strategic Account Executive, Automotive</strong> to drive new business growth across large and strategically important automotive dealer groups.</p>\n<p>This is a senior individual contributor role focused on developing, navigating, and closing opportunities within complex dealer organizations. You'll own a portfolio of strategic dealer groups and work across multiple levels of these organizations, from individual rooftops and operational leaders to executive decision-makers, to build initial relationships, establish value, and expand adoption across the broader group.</p>",
+      "pubDate": "2026-10-30T18:07:42+00:00"
+    },
+    {
+      "id": 154189,
+      "url": "https://jobicy.com/jobs/154189-director-of-creative-strategy",
+      "jobSlug": "154189-director-of-creative-strategy",
+      "jobTitle": "Director of Creative Strategy",
+      "companyName": "Superside",
+      "companyLogo": "https://jobicy.com/data/server-nyc0409/galaxy/mercury/2021/01/WRILS-210104060359-501693.jpg",
+      "jobIndustry": [
+        "Marketing & Sales"
+      ],
+      "jobType": [
+        "Full-Time"
+      ],
+      "jobGeo": "Anywhere",
+      "jobLevel": "Director",
+      "jobDescription": "<p><a href=\"https://jobicy.com/company/superside\" target=\"_blank\" rel=\"noopener\">Superside</a> is hiring a Director of Creative Strategy to lead and evolve our Strategy function. You'll shape how strategy drives creative excellence across the business, leading a team of strategists while partnering with executive customers and internal leaders to solve complex business challenges through insight-driven creativity.</p>",
+      "pubDate": "2026-10-30T03:25:26+00:00"
+    }
+  ]
+}

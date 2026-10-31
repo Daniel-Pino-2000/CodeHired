@@ -55,6 +55,17 @@
   color: var(--color-text-muted);
 }
 
+.source {
+  margin-top: 4px;
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+.source a {
+  color: var(--color-brand);
+  font-weight: 600;
+}
+
 .layout {
   display: grid;
   grid-template-columns: 1fr 300px;
