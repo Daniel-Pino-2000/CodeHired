@@ -1,6 +1,7 @@
 // Reads fictional jobs from a local JSON file. Used by the tests (which must never hit the
 // network) and to try the pipeline locally: `pnpm ingest --source=fixture`.
 import { readFile } from 'node:fs/promises'
+import { SOURCE_PRIORITY } from '../dedupe.js'
 import {
   formatLocation,
   htmlToText,
@@ -73,6 +74,7 @@ export function createFixtureSource (file = new URL('jobs.json', FIXTURES_DIR), 
     id,
     name: 'Fixture (fictional jobs)',
     attribution: { label: 'Sample data', url: 'https://github.com/Daniel-Pino-2000/CodeHired' },
+    priority: SOURCE_PRIORITY.sample,
     devOnly: true,
     async * fetchJobs () {
       const { jobs } = JSON.parse(await readFile(file, 'utf8')) as { jobs: FixtureJob[] }

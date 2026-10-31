@@ -21,7 +21,13 @@ export interface Source<RawJob = unknown> {
   id: string
   name: string
   attribution: Attribution
-  // Fictional data (the fixture source): never part of a full run, never sent to a hosted database
+  // Which copy is listed when several sources have the same job: lower wins (`SOURCE_PRIORITY`)
+  priority?: number
+  // The company's own board: a posting is removed when the role is filled, so a listed job is open
+  // whatever its date, and is not closed for its age
+  listsOnlyOpenJobs?: boolean
+  // Fictional data (the fixture source): never part of a full run, never sent to a hosted database,
+  // never closed for its age (its dates are fixed in a file)
   devOnly?: boolean
   // Throwing ends the run as 'failed'; a source made of many boards should skip a broken one instead
   fetchJobs (context: FetchContext): AsyncIterable<RawJob>
