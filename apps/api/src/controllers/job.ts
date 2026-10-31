@@ -4,7 +4,8 @@ import { JobModel } from '../models/job.js'
 import { jobFiltersSchema } from '../schemas/job.js'
 
 export class JobController {
-  static getAll (req: Request, res: Response) {
+  // Express 5 forwards rejected promises to the error handler, so no try/catch is needed
+  static async getAll (req: Request, res: Response) {
     const result = jobFiltersSchema.safeParse(req.query)
 
     if (!result.success) {
@@ -14,11 +15,11 @@ export class JobController {
       })
     }
 
-    return res.json(JobModel.getAll(result.data))
+    return res.json(await JobModel.getAll(result.data))
   }
 
-  static getById (req: Request<{ id: string }>, res: Response) {
-    const job = JobModel.getById(req.params.id)
+  static async getById (req: Request<{ id: string }>, res: Response) {
+    const job = await JobModel.getById(req.params.id)
 
     if (!job) {
       return res.status(404).json({ error: 'Job not found' })
