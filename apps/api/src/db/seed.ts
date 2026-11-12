@@ -8,9 +8,9 @@ const DAY_MS = 24 * 60 * 60 * 1000
 
 // Inserts the seed jobs in one transaction. Returns how many were inserted.
 export async function seedJobs () {
-  const inserts = SEED_JOBS.map(({ postedDaysAgo, ...job }) => {
+  const inserts = SEED_JOBS.map(({ postedDaysAgo, state, ...job }) => {
     const createdAt = toIsoSeconds(new Date(Date.now() - postedDaysAgo * DAY_MS))
-    return JobModel.insertStatement({ ...jobSchema.parse(job), createdAt })
+    return JobModel.insertStatement({ ...jobSchema.parse(job), createdAt, state })
   })
 
   await db.batch(inserts, 'write')

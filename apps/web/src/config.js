@@ -3,6 +3,7 @@ export const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
 export const PAGE_SIZE = 10
 
 import technologies from '@codehired/shared/technologies.json'
+import usStates from '@codehired/shared/us-states.json'
 
 // Display names for technology slugs stored in the API. The API tags jobs with the same
 // dictionary, so every slug it stores has a label here.
@@ -37,3 +38,32 @@ export const EMPLOYMENT_TYPES = [
   { value: 'contract', label: 'Contract' },
   { value: 'internship', label: 'Internship' }
 ]
+
+// Search filters kept in the URL: the main row, then the ones behind "More filters" on small screens
+export const MAIN_FILTER_KEYS = ['text', 'technology', 'level', 'workplace']
+export const MORE_FILTER_KEYS = ['postedWithin', 'state', 'employmentType', 'minSalary', 'source', 'hasSalary']
+
+// GET /jobs `postedWithin`
+export const POSTED_WITHIN = [
+  { value: '24h', label: 'Last 24 hours' },
+  { value: '3d', label: 'Last 3 days' },
+  { value: '7d', label: 'Last 7 days' },
+  { value: '30d', label: 'Last 30 days' }
+]
+
+// GET /jobs `minSalary`, yearly USD
+export const MIN_SALARIES = [50000, 75000, 100000, 125000, 150000, 200000].map((value) => ({
+  value: String(value),
+  label: `$${value / 1000}k+`
+}))
+
+// GET /jobs `sort`
+export const SORTS = [
+  { value: 'newest', label: 'Newest' },
+  { value: 'salary_desc', label: 'Highest salary' }
+]
+
+// GET /jobs `state`: the same list the API validates against, by name
+export const US_STATES = Object.entries(usStates)
+  .map(([value, label]) => ({ value, label }))
+  .toSorted((a, b) => a.label.localeCompare(b.label))

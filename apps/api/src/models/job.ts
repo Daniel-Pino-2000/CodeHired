@@ -4,7 +4,7 @@ import { CONFIG } from '../config.js'
 import { db } from '../db/database.js'
 import type { NormalizedJob } from '../ingest/schema.js'
 import { getSource } from '../ingest/sources/index.js'
-import type { Job, JobDetail, JobFilters, JobSource, Paginated } from '../types.js'
+import { POSTED_WITHIN_HOURS, type Job, type JobDetail, type JobFilters, type JobSort, type JobSource, type Paginated } from '../types.js'
 import { toIsoSeconds } from '../utils/dates.js'
 import { sanitizeDescriptionHtml } from '../utils/sanitize.js'
 
@@ -37,6 +37,18 @@ const LISTED = [
   'jobs.duplicate_of IS NULL',
   ...(CONFIG.IS_LOCAL_DATABASE ? [] : ["jobs.source <> 'seed'"])
 ]
+
+const HOUR_MS = 60 * 60 * 1000
+
+// The highest salary a job states: the top of its range, or its only number
+const TOP_SALARY = 'COALESCE(salary_max, salary_min)'
+
+// `id` last, so pages never overlap when the other keys tie
+const ORDER_BY: Record<JobSort, string> = {
+  newest: 'created_at DESC, id',
+  // Jobs without a salary come after every job with one, newest first among equals
+  salary_desc: `${TOP_SALARY} IS NULL, ${TOP_SALARY} DESC, created_at DESC, id`
+}
 
 // Rows of `jobs` or `job_sources` without a posting URL (the seed) have no source to show
 function toJobSource (row: { source: string, source_url: string | null, publisher: string | null }): JobSource | null {
@@ -73,7 +85,22 @@ function toJob (row: Row): Job {
 }
 
 export class JobModel {
-  static async getAll ({ text, technology, level, workplace, limit, offset }: JobFilters): Promise<Paginated<Job>> {
+  // Every filter narrows the list (they combine with AND)
+  static async getAll ({
+    text,
+    technology,
+    level,
+    workplace,
+    employmentType,
+    postedWithin,
+    state,
+    minSalary,
+    hasSalary,
+    source,
+    sort = 'newest',
+    limit,
+    offset
+  }: JobFilters, now: Date = new Date()): Promise<Paginated<Job>> {
     // Jobs that disappeared from their source stay in the table but are no longer listed, and
     // an opening listed by several sources is shown once
     const where: string[] = [...LISTED]
@@ -95,6 +122,31 @@ export class JobModel {
       where.push('workplace = @workplace')
       args.workplace = workplace
     }
+    if (employmentType) {
+      where.push('employment_type = @employmentType')
+      args.employmentType = employmentType
+    }
+    if (postedWithin) {
+      // `created_at` is the posting date, or when CodeHired first saw the job
+      where.push('created_at >= @postedSince')
+      args.postedSince = toIsoSeconds(new Date(now.getTime() - POSTED_WITHIN_HOURS[postedWithin] * HOUR_MS))
+    }
+    if (state) {
+      where.push('state = @state')
+      args.state = state
+    }
+    // The top of the range is what a candidate can reach; a job with only one number uses it
+    if (minSalary !== undefined) {
+      where.push(`${TOP_SALARY} >= @minSalary`)
+      args.minSalary = minSalary
+    }
+    if (hasSalary) {
+      where.push(`${TOP_SALARY} IS NOT NULL`)
+    }
+    if (source) {
+      where.push('source = @source')
+      args.source = source
+    }
 
     const whereClause = `WHERE ${where.join(' AND ')}`
 
@@ -102,7 +154,7 @@ export class JobModel {
     const [countResult, pageResult] = await db.batch([
       { sql: `SELECT COUNT(*) AS total FROM jobs ${whereClause}`, args },
       {
-        sql: `SELECT * FROM jobs ${whereClause} ORDER BY created_at DESC, id LIMIT @limit OFFSET @offset`,
+        sql: `SELECT * FROM jobs ${whereClause} ORDER BY ${ORDER_BY[sort]} LIMIT @limit OFFSET @offset`,
         args: { ...args, limit, offset }
       }
     ], 'read')
@@ -150,13 +202,13 @@ export class JobModel {
   // The INSERT on its own, so callers can run many of them in one batch
   // Jobs created here (the seed, POST /jobs later) are their own source: `source` keeps its
   // default of 'seed' and `source_id` is the job id
-  static insertStatement (job: NewJob & { id?: string, createdAt?: string }): InStatement {
+  static insertStatement (job: NewJob & { id?: string, createdAt?: string, state?: string | null }): InStatement {
     return {
       sql: `
-        INSERT INTO jobs (id, source_id, title, company, location, workplace, remote, level,
+        INSERT INTO jobs (id, source_id, title, company, location, state, workplace, remote, level,
                           employment_type, salary_min, salary_max, currency, technologies,
                           description_text, posted_at, last_seen_at, created_at)
-        VALUES (@id, @id, @title, @company, @location, @workplace, @workplace = 'remote', @level,
+        VALUES (@id, @id, @title, @company, @location, @state, @workplace, @workplace = 'remote', @level,
                 @employmentType, @salaryMin, @salaryMax, @currency, @technologies,
                 @description, @createdAt, @createdAt, @createdAt)
       `,
@@ -165,6 +217,7 @@ export class JobModel {
         title: job.title,
         company: job.company,
         location: job.location,
+        state: job.state ?? null,
         workplace: job.workplace,
         level: job.level,
         employmentType: job.employmentType,
@@ -364,7 +417,7 @@ export class JobModel {
     }
   }
 
-  static async create (job: NewJob & { createdAt?: string }): Promise<Job> {
+  static async create (job: NewJob & { createdAt?: string, state?: string | null }): Promise<Job> {
     const id = randomUUID()
     await db.execute(JobModel.insertStatement({ ...job, id }))
     return (await JobModel.getById(id))!

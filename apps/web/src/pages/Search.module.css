@@ -26,10 +26,35 @@
   font-weight: 500;
 }
 
+/* The job count, and the order on the right */
+.results {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin: 20px 0 12px;
+}
+
 .count {
   min-height: 24px;
-  margin: 20px 0 12px;
   color: var(--color-text-muted);
   font-size: 14px;
   font-weight: 500;
+}
+
+.sort {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-text-muted);
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.sort select {
+  width: auto;
+  height: 36px;
+  padding: 0 10px;
 }

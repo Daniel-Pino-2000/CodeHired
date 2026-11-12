@@ -2,9 +2,10 @@
   "name": "@codehired/shared",
   "version": "0.1.0",
   "private": true,
-  "description": "Data shared by the web app and the API: the technology dictionary (labels for the UI, match patterns for tagging ingested jobs)",
+  "description": "Data shared by the web app and the API: the technology dictionary (labels for the UI, match patterns for tagging ingested jobs) and the US states (the location filter, and parsing locations at ingestion)",
   "type": "module",
   "exports": {
-    "./technologies.json": "./technologies.json"
+    "./technologies.json": "./technologies.json",
+    "./us-states.json": "./us-states.json"
   }
 }

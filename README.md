@@ -6,7 +6,7 @@ CodeHired is a web platform that helps developers find and apply for programming
 
 ## Features
 
-- 🔍 **Job Search** — search and filter programming jobs by keyword, technology, experience level and workplace
+- 🔍 **Job Search** — search and filter programming jobs by keyword, technology, experience level, workplace, US state, contract, posting date, salary and source, sorted by date or salary. Every filter lives in the URL, so a search can be shared
 - 📄 **Job Listings** — detailed postings with role description, salary, tech stack and company info
 - 🔗 **Apply at the Source** — every job names where it was found and links to the original posting to apply. The [`/sources`](apps/web/src/pages/Sources.jsx) page credits every data source and shows when the jobs were last refreshed
 - 📊 **Application Tracking** — keep track of jobs you've applied to and their status _(planned)_
@@ -136,7 +136,7 @@ Without them every run ends early with an "Ingestion skipped" notice, and stays 
 | Method | Endpoint | Description |
 | --- | --- | --- |
 | `GET` | `/health` | Health check |
-| `GET` | `/jobs` | List jobs. Query: `text`, `technology`, `level` (`intern`, `junior`, `mid`, `senior`, `staff`, `lead`), `workplace` (`remote`, `hybrid`, `onsite`), `limit` (max 50), `offset` |
+| `GET` | `/jobs` | List jobs. Filters (they combine): `text`, `technology`, `level` (`intern`, `junior`, `mid`, `senior`, `staff`, `lead`), `workplace` (`remote`, `hybrid`, `onsite`), `employmentType` (`full-time`, `part-time`, `contract`, `internship`), `postedWithin` (`24h`, `3d`, `7d`, `30d`), `state` (US state code, e.g. `TX`), `minSalary` (yearly USD; matches the top of the range, so jobs without a salary are left out), `hasSalary=true`, `source` (e.g. `greenhouse`). `sort`: `newest` (default) or `salary_desc` (jobs without a salary last). `limit` (max 50), `offset` |
 | `GET` | `/jobs/:id` | Get one job, plus `alsoPostedOn`: the other places the same opening was found |
 | `GET` | `/sources` | Every data source with its credit and terms links, and when it was last refreshed |
 
