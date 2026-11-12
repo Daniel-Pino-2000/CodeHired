@@ -1,14 +1,17 @@
 import { createApp } from './app.js'
 import { CONFIG } from './config.js'
-import { initDatabase } from './db/database.js'
+import { runMigrations } from './db/migrations.js'
 import { seedJobs } from './db/seed.js'
 import { JobModel } from './models/job.js'
 
-initDatabase()
+const applied = await runMigrations()
+if (applied.length > 0) {
+  console.log(`Applied migrations: ${applied.join(', ')}`)
+}
 
-// First run on a fresh machine: fill the database so the UI has something to show
-if (JobModel.count() === 0) {
-  const inserted = seedJobs()
+// First run on a fresh machine: fill the local database so the UI has something to show
+if (CONFIG.IS_LOCAL_DATABASE && await JobModel.count() === 0) {
+  const inserted = await seedJobs()
   console.log(`Database was empty, seeded ${inserted} jobs`)
 }
 

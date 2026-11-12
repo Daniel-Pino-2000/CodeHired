@@ -6,7 +6,7 @@ import { SEED_JOBS } from '../src/db/seed-data.js'
 import type { Job, Paginated } from '../src/types.js'
 import { createTestApp } from './helpers.js'
 
-const app = createTestApp()
+const app = await createTestApp()
 
 async function getJobs (query: Record<string, string | number> = {}) {
   const res = await request(app).get('/jobs').query(query)
