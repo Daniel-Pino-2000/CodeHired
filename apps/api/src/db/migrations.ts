@@ -23,12 +23,15 @@ export async function runMigrations (client: Client = db, dir: URL = MIGRATIONS_
   const files = (await readdir(dir)).filter((file) => MIGRATION_FILE.test(file)).sort()
   const pending = files.filter((file) => !applied.has(file))
 
+  const appliedNow: string[] = []
+
   for (const file of pending) {
     const sql = await readFile(new URL(file, dir), 'utf8')
 
-    // One script with its own BEGIN/COMMIT: a failing migration leaves no trace. An interactive
-    // `client.transaction()` is avoided on purpose: locally it hands over the connection, which
-    // would leave an in-memory database empty for the next query.
+    // One script with its own BEGIN/COMMIT, so migration files must not contain their own: a
+    // failing migration leaves no trace. An interactive `client.transaction()` is avoided on
+    // purpose: locally it hands over the connection, which would leave an in-memory database
+    // empty for the next query.
     try {
       await client.executeMultiple([
         'BEGIN;',
@@ -36,11 +39,25 @@ export async function runMigrations (client: Client = db, dir: URL = MIGRATIONS_
         `;INSERT INTO schema_migrations (version) VALUES ('${file}');`,
         'COMMIT;'
       ].join('\n'))
+      appliedNow.push(file)
     } catch (error) {
       await client.execute('ROLLBACK').catch(() => {})
+
+      // Two instances starting at once (e.g. serverless cold starts) both see the migration as
+      // pending; the one that loses the race fails here, but the database is already migrated
+      if (await isApplied(client, file)) continue
+
       throw new Error(`Migration ${file} failed`, { cause: error })
     }
   }
 
-  return pending
+  return appliedNow
+}
+
+async function isApplied (client: Client, version: string) {
+  const { rows } = await client.execute({
+    sql: 'SELECT 1 FROM schema_migrations WHERE version = ?',
+    args: [version]
+  })
+  return rows.length > 0
 }
