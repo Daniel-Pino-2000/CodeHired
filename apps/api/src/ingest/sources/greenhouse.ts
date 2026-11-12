@@ -112,7 +112,7 @@ export function createGreenhouseSource ({ companies = companiesOn('greenhouse'),
   return createBoardSource<GreenhouseJob>({
     id: 'greenhouse',
     name: 'Company boards on Greenhouse',
-    attribution: { label: 'Greenhouse', url: 'https://www.greenhouse.com' },
+    attribution: { label: 'Greenhouse', url: 'https://www.greenhouse.com', termsUrl: 'https://developers.greenhouse.io/job-board.html' },
     priority: SOURCE_PRIORITY.companyAts,
     companies,
     http,

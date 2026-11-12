@@ -124,7 +124,7 @@ export function createAshbySource ({ companies = companiesOn('ashby'), http }: B
   return createBoardSource<AshbyJob>({
     id: 'ashby',
     name: 'Company boards on Ashby',
-    attribution: { label: 'Ashby', url: 'https://www.ashbyhq.com' },
+    attribution: { label: 'Ashby', url: 'https://www.ashbyhq.com', termsUrl: 'https://developers.ashbyhq.com/docs/public-job-posting-api' },
     priority: SOURCE_PRIORITY.companyAts,
     companies,
     http,

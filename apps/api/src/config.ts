@@ -9,7 +9,8 @@ export const CONFIG = {
   // `file:codehired.db` locally, `:memory:` in tests, `libsql://<db>.turso.io` in production
   DATABASE_URL,
   DATABASE_AUTH_TOKEN: process.env.DATABASE_AUTH_TOKEN || undefined,
-  // Only local databases can be seeded with the fictional demo jobs; a hosted one never is
+  // Only local databases can be seeded with the fictional demo jobs; a hosted one never is, and
+  // the API never lists seed jobs from one
   IS_LOCAL_DATABASE: DATABASE_URL === ':memory:' || DATABASE_URL.startsWith('file:'),
   CORS_ORIGINS: (process.env.CORS_ORIGINS ?? 'http://localhost:5173')
     .split(',')

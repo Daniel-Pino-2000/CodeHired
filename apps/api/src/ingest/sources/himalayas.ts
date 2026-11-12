@@ -98,7 +98,7 @@ export function createHimalayasSource ({
   return {
     id: 'himalayas',
     name: 'Himalayas',
-    attribution: { label: 'Himalayas', url: 'https://himalayas.app' },
+    attribution: { label: 'Himalayas', url: 'https://himalayas.app', termsUrl: 'https://himalayas.app/terms' },
     priority: SOURCE_PRIORITY.remoteBoard,
     async * fetchJobs ({ logger }) {
       // The same job comes up in several queries

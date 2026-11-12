@@ -113,7 +113,7 @@ export function createLeverSource ({ companies = companiesOn('lever'), http }: B
   return createBoardSource<LeverPosting>({
     id: 'lever',
     name: 'Company boards on Lever',
-    attribution: { label: 'Lever', url: 'https://www.lever.co' },
+    attribution: { label: 'Lever', url: 'https://www.lever.co', termsUrl: 'https://github.com/lever/postings-api' },
     priority: SOURCE_PRIORITY.companyAts,
     companies,
     http,

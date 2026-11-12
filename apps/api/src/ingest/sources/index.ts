@@ -18,9 +18,9 @@ export const SOURCES: readonly Source[] = [
   createJobicySource()
 ]
 
-// How a source must be credited where its jobs are shown; undefined for jobs created here (the seed)
-export function getAttribution (sourceId: string) {
-  return SOURCES.find((source) => source.id === sourceId)?.attribution
+// The source a stored job came from; undefined for jobs created here (the seed)
+export function getSource (sourceId: string) {
+  return SOURCES.find((source) => source.id === sourceId)
 }
 
 // The sources named on the command line, or every real source when none is named

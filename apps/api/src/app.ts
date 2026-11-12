@@ -2,6 +2,7 @@ import express from 'express'
 import { cors } from './middlewares/cors.js'
 import { errorHandler, notFound } from './middlewares/errors.js'
 import { jobsRouter } from './routes/jobs.js'
+import { sourcesRouter } from './routes/sources.js'
 
 // The app is created separately from `listen()` so tests can import it without opening a port
 export function createApp () {
@@ -16,6 +17,7 @@ export function createApp () {
   })
 
   app.use('/jobs', jobsRouter)
+  app.use('/sources', sourcesRouter)
 
   app.use(notFound)
   app.use(errorHandler)

@@ -68,7 +68,7 @@ export function createRemoteOkSource ({ http = createHttpClient({ concurrency: 1
   return {
     id: 'remoteok',
     name: 'Remote OK',
-    attribution: { label: 'Remote OK', url: 'https://remoteok.com' },
+    attribution: { label: 'Remote OK', url: 'https://remoteok.com', termsUrl: 'https://remoteok.com/api' },
     priority: SOURCE_PRIORITY.remoteBoard,
     async * fetchJobs ({ logger }) {
       // One request returns the whole feed

@@ -85,7 +85,7 @@ export function createJobicySource ({ http = createHttpClient({ concurrency: 1 }
   return {
     id: 'jobicy',
     name: 'Jobicy',
-    attribution: { label: 'Jobicy', url: 'https://jobicy.com' },
+    attribution: { label: 'Jobicy', url: 'https://jobicy.com', termsUrl: 'https://jobicy.com/jobs-rss-feed' },
     priority: SOURCE_PRIORITY.remoteBoard,
     async * fetchJobs ({ logger }) {
       let cursor: string | undefined
