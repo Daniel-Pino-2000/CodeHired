@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import { describe, test } from 'node:test'
 import request from 'supertest'
 import { CONFIG } from '../src/config.js'
+import { db } from '../src/db/database.js'
 import { SEED_JOBS } from '../src/db/seed-data.js'
 import type { Job, Paginated } from '../src/types.js'
 import { createTestApp } from './helpers.js'
@@ -122,7 +123,26 @@ describe('GET /jobs/:id', () => {
     const res = await request(app).get(`/jobs/${job.id}`)
 
     assert.equal(res.status, 200)
-    assert.deepEqual(res.body, { ...job, alsoPostedOn: [] })
+    assert.deepEqual(res.body, { ...job, descriptionHtml: null, alsoPostedOn: [] })
+  })
+
+  test('serves the description HTML sanitized, even when the stored copy is not', async () => {
+    const { body } = await getJobs({ limit: 1, offset: 1 })
+    const [job] = body.data
+    await db.execute({
+      sql: 'UPDATE jobs SET description_html = ? WHERE id = ?',
+      args: ['<h1>About us</h1><img src=x onerror=alert(1)><script>alert(1)</script><p><a href="javascript:alert(1)">Click</a> or <a href="https://example.com/team">meet the team</a></p>', job.id]
+    })
+
+    const res = await request(app).get(`/jobs/${job.id}`)
+
+    assert.equal(res.status, 200)
+    assert.equal(
+      res.body.descriptionHtml,
+      '<h3>About us</h3><p><a>Click</a> or <a href="https://example.com/team" target="_blank" rel="nofollow ugc noopener noreferrer">meet the team</a></p>'
+    )
+    const list = await getJobs({ limit: 1, offset: 1 })
+    assert.equal('descriptionHtml' in list.body.data[0], false, 'only the job page needs the HTML')
   })
 
   test('responds 404 for an unknown id', async () => {

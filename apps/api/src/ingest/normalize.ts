@@ -48,7 +48,7 @@ export function repairMojibake (text: string) {
 }
 
 // Plain text with paragraphs separated by a blank line, which is how the web app renders
-// `description` today. The HTML itself is kept in `description_html` for #9.
+// `description`, used for search and as the fallback when a source sends no HTML (`description_html`)
 export function htmlToText (html: string) {
   const text = html
     .replace(/<(script|style)\b[\s\S]*?<\/\1>/gi, '')

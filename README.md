@@ -146,6 +146,10 @@ Without them every run ends early with an "Ingestion skipped" notice, and stays 
 - `postedAt`: the posting date the source gave, if any. `createdAt` falls back to when CodeHired first saw the job
 - `descriptionIsSnippet`: `true` when the source only gives part of the description
 
+`GET /jobs/:id` adds `alsoPostedOn` and `descriptionHtml`: the source's formatted description, or `null` when it only gave plain text (then use `description`).
+
+**Description HTML is sanitized on the server**, with [`sanitize-html`](https://github.com/apostrophecms/sanitize-html) and a strict allowlist ([`utils/sanitize.ts`](apps/api/src/utils/sanitize.ts)): paragraphs, line breaks, lists, headings (moved down to `h3`/`h4`), bold, italic, underline, quotes, code and links. Nothing else survives: no scripts, event handlers, `style`, `class`, images or iframes. Links keep only absolute `http(s)` and `mailto` hrefs, and open in a new tab with `rel="nofollow ugc noopener noreferrer"`. Ingestion stores it sanitized, and `GET /jobs/:id` sanitizes it again on the way out, so a row written any other way is never served raw. The web app inserts it as is. Sanitizing on the server keeps one tested allowlist for every client, and the browser never downloads a sanitizer.
+
 `GET /sources` responds with `{ updatedAt, data }`: `updatedAt` is when the latest successful ingestion run finished, and each source has `{ id, name, url, termsUrl, updatedAt }`.
 
 The fictional seed jobs are only served from a local database: a hosted one never lists them.

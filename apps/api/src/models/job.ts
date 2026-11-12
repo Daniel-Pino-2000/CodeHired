@@ -6,6 +6,7 @@ import type { NormalizedJob } from '../ingest/schema.js'
 import { getSource } from '../ingest/sources/index.js'
 import type { Job, JobDetail, JobFilters, JobSource, Paginated } from '../types.js'
 import { toIsoSeconds } from '../utils/dates.js'
+import { sanitizeDescriptionHtml } from '../utils/sanitize.js'
 
 interface JobRow {
   id: string
@@ -139,7 +140,11 @@ export class JobModel {
       .map((source) => toJobSource(source as unknown as Parameters<typeof toJobSource>[0]))
       .filter((source) => source !== null)
 
-    return { ...toJob(row), alsoPostedOn }
+    // Sanitized again on the way out, so rows written before ingestion sanitized (or by any other
+    // path) are never served raw. Cheap: one description per request.
+    const descriptionHtml = sanitizeDescriptionHtml(row.description_html as string | null)
+
+    return { ...toJob(row), descriptionHtml, alsoPostedOn }
   }
 
   // The INSERT on its own, so callers can run many of them in one batch
