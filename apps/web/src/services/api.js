@@ -32,3 +32,5 @@ export function jobsPath ({ text, technology, level, workplace, limit, offset })
 }
 
 export const jobPath = (id) => `/jobs/${encodeURIComponent(id)}`
+
+export const SOURCES_PATH = '/sources'

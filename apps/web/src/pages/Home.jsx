@@ -28,8 +28,8 @@ export default function HomePage () {
             Get hired for the <span className={styles.highlight}>code</span> you love writing
           </h1>
           <p className={styles.lead}>
-            Search programming jobs by stack, level and workplace, apply in one click and keep
-            track of every application in one place.
+            Search US programming jobs from company career pages and trusted job boards by stack,
+            level and workplace, then apply on the original posting.
           </p>
 
           <form className={styles.search} role='search' onSubmit={handleSubmit}>

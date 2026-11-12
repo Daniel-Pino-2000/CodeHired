@@ -1,9 +1,10 @@
 import { randomUUID } from 'node:crypto'
 import type { InStatement, InValue, Row } from '@libsql/client'
+import { CONFIG } from '../config.js'
 import { db } from '../db/database.js'
 import type { NormalizedJob } from '../ingest/schema.js'
-import { getAttribution } from '../ingest/sources/index.js'
-import type { Job, JobFilters, Paginated } from '../types.js'
+import { getSource } from '../ingest/sources/index.js'
+import type { Job, JobDetail, JobFilters, JobSource, Paginated } from '../types.js'
 import { toIsoSeconds } from '../utils/dates.js'
 
 interface JobRow {
@@ -20,11 +21,32 @@ interface JobRow {
   technologies: string
   description_text: string
   created_at: string
+  posted_at: string | null
   source: string
   source_url: string | null
+  publisher: string | null
 }
 
-export type NewJob = Omit<Job, 'id' | 'createdAt' | 'source'>
+export type NewJob = Omit<Job, 'id' | 'createdAt' | 'postedAt' | 'source' | 'descriptionIsSnippet'>
+
+// Jobs that are not shown: closed (gone from their source), copies of a job listed from a
+// higher-priority source, and the fictional seed jobs outside a local database
+const LISTED = [
+  'jobs.closed_at IS NULL',
+  'jobs.duplicate_of IS NULL',
+  ...(CONFIG.IS_LOCAL_DATABASE ? [] : ["jobs.source <> 'seed'"])
+]
+
+// Rows of `jobs` or `job_sources` without a posting URL (the seed) have no source to show
+function toJobSource (row: { source: string, source_url: string | null, publisher: string | null }): JobSource | null {
+  if (!row.source_url) return null
+  return {
+    id: row.source,
+    name: getSource(row.source)?.attribution.label ?? row.source,
+    publisher: row.publisher,
+    url: row.source_url
+  }
+}
 
 function toJob (row: Row): Job {
   const job = row as unknown as JobRow
@@ -42,10 +64,10 @@ function toJob (row: Row): Job {
     currency: job.currency,
     technologies: JSON.parse(job.technologies) as string[],
     description: job.description_text,
+    descriptionIsSnippet: getSource(job.source)?.snippetOnly ?? false,
     createdAt: job.created_at,
-    source: job.source_url
-      ? { name: getAttribution(job.source)?.label ?? job.source, url: job.source_url }
-      : null
+    postedAt: job.posted_at,
+    source: toJobSource(job)
   }
 }
 
@@ -53,7 +75,7 @@ export class JobModel {
   static async getAll ({ text, technology, level, workplace, limit, offset }: JobFilters): Promise<Paginated<Job>> {
     // Jobs that disappeared from their source stay in the table but are no longer listed, and
     // an opening listed by several sources is shown once
-    const where: string[] = ['closed_at IS NULL', 'duplicate_of IS NULL']
+    const where: string[] = [...LISTED]
     const args: Record<string, InValue> = {}
 
     if (text) {
@@ -92,9 +114,32 @@ export class JobModel {
     }
   }
 
-  static async getById (id: string): Promise<Job | undefined> {
-    const { rows } = await db.execute({ sql: 'SELECT * FROM jobs WHERE id = ?', args: [id] })
-    return rows[0] ? toJob(rows[0]) : undefined
+  // Closed jobs and copies can still be opened from an old link; seed jobs only where they are listed
+  static async getById (id: string): Promise<JobDetail | undefined> {
+    const seed = CONFIG.IS_LOCAL_DATABASE ? '' : "AND source <> 'seed'"
+    const [jobResult, sourcesResult] = await db.batch([
+      { sql: `SELECT * FROM jobs WHERE id = ? ${seed}`, args: [id] },
+      // Where else the same opening is posted: every row of the group but the job itself
+      {
+        sql: `
+          SELECT job_sources.source, job_sources.source_url, job_sources.publisher
+          FROM job_sources JOIN jobs ON jobs.id = job_sources.job_id
+          WHERE job_sources.job_id = ?
+            AND NOT (job_sources.source = jobs.source AND job_sources.source_id = jobs.source_id)
+          ORDER BY job_sources.source, job_sources.source_id
+        `,
+        args: [id]
+      }
+    ], 'read')
+
+    const [row] = jobResult.rows
+    if (!row) return undefined
+
+    const alsoPostedOn = sourcesResult.rows
+      .map((source) => toJobSource(source as unknown as Parameters<typeof toJobSource>[0]))
+      .filter((source) => source !== null)
+
+    return { ...toJob(row), alsoPostedOn }
   }
 
   // The INSERT on its own, so callers can run many of them in one batch
@@ -287,24 +332,6 @@ export class JobModel {
         WHERE closed_at IS NULL AND source_id IS NOT NULL
       `
     ], 'write')
-  }
-
-  // Where a job appears: the canonical job first, then its copies
-  static async getSources (jobId: string) {
-    const { rows } = await db.execute({
-      sql: `
-        SELECT job_sources.source, job_sources.source_url, job_sources.publisher
-        FROM job_sources JOIN jobs ON jobs.source = job_sources.source AND jobs.source_id = job_sources.source_id
-        WHERE job_sources.job_id = ?
-        ORDER BY jobs.id <> job_sources.job_id, job_sources.source
-      `,
-      args: [jobId]
-    })
-    return rows.map((row) => ({
-      source: String(row.source),
-      sourceUrl: row.source_url as string | null,
-      publisher: row.publisher as string | null
-    }))
   }
 
   // What the database holds, to keep an eye on the hosting free tier

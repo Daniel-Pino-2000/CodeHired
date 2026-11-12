@@ -59,6 +59,17 @@ export class IngestionRunModel {
     })
   }
 
+  // When each source's last successful run finished, keyed by source
+  static async lastSucceeded (): Promise<Map<string, string>> {
+    const { rows } = await db.execute(`
+      SELECT source, MAX(finished_at) AS finished_at
+      FROM ingestion_runs
+      WHERE status = 'succeeded'
+      GROUP BY source
+    `)
+    return new Map(rows.map((row) => [String(row.source), String(row.finished_at)]))
+  }
+
   // Newest first
   static async getAll (source?: string): Promise<IngestionRun[]> {
     const { rows } = source

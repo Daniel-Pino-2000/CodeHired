@@ -1,9 +1,10 @@
-import { useSearchParams } from 'react-router'
+import { Link, useSearchParams } from 'react-router'
 import { JobList } from '../components/JobList.jsx'
 import { Pagination } from '../components/Pagination.jsx'
 import { SearchFilters } from '../components/SearchFilters.jsx'
 import { PAGE_SIZE } from '../config.js'
-import { useJobs } from '../hooks/useJobs.js'
+import { useJobs, useSources } from '../hooks/useJobs.js'
+import { updatedAgo } from '../utils/format.js'
 import styles from './Search.module.css'
 
 const FILTER_KEYS = ['text', 'technology', 'level', 'workplace']
@@ -20,6 +21,8 @@ export default function SearchPage () {
     limit: PAGE_SIZE,
     offset: (currentPage - 1) * PAGE_SIZE
   })
+
+  const { updatedAt } = useSources()
 
   const totalPages = Math.ceil(total / PAGE_SIZE)
 
@@ -48,6 +51,12 @@ export default function SearchPage () {
       <header className={styles.header}>
         <h1>Find your next role</h1>
         <p className={styles.subtitle}>Search by keyword, technology, experience level and workplace.</p>
+        {updatedAt && (
+          <p className={styles.updated}>
+            Updated <time dateTime={updatedAt}>{updatedAgo(updatedAt)}</time> from{' '}
+            <Link to='/sources'>these sources</Link>
+          </p>
+        )}
       </header>
 
       <SearchFilters filters={filters} onChange={handleFiltersChange} onClear={handleClear} />

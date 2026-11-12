@@ -165,9 +165,13 @@ describe('GET /jobs/:id', () => {
     const detail = await request(app).get(`/jobs/${job.id}`)
 
     assert.deepEqual(detail.body.source, {
+      id: 'remoteok',
       name: 'Remote OK',
+      publisher: null,
       url: 'https://remoteOK.com/remote-jobs/remote-front-end-developer-edconic-1137597'
     })
+    assert.equal(detail.body.descriptionIsSnippet, false)
+    assert.equal(detail.body.postedAt, job.postedAt)
   })
 
   test('has no source for jobs created here', async () => {

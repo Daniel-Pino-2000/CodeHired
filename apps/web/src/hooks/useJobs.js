@@ -1,4 +1,4 @@
-import { jobPath, jobsPath } from '../services/api.js'
+import { jobPath, jobsPath, SOURCES_PATH } from '../services/api.js'
 import { useFetch } from './useFetch.js'
 
 export function useJobs (filters) {
@@ -15,4 +15,16 @@ export function useJobs (filters) {
 export function useJob (id) {
   const { data, error, loading } = useFetch(jobPath(id))
   return { job: data, error, loading }
+}
+
+// Every data source and when the jobs were last refreshed (`updatedAt`)
+export function useSources () {
+  const { data, error, loading } = useFetch(SOURCES_PATH)
+
+  return {
+    sources: data?.data ?? [],
+    updatedAt: data?.updatedAt ?? null,
+    error,
+    loading
+  }
 }

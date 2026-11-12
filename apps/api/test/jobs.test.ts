@@ -122,7 +122,7 @@ describe('GET /jobs/:id', () => {
     const res = await request(app).get(`/jobs/${job.id}`)
 
     assert.equal(res.status, 200)
-    assert.deepEqual(res.body, job)
+    assert.deepEqual(res.body, { ...job, alsoPostedOn: [] })
   })
 
   test('responds 404 for an unknown id', async () => {

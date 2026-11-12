@@ -19,10 +19,42 @@ export interface Job {
   currency: string
   technologies: string[]
   description: string
+  // True when the source only gave a snippet: the full description is on the original posting
+  descriptionIsSnippet: boolean
+  // When the job was posted, or when CodeHired first saw it if the source has no date
   createdAt: string
+  // The posting date the source gave, when it gave one
+  postedAt: string | null
   // Where the job was found, with a link to the original posting; null for jobs created here.
   // Showing it is what the sources' terms ask for (docs/data-sources.md).
-  source: { name: string, url: string } | null
+  source: JobSource | null
+}
+
+// One place a job is posted
+export interface JobSource {
+  // `jobs.source`, e.g. 'greenhouse'
+  id: string
+  // Who to credit: "Greenhouse", "Remote OK"
+  name: string
+  // The site that published the job, when the source collects it from others (JSearch → "LinkedIn")
+  publisher: string | null
+  // The original posting, where candidates read the full job and apply
+  url: string
+}
+
+// GET /jobs/:id adds the other places the same opening was found
+export interface JobDetail extends Job {
+  alsoPostedOn: JobSource[]
+}
+
+// GET /sources: every data source and when its jobs were last refreshed
+export interface SourceSummary {
+  id: string
+  name: string
+  url: string
+  termsUrl: string | null
+  // When the last successful ingestion run of this source finished
+  updatedAt: string | null
 }
 
 export interface JobFilters {

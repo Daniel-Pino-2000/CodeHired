@@ -44,7 +44,8 @@ Boards that list remote jobs from many companies. Their terms differ a lot, so e
 
 - Every job from these boards shows its source by name ("via Remote OK" on the card) and links to the job's page on that board ("Found on Remote OK" on the job page). The link is a plain followed link: `target="_blank" rel="noopener noreferrer"`, never `nofollow`.
 - No third-party logos.
-- When an "Apply" button replaces today's placeholder (#32), it must point to `source_url`. For Himalayas that is the unchanged `applicationLink`; for Jobicy, the Jobicy page.
+- The "Apply on …" button on the job page points to `source_url`, unchanged. For Himalayas that is the `applicationLink`; for Jobicy, the Jobicy page.
+- The [`/sources`](../apps/web/src/pages/Sources.jsx) page, linked from the footer, names every source and links to it and to its terms (`Source.attribution`). It is served by `GET /sources`, which only lists real sources.
 - If CodeHired ever adds `JobPosting` structured data or a public feed, it must leave out Himalayas jobs.
 
 ## Not enabled
