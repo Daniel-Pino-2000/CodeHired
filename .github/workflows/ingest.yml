@@ -1,0 +1,89 @@
+name: Ingest jobs
+
+# Refreshes the production database (Turso) from every job source. Scheduled runs only start from
+# the default branch. GitHub disables the schedule after 60 days without activity in the
+# repository: see "Scheduled ingestion" in the README to turn it back on.
+on:
+  schedule:
+    # Every 6 hours. Minute 17 rather than 0: runs queued at the top of the hour start later.
+    # Each source still runs only as often as its terms allow (`--due`): the company boards once a
+    # day, Jobicy at most hourly, the other boards every time.
+    - cron: '17 */6 * * *'
+  workflow_dispatch:
+    inputs:
+      sources:
+        description: Source ids, comma-separated (e.g. remoteok,jobicy). Empty runs every source that is due
+        required: false
+        default: ''
+      dry_run:
+        description: Dry run (fetch and validate, write nothing)
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+# Never two runs at once: a manual run waits for the scheduled one, and the other way around
+concurrency:
+  group: ingest
+  cancel-in-progress: false
+
+jobs:
+  # Without the database secrets the workflow is a no-op, not a failure
+  check:
+    name: Check the database secrets
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    outputs:
+      configured: ${{ steps.secrets.outputs.configured }}
+    steps:
+      - name: Check DATABASE_URL and DATABASE_AUTH_TOKEN
+        id: secrets
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_AUTH_TOKEN: ${{ secrets.DATABASE_AUTH_TOKEN }}
+        run: |
+          if [ -z "$DATABASE_URL" ] || [ -z "$DATABASE_AUTH_TOKEN" ]; then
+            message="Add the DATABASE_URL and DATABASE_AUTH_TOKEN repository secrets (Settings > Secrets and variables > Actions) to ingest jobs into Turso."
+            echo "::notice title=Ingestion skipped::$message"
+            printf '## Ingestion skipped\n\n%s\n' "$message" >> "$GITHUB_STEP_SUMMARY"
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+          elif [[ "$DATABASE_URL" != libsql://* && "$DATABASE_URL" != https://* ]]; then
+            echo "::error title=Wrong DATABASE_URL::DATABASE_URL must be a hosted database (libsql://<database>-<user>.turso.io)."
+            exit 1
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  ingest:
+    name: Ingest jobs into Turso
+    needs: check
+    if: needs.check.outputs.configured == 'true'
+    runs-on: ubuntu-24.04
+    # A full run takes a few minutes; a hung source must not burn the free minutes
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup-pnpm
+
+      - name: Ingest
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_AUTH_TOKEN: ${{ secrets.DATABASE_AUTH_TOKEN }}
+          NODE_ENV: production
+          # Inputs reach the script through the environment, never pasted into it
+          SOURCES: ${{ inputs.sources }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        # Writes the per-source table to the run's summary. A source that fails fails the run (and
+        # GitHub emails the repository owner); the other sources are still ingested.
+        run: |
+          args=()
+          if [ -n "$SOURCES" ]; then
+            args+=("--source=$SOURCES")
+          else
+            args+=(--due)
+          fi
+          if [ "$DRY_RUN" = "true" ]; then
+            args+=(--dry-run)
+          fi
+          pnpm ingest "${args[@]}"

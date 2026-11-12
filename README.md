@@ -63,7 +63,7 @@ This starts both apps:
 | `pnpm dev:api` / `pnpm dev:web` | Run only one of them |
 | `pnpm db:migrate` | Apply pending migrations (`apps/api/src/db/migrations/*.sql`) |
 | `pnpm db:seed` | Replace the sample jobs in a **local** database (refuses hosted databases, keeps ingested jobs) |
-| `pnpm ingest` | Fetch jobs from every source. `--source=<id>` runs only that source, `--dry-run` writes nothing |
+| `pnpm ingest` | Fetch jobs from every source. `--source=<id>` runs only that source, `--due` skips sources that ran too recently for their terms, `--dry-run` writes nothing |
 | `pnpm build` | Production build of both apps |
 | `pnpm lint` / `pnpm typecheck` | Static checks |
 | `pnpm test` | API tests (node:test + Supertest, in-memory database) |
@@ -110,7 +110,26 @@ The real sources today are company career boards on **Greenhouse**, **Lever** an
 pnpm ingest --source=fixture   # fictional jobs from apps/api/test/fixtures/jobs.json (local databases only)
 pnpm ingest --source=lever     # one source
 pnpm ingest --dry-run          # fetch and validate everything, write nothing
+pnpm ingest --due              # only the sources whose terms allow another run by now
 ```
+
+### Scheduled ingestion
+
+The [`Ingest jobs`](.github/workflows/ingest.yml) workflow refreshes the production database on GitHub Actions, which is free for public repositories. It runs every 6 hours (`17 */6 * * *`, UTC) with `pnpm ingest --due`: every source whose last run started long enough ago for its terms (`Source.minHoursBetweenRuns`). So one schedule respects every limit in [`docs/data-sources.md`](docs/data-sources.md): the company boards (Greenhouse, Lever, Ashby) run once a day, Remote OK, Himalayas and Jobicy at every run. The table of each run (jobs fetched, inserted, updated, closed per source, and the database size) is on the run's summary page.
+
+To turn it on, add two repository secrets under **Settings → Secrets and variables → Actions**:
+
+| Secret | Value |
+| --- | --- |
+| `DATABASE_URL` | `turso db show codehired --url` (`libsql://…`) |
+| `DATABASE_AUTH_TOKEN` | `turso db tokens create codehired` |
+
+Without them every run ends early with an "Ingestion skipped" notice, and stays green.
+
+- **Run it by hand:** Actions → Ingest jobs → Run workflow. Leave "Source ids" empty for the sources that are due, or name some (`remoteok,jobicy`) to run them now whatever their last run. Naming the company boards more than once a day breaks our own rule for them, so don't. "Dry run" fetches and validates without writing.
+- **Overlaps:** runs never overlap (a `concurrency` group queues them) and each one is stopped after 30 minutes.
+- **Failures:** a source that fails fails the run, and GitHub emails the repository owner; the other sources are still ingested.
+- **After 60 days without activity** (no commit) in a public repository, GitHub disables scheduled workflows and emails the owner. Turn it back on under Actions → Ingest jobs → **Enable workflow**, or with `gh workflow enable ingest.yml`.
 
 ## API
 

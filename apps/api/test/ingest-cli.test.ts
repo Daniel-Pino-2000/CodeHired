@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { execFile } from 'node:child_process'
-import { mkdtemp, rm } from 'node:fs/promises'
+import { mkdtemp, readFile, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -52,6 +52,20 @@ describe('pnpm ingest', () => {
     const runs = await client.execute("SELECT COUNT(*) AS total FROM ingestion_runs WHERE source = 'fixture'")
     client.close()
     assert.equal(Number(runs.rows[0].total), 2)
+  })
+
+  test('writes a Markdown report to the GitHub Actions job summary', async () => {
+    const summaryFile = join(dir, 'step-summary.md')
+    const { stdout } = await run(process.execPath, ['--import', 'tsx', CLI, '--source=fixture', '--due'], {
+      env: { ...process.env, DATABASE_URL: databaseUrl, GITHUB_STEP_SUMMARY: summaryFile },
+      cwd: API_DIR
+    })
+
+    assert.match(stdout, /fixture: fetched 5/, '--due always runs a source without a limit')
+    const markdown = await readFile(summaryFile, 'utf8')
+    assert.match(markdown, /## Ingestion/)
+    assert.match(markdown, /\| `fixture` \| ✅ succeeded \| 5 \| 0 \| 0 \| 5 \| 0 \| 0 \|/)
+    assert.match(markdown, /\*\*Database:\*\* \d+ jobs listed/)
   })
 
   test('exits with an error for an unknown source', async () => {

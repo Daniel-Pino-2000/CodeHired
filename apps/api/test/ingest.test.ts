@@ -220,14 +220,15 @@ describe('GET /jobs with ingested jobs', () => {
 })
 
 describe('CLI arguments', () => {
-  test('parses --source (repeated or comma-separated) and --dry-run', () => {
-    assert.deepEqual(parseIngestArgs(['--source=a,b', '--source', 'c', '--dry-run']), {
+  test('parses --source (repeated or comma-separated), --due and --dry-run', () => {
+    assert.deepEqual(parseIngestArgs(['--source=a,b', '--source', 'c', '--due', '--dry-run']), {
       sourceIds: ['a', 'b', 'c'],
+      due: true,
       dryRun: true,
       help: false
     })
     assert.deepEqual(parseIngestArgs(['--', '--source=fixture']).sourceIds, ['fixture'])
-    assert.deepEqual(parseIngestArgs([]), { sourceIds: [], dryRun: false, help: false })
+    assert.deepEqual(parseIngestArgs([]), { sourceIds: [], due: false, dryRun: false, help: false })
   })
 
   test('rejects unknown flags', () => {

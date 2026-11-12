@@ -12,6 +12,10 @@ export interface BoardPosting<Posting> {
   posting: Posting
 }
 
+// One full run of the company boards a day at most (docs/data-sources.md). 20 hours rather than
+// 24, so the 6-hourly schedule still picks them up once a day when GitHub starts a run late.
+export const BOARD_MIN_HOURS_BETWEEN_RUNS = 20
+
 export interface BoardSourceOptions {
   // Defaults to every company on this ATS in companies.json
   companies?: readonly Company[]
@@ -50,6 +54,7 @@ export function createBoardSource<Posting> ({
     attribution,
     priority,
     listsOnlyOpenJobs: true,
+    minHoursBetweenRuns: BOARD_MIN_HOURS_BETWEEN_RUNS,
     async * fetchJobs ({ logger }) {
       // Every board is requested up front and the HTTP client keeps only a few in flight. Only the
       // kept postings stay in memory while earlier boards are being written.

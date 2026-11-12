@@ -1,13 +1,15 @@
 import { parseArgs } from 'node:util'
 
-export const USAGE = `Usage: pnpm ingest [--source=<id>[,<id>...]] [--dry-run]
+export const USAGE = `Usage: pnpm ingest [--source=<id>[,<id>...]] [--due] [--dry-run]
 
   --source   Only run these sources (repeat it or separate ids with commas)
+  --due      Skip sources that ran more recently than their terms allow (used by the schedule)
   --dry-run  Fetch and validate, compare with the database, but write nothing
   --help     Show this message`
 
 export interface IngestArgs {
   sourceIds: string[]
+  due: boolean
   dryRun: boolean
   help: boolean
 }
@@ -21,6 +23,7 @@ export function parseIngestArgs (argv: readonly string[]): IngestArgs {
     args,
     options: {
       source: { type: 'string', multiple: true },
+      due: { type: 'boolean', default: false },
       'dry-run': { type: 'boolean', default: false },
       help: { type: 'boolean', short: 'h', default: false }
     }
@@ -31,5 +34,5 @@ export function parseIngestArgs (argv: readonly string[]): IngestArgs {
     .map((id) => id.trim())
     .filter(Boolean)
 
-  return { sourceIds: [...new Set(sourceIds)], dryRun: values['dry-run'], help: values.help }
+  return { sourceIds: [...new Set(sourceIds)], due: values.due, dryRun: values['dry-run'], help: values.help }
 }
