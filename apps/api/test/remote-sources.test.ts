@@ -79,6 +79,9 @@ describe('Remote OK source', () => {
     assert.deepEqual([frontEnd.salaryMin, frontEnd.salaryMax, frontEnd.country, frontEnd.workplace], [80000, 100000, null, 'remote'])
     assert.deepEqual([principal.state, principal.country, principal.level], ['KS', 'US', 'staff'])
     assert.ok(frontEnd.description.length > 20)
+    // The feed sends "data\u00e2\u0080\u0094moving"
+    assert.match(principal.description, /data—moving/)
+    assert.ok(jobs.every((job) => !/[\u0080-\u009f]/.test(job.description)), 'no stray control characters')
   })
 
   test('fails the run when the feed is not a list', async () => {

@@ -4,7 +4,7 @@
 import { SOURCE_PRIORITY } from '../dedupe.js'
 import { formatUsLocation, isNonUsPlace, isTechRole, parseRemoteLocation } from '../filters.js'
 import { createHttpClient, type HttpClient } from '../http.js'
-import { htmlToText, inferEmploymentType, inferLevel, usdYearlySalary } from '../normalize.js'
+import { htmlToText, inferEmploymentType, inferLevel, repairMojibake, usdYearlySalary } from '../normalize.js'
 import type { NormalizedJobInput } from '../schema.js'
 import type { Source } from '../types.js'
 
@@ -29,6 +29,18 @@ export interface RemoteOkJob {
 // The feed starts with its legal notice, which is not a job
 const isJob = (entry: unknown): entry is RemoteOkJob =>
   typeof entry === 'object' && entry !== null && 'position' in entry && 'url' in entry
+
+// The feed's text is UTF-8 that was decoded as Latin-1 upstream ("dataâ\u0080\u0094moving" for
+// "data—moving"), in titles, companies and locations as well as descriptions
+function repairText (job: RemoteOkJob): RemoteOkJob {
+  return {
+    ...job,
+    position: repairMojibake(job.position),
+    company: repairMojibake(job.company),
+    location: job.location && repairMojibake(job.location),
+    description: job.description && repairMojibake(job.description)
+  }
+}
 
 // The location is often empty and the region is in the title instead: "Senior Engineer LATAM"
 export function keepRemoteOkJob (job: RemoteOkJob) {
@@ -74,7 +86,7 @@ export function createRemoteOkSource ({ http = createHttpClient({ concurrency: 1
       // One request returns the whole feed
       const feed = await http.getJson(REMOTEOK_URL)
       if (!Array.isArray(feed)) throw new Error('unexpected response: the feed is not a list')
-      const jobs = feed.filter(isJob)
+      const jobs = feed.filter(isJob).map(repairText)
       const kept = jobs.filter(keepRemoteOkJob)
       logger.info(`[remoteok] kept ${kept.length} of ${jobs.length} jobs`)
       yield * kept
