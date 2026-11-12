@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit && tsc -p test/tsconfig.json",
     "db:migrate": "tsx --env-file-if-exists=.env src/db/migrate.ts",
     "db:seed": "tsx --env-file-if-exists=.env src/db/reset.ts",
+    "ingest": "tsx --env-file-if-exists=.env src/ingest/cli.ts",
     "test": "node --import tsx --import ./test/setup.ts --test \"test/**/*.test.ts\""
   },
   "dependencies": {

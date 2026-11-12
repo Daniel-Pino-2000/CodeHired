@@ -1,0 +1,61 @@
+{
+  "jobs": [
+    {
+      "id": 4001,
+      "title": "Senior Frontend Engineer",
+      "company": "Copperline Analytics",
+      "url": "https://jobs.example.com/copperline/4001",
+      "location": { "city": "Austin", "state": "TX", "country": "us" },
+      "workplace_type": "Hybrid",
+      "employment_type": "Full-time",
+      "salary": { "min": 145000, "max": "175,000", "currency": "usd" },
+      "tags": ["React", "TypeScript", "GraphQL", "react"],
+      "description_html": "<p>Copperline builds dashboards for &amp; with public utilities.</p><h3>What you will do</h3><ul><li>Own our React design system</li><li>Mentor two engineers</li></ul>",
+      "published_at": "2026-10-20T09:30:00-05:00"
+    },
+    {
+      "id": "4002",
+      "title": "Backend Engineer, Payments",
+      "company": "Tallgrass Pay",
+      "url": "https://jobs.example.com/tallgrass/4002",
+      "location": { "country": "US", "remote": true },
+      "employment_type": "Full-time",
+      "salary": { "min": 130000, "max": 160000 },
+      "tags": ["Go", "PostgreSQL", "Kafka"],
+      "description_html": "<p>Tallgrass moves money for small farms across the Midwest.<br>You will build idempotent payment APIs in Go.</p>",
+      "published_at": "2026-10-22T15:00:00Z"
+    },
+    {
+      "id": "4003",
+      "title": "Software Engineering Intern (Summer 2027)",
+      "company": "Copperline Analytics",
+      "url": "https://jobs.example.com/copperline/4003",
+      "location": { "city": "Denver", "state": "CO", "country": "US" },
+      "tags": ["Python", "SQL"],
+      "description_html": "<p>A twelve-week paid internship on the data platform team, with a mentor and a real project to ship.</p>",
+      "published_at": "2026-10-25T12:00:00Z"
+    },
+    {
+      "id": "4004",
+      "title": "Staff Site Reliability Engineer",
+      "company": "Harborlight Health",
+      "url": "https://jobs.example.com/harborlight/4004",
+      "location": { "city": "Boston", "state": "MA", "country": "US" },
+      "employment_type": "Full-time",
+      "tags": ["Kubernetes", "Terraform", "AWS"],
+      "description_html": "<div><p>Keep our patient-facing services available around the clock.</p><p>You will lead incident reviews and own our observability stack.</p></div>"
+    },
+    {
+      "id": "4005",
+      "title": "Contract Data Engineer",
+      "company": "Mesa Freight",
+      "url": "https://jobs.example.com/mesa/4005",
+      "location": { "city": "Phoenix", "state": "AZ", "country": "US" },
+      "employment_type": "Contract",
+      "salary": { "min": 70.5, "max": 85, "currency": "USD" },
+      "tags": ["Python", "Apache Airflow", "Snowflake"],
+      "description_html": "<p>Six-month contract to move our nightly batch jobs to Airflow and Snowflake.</p>",
+      "published_at": "2026-10-28T08:00:00Z"
+    }
+  ]
+}

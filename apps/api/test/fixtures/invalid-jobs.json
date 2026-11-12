@@ -1,0 +1,62 @@
+{
+  "jobs": [
+    {
+      "id": "5001",
+      "title": "Full-Stack Developer",
+      "company": "Juniper Robotics",
+      "url": "https://jobs.example.com/juniper/5001",
+      "location": { "city": "Pittsburgh", "state": "PA", "country": "US" },
+      "tags": ["TypeScript", "Node"],
+      "description_html": "<p>Build the web tools our field technicians use to calibrate robots.</p>"
+    },
+    {
+      "id": "5002",
+      "title": "Platform Engineer",
+      "company": "Juniper Robotics",
+      "location": { "city": "Pittsburgh", "state": "PA", "country": "US" },
+      "description_html": "<p>This posting has no apply link, so nobody could apply to it.</p>"
+    },
+    {
+      "id": "5003",
+      "title": "Mobile Engineer",
+      "company": "Juniper Robotics",
+      "url": "ftp://jobs.example.com/juniper/5003",
+      "location": { "remote": true },
+      "description_html": "<p>The apply link is not an http(s) URL, so the job is rejected.</p>"
+    },
+    {
+      "id": "5004",
+      "title": "QA Engineer",
+      "company": "Juniper Robotics",
+      "url": "https://jobs.example.com/juniper/5004",
+      "location": { "city": "Pittsburgh", "state": "PA", "country": "US" },
+      "salary": { "min": 120000, "max": 90000 },
+      "description_html": "<p>The salary range is upside down, which fails validation.</p>"
+    },
+    {
+      "id": "5005",
+      "title": "Data Analyst",
+      "company": "Juniper Robotics",
+      "url": "https://jobs.example.com/juniper/5005",
+      "location": { "city": "Pittsburgh", "state": "PA", "country": "US" },
+      "description_html": "<p>Too short.</p>"
+    },
+    null,
+    {
+      "id": "5001",
+      "title": "Full-Stack Developer (duplicate)",
+      "company": "Juniper Robotics",
+      "url": "https://jobs.example.com/juniper/5001",
+      "location": { "city": "Pittsburgh", "state": "PA", "country": "US" },
+      "description_html": "<p>The same id twice in one feed: only the first one is kept.</p>"
+    },
+    {
+      "id": "5006",
+      "title": "DevOps Engineer",
+      "company": "Juniper Robotics",
+      "url": "https://jobs.example.com/juniper/5006",
+      "location": { "city": "Pittsburgh", "state": "PA", "country": "US" },
+      "description_html": "<p>Automate deployments for the fleet management platform.</p>"
+    }
+  ]
+}

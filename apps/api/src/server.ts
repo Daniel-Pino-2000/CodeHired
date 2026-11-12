@@ -9,8 +9,9 @@ if (applied.length > 0) {
   console.log(`Applied migrations: ${applied.join(', ')}`)
 }
 
-// First run on a fresh machine: fill the local database so the UI has something to show
-if (CONFIG.IS_LOCAL_DATABASE && await JobModel.count() === 0) {
+// First run on a fresh machine: fill the local database so the UI has something to show.
+// Fictional jobs are for development only, never next to real ones in production.
+if (CONFIG.IS_DEVELOPMENT && CONFIG.IS_LOCAL_DATABASE && await JobModel.count() === 0) {
   const inserted = await seedJobs()
   console.log(`Database was empty, seeded ${inserted} jobs`)
 }
