@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { jobFieldsSchema, withValidSalaryRange } from '../schemas/job.js'
 import { toIsoSeconds } from '../utils/dates.js'
+import { sanitizeDescriptionHtml } from '../utils/sanitize.js'
 
 const optionalText = z.string().trim().min(1).nullable().default(null)
 
@@ -25,7 +26,9 @@ export const normalizedJobSchema = withValidSalaryRange(jobFieldsSchema.extend({
     .transform((value) => toIsoSeconds(new Date(value)))
     .nullable()
     .default(null),
-  descriptionHtml: z.string().trim().min(1).nullable().default(null)
+  // Stored sanitized (see utils/sanitize.ts): whatever an adapter passes on, the database only
+  // holds HTML that is safe to render. Null when nothing is left.
+  descriptionHtml: z.string().transform(sanitizeDescriptionHtml).nullable().default(null)
 }))
 
 export type NormalizedJobInput = z.input<typeof normalizedJobSchema>

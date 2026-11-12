@@ -119,6 +119,19 @@ describe('ingestSource', () => {
     assert.ok(after.every((job) => job.closed_at === null), 'a job seen again is open again')
   })
 
+  test('stores the description HTML sanitized, whatever the adapter passed on', async () => {
+    const hostile = [{
+      ...FIXTURE_JOBS[0],
+      description_html: '<p onclick="steal()">Build the payments platform.</p><img src=x onerror=alert(1)><script>alert(1)</script><p>&nbsp;</p>'
+    }]
+    const summary = await ingestSource(createFixtureSource(await fixtureFile(hostile), 'fixture-hostile'), { logger: silent })
+
+    assert.equal(summary.inserted, 1)
+    const [job] = await storedJobs('fixture-hostile')
+    assert.equal(job.description_html, '<p>Build the payments platform.</p>')
+    assert.equal(job.description_text, 'Build the payments platform.')
+  })
+
   test('skips and logs invalid jobs without failing the run', async () => {
     const { logger, warnings } = recordingLogger()
 

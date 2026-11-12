@@ -40,6 +40,20 @@ export default function JobDetailPage () {
   )
 }
 
+// The source's formatting when it sent HTML, otherwise the plain text split into paragraphs.
+// `descriptionHtml` comes from the API already sanitized with a strict allowlist (no scripts,
+// event handlers, styles or images; links only to http(s) and mailto), so it is inserted as is.
+// The sanitizing happens on the server so it is done once, tested once, and the browser does not
+// download a sanitizer.
+function Description ({ job }) {
+  if (job.descriptionHtml) {
+    return <div className={styles.prose} dangerouslySetInnerHTML={{ __html: job.descriptionHtml }} />
+  }
+  return job.description.split('\n\n').map((paragraph, index) => (
+    <p key={index}>{paragraph}</p>
+  ))
+}
+
 function JobDetail ({ job }) {
   const { source } = job
   const publisher = source && sourceLabel(source)
@@ -72,9 +86,7 @@ function JobDetail ({ job }) {
       <div className={styles.layout}>
         <section className={styles.description}>
           <h2>About the role</h2>
-          {job.description.split('\n\n').map((paragraph, index) => (
-            <p key={index}>{paragraph}</p>
-          ))}
+          <Description job={job} />
           {/* Some sources only give a snippet: the rest is on the posting */}
           {source && job.descriptionIsSnippet && (
             <p>

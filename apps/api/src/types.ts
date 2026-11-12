@@ -42,8 +42,11 @@ export interface JobSource {
   url: string
 }
 
-// GET /jobs/:id adds the other places the same opening was found
+// GET /jobs/:id adds the formatted description and the other places the same opening was found
 export interface JobDetail extends Job {
+  // The source's description as sanitized HTML (paragraphs, lists, headings, emphasis, links),
+  // safe to insert into the page as is. Null when the source gave plain text only: use `description`
+  descriptionHtml: string | null
   alsoPostedOn: JobSource[]
 }
 
