@@ -1,6 +1,5 @@
 .filters {
   display: grid;
-  grid-template-columns: 2fr repeat(3, 1fr) auto;
   gap: 10px;
   padding: 16px;
   background: var(--color-surface);
@@ -9,26 +8,88 @@
   box-shadow: var(--shadow-sm);
 }
 
+.main {
+  display: grid;
+  grid-template-columns: 2fr repeat(3, 1fr);
+  gap: 10px;
+}
+
+.more {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Grid items shrink below their content (long option labels) instead of widening the page */
+.main > *,
+.more > * {
+  min-width: 0;
+}
+
 .textField {
   min-width: 0;
 }
 
+.checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 4px;
+  color: var(--color-text-muted);
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.checkbox input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--color-brand);
+}
+
+/* "More filters" only exists on small screens (the extra class outweighs the global .button) */
+.main .toggle {
+  display: none;
+}
+
+.count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: var(--radius-pill);
+  background: var(--color-brand);
+  color: var(--color-brand-contrast);
+  font-size: 12px;
+}
+
 @media (max-width: 900px) {
-  .filters {
+  .main,
+  .more {
     grid-template-columns: repeat(3, 1fr);
   }
 
   .textField {
     grid-column: 1 / -1;
   }
-
-  .filters button {
-    grid-column: 1 / -1;
-  }
 }
 
 @media (max-width: 560px) {
-  .filters {
+  .main,
+  .more {
     grid-template-columns: 1fr;
+  }
+
+  .main .toggle {
+    display: inline-flex;
+  }
+
+  .more:not(.open) {
+    display: none;
   }
 }

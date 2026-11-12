@@ -19,12 +19,18 @@ export async function getJson (path, { signal } = {}) {
   return response.json()
 }
 
-// Builds `/jobs?text=...&level=...`, skipping empty filters
-export function jobsPath ({ text, technology, level, workplace, limit, offset }) {
-  const params = new URLSearchParams()
-  const entries = { text, technology, level, workplace, limit, offset }
+// Every query parameter GET /jobs understands
+const JOBS_PARAMS = [
+  'text', 'technology', 'level', 'workplace', 'employmentType', 'postedWithin', 'state',
+  'minSalary', 'hasSalary', 'source', 'sort', 'limit', 'offset'
+]
 
-  for (const [key, value] of Object.entries(entries)) {
+// Builds `/jobs?text=...&level=...`, skipping empty filters
+export function jobsPath (filters) {
+  const params = new URLSearchParams()
+
+  for (const key of JOBS_PARAMS) {
+    const value = filters[key]
     if (value !== undefined && value !== null && value !== '') params.set(key, value)
   }
 

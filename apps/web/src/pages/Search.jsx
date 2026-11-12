@@ -1,28 +1,33 @@
+import { useId } from 'react'
 import { Link, useSearchParams } from 'react-router'
+import { ActiveFilters } from '../components/ActiveFilters.jsx'
 import { JobList } from '../components/JobList.jsx'
 import { Pagination } from '../components/Pagination.jsx'
 import { SearchFilters } from '../components/SearchFilters.jsx'
-import { PAGE_SIZE } from '../config.js'
+import { MAIN_FILTER_KEYS, MORE_FILTER_KEYS, PAGE_SIZE, SORTS } from '../config.js'
 import { useJobs, useSources } from '../hooks/useJobs.js'
 import { updatedAgo } from '../utils/format.js'
 import styles from './Search.module.css'
 
-const FILTER_KEYS = ['text', 'technology', 'level', 'workplace']
+const FILTER_KEYS = [...MAIN_FILTER_KEYS, ...MORE_FILTER_KEYS]
 
 // All search state lives in the URL, so results can be shared, bookmarked and survive a reload
 export default function SearchPage () {
+  const sortId = useId()
   const [searchParams, setSearchParams] = useSearchParams()
 
   const filters = Object.fromEntries(FILTER_KEYS.map((key) => [key, searchParams.get(key) ?? '']))
+  const sort = searchParams.get('sort') ?? ''
   const currentPage = Math.max(1, Number(searchParams.get('page')) || 1)
 
   const { jobs, total, loading, error } = useJobs({
     ...filters,
+    sort,
     limit: PAGE_SIZE,
     offset: (currentPage - 1) * PAGE_SIZE
   })
 
-  const { updatedAt } = useSources()
+  const { sources, updatedAt } = useSources()
 
   const totalPages = Math.ceil(total / PAGE_SIZE)
 
@@ -36,8 +41,11 @@ export default function SearchPage () {
     }, { replace: true })
   }
 
+  // Any change of filters or order starts again from the first page
   const handleFiltersChange = (changes) => updateParams({ ...changes, page: null })
-  const handleClear = () => setSearchParams({}, { replace: true })
+  const handleRemove = (key) => handleFiltersChange({ [key]: null })
+  // Clears the filters, keeps the order
+  const handleClear = () => setSearchParams(sort ? { sort } : {}, { replace: true })
 
   const handlePageChange = (page) => {
     updateParams({ page: page === 1 ? null : page })
@@ -50,7 +58,7 @@ export default function SearchPage () {
 
       <header className={styles.header}>
         <h1>Find your next role</h1>
-        <p className={styles.subtitle}>Search by keyword, technology, experience level and workplace.</p>
+        <p className={styles.subtitle}>Search by keyword, technology, level, place, date and salary.</p>
         {updatedAt && (
           <p className={styles.updated}>
             Updated <time dateTime={updatedAt}>{updatedAgo(updatedAt)}</time> from{' '}
@@ -59,11 +67,26 @@ export default function SearchPage () {
         )}
       </header>
 
-      <SearchFilters filters={filters} onChange={handleFiltersChange} onClear={handleClear} />
+      <SearchFilters filters={filters} sources={sources} onChange={handleFiltersChange} />
+      <ActiveFilters filters={filters} sources={sources} onRemove={handleRemove} onClear={handleClear} />
 
-      <p className={styles.count} aria-live='polite'>
-        {!error && !loading && `${total} ${total === 1 ? 'job' : 'jobs'} found`}
-      </p>
+      <div className={styles.results}>
+        <p className={styles.count} aria-live='polite'>
+          {!error && !loading && `${total} ${total === 1 ? 'job' : 'jobs'} found`}
+        </p>
+
+        <div className={styles.sort}>
+          <label htmlFor={sortId}>Sort by</label>
+          <select
+            id={sortId}
+            className='select'
+            value={sort || 'newest'}
+            onChange={(event) => handleFiltersChange({ sort: event.target.value === 'newest' ? null : event.target.value })}
+          >
+            {SORTS.map(({ value, label }) => <option key={value} value={value}>{label}</option>)}
+          </select>
+        </div>
+      </div>
 
       <JobList jobs={jobs} loading={loading} error={error} />
 

@@ -1,7 +1,8 @@
 import type { JobInput } from '../schemas/job.js'
 
 // Fictional companies and listings, used only for local development and demos.
-export const SEED_JOBS: Array<JobInput & { postedDaysAgo: number }> = [
+// `state` (the US state code, for the location filter) is set on the jobs in the US
+export const SEED_JOBS: Array<JobInput & { postedDaysAgo: number, state?: string }> = [
   {
     title: 'Frontend Engineer (React)',
     company: 'Lumen Labs',
@@ -20,6 +21,7 @@ export const SEED_JOBS: Array<JobInput & { postedDaysAgo: number }> = [
     title: 'Junior Full-Stack Developer',
     company: 'Brightpath Learning',
     location: 'Austin, TX',
+    state: 'TX',
     workplace: 'hybrid',
     level: 'junior',
     employmentType: 'full-time',
@@ -62,6 +64,7 @@ export const SEED_JOBS: Array<JobInput & { postedDaysAgo: number }> = [
     title: 'Data Analyst',
     company: 'Northwind Retail',
     location: 'Chicago, IL',
+    state: 'IL',
     workplace: 'onsite',
     level: 'junior',
     employmentType: 'full-time',
@@ -118,6 +121,7 @@ export const SEED_JOBS: Array<JobInput & { postedDaysAgo: number }> = [
     title: 'Lead Frontend Engineer',
     company: 'Fintrail',
     location: 'New York, NY',
+    state: 'NY',
     workplace: 'hybrid',
     level: 'lead',
     employmentType: 'full-time',
@@ -174,6 +178,7 @@ export const SEED_JOBS: Array<JobInput & { postedDaysAgo: number }> = [
     title: 'Machine Learning Engineer',
     company: 'Verdant AI',
     location: 'San Francisco, CA',
+    state: 'CA',
     workplace: 'hybrid',
     level: 'senior',
     employmentType: 'full-time',
@@ -216,6 +221,7 @@ export const SEED_JOBS: Array<JobInput & { postedDaysAgo: number }> = [
     title: 'WordPress Developer',
     company: 'Harbor Creative',
     location: 'Miami, FL',
+    state: 'FL',
     workplace: 'onsite',
     level: 'mid',
     employmentType: 'contract',

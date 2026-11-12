@@ -2,6 +2,14 @@ export const LEVELS = ['intern', 'junior', 'mid', 'senior', 'staff', 'lead'] as 
 export const WORKPLACES = ['remote', 'hybrid', 'onsite'] as const
 export const EMPLOYMENT_TYPES = ['full-time', 'part-time', 'contract', 'internship'] as const
 
+// GET /jobs `postedWithin`, and how far back each one goes
+export const POSTED_WITHIN = ['24h', '3d', '7d', '30d'] as const
+export const POSTED_WITHIN_HOURS: Record<PostedWithin, number> = { '24h': 24, '3d': 72, '7d': 168, '30d': 720 }
+// GET /jobs `sort`
+export const JOB_SORTS = ['newest', 'salary_desc'] as const
+
+export type PostedWithin = (typeof POSTED_WITHIN)[number]
+export type JobSort = (typeof JOB_SORTS)[number]
 export type Level = (typeof LEVELS)[number]
 export type Workplace = (typeof WORKPLACES)[number]
 export type EmploymentType = (typeof EMPLOYMENT_TYPES)[number]
@@ -65,6 +73,13 @@ export interface JobFilters {
   technology?: string
   level?: Level
   workplace?: Workplace
+  employmentType?: EmploymentType
+  postedWithin?: PostedWithin
+  state?: string
+  minSalary?: number
+  hasSalary?: boolean
+  source?: string
+  sort?: JobSort
   limit: number
   offset: number
 }
