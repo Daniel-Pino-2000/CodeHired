@@ -8,7 +8,7 @@ CodeHired is a web platform that helps developers find and apply for programming
 
 - 🔍 **Job Search** — search and filter programming jobs by keyword, technology, experience level and workplace
 - 📄 **Job Listings** — detailed postings with role description, salary, tech stack and company info
-- ✅ **Apply Directly** — apply to jobs directly through the platform _(in progress)_
+- 🔗 **Apply at the Source** — every job names where it was found and links to the original posting to apply. The [`/sources`](apps/web/src/pages/Sources.jsx) page credits every data source and shows when the jobs were last refreshed
 - 📊 **Application Tracking** — keep track of jobs you've applied to and their status _(planned)_
 - 👤 **User Profiles** — manage your candidate profile and resume _(planned)_
 - 📱 **Responsive Design** — works across desktop, tablet and mobile, in light and dark mode
@@ -118,9 +118,18 @@ pnpm ingest --dry-run          # fetch and validate everything, write nothing
 | --- | --- | --- |
 | `GET` | `/health` | Health check |
 | `GET` | `/jobs` | List jobs. Query: `text`, `technology`, `level` (`intern`, `junior`, `mid`, `senior`, `staff`, `lead`), `workplace` (`remote`, `hybrid`, `onsite`), `limit` (max 50), `offset` |
-| `GET` | `/jobs/:id` | Get one job |
+| `GET` | `/jobs/:id` | Get one job, plus `alsoPostedOn`: the other places the same opening was found |
+| `GET` | `/sources` | Every data source with its credit and terms links, and when it was last refreshed |
 
-`GET /jobs` responds with `{ data, total, limit, offset }`. Each job has a `source` (`{ name, url }`, with the original posting) when it was ingested from an external source, and `null` for jobs created here.
+`GET /jobs` responds with `{ data, total, limit, offset }`. Each job has:
+
+- `source`: where it was found, `{ id, name, publisher, url }`. `url` is the original posting, where candidates apply; `publisher` is the site that published it when the source collects jobs from others (JSearch → LinkedIn). `null` for jobs created here (the local demo data)
+- `postedAt`: the posting date the source gave, if any. `createdAt` falls back to when CodeHired first saw the job
+- `descriptionIsSnippet`: `true` when the source only gives part of the description
+
+`GET /sources` responds with `{ updatedAt, data }`: `updatedAt` is when the latest successful ingestion run finished, and each source has `{ id, name, url, termsUrl, updatedAt }`.
+
+The fictional seed jobs are only served from a local database: a hosted one never lists them.
 
 ## Project Structure
 

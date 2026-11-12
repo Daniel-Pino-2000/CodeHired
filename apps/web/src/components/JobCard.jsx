@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import { formatSalary, levelLabel, technologyLabel, timeAgo, workplaceLabel } from '../utils/format.js'
+import { formatSalary, levelLabel, sourceLabel, technologyLabel, timeAgo, workplaceLabel } from '../utils/format.js'
 import styles from './JobCard.module.css'
 
 const MAX_TECHNOLOGIES = 4
@@ -23,7 +23,7 @@ export function JobCard ({ job }) {
           <p className={styles.meta}>
             {job.company} · {job.location}
             {/* Credit the source, as its terms require; the detail page links to the posting */}
-            {job.source && <> · via {job.source.name}</>}
+            {job.source && <> · via {sourceLabel(job.source)}</>}
           </p>
         </header>
 

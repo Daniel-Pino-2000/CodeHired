@@ -1,0 +1,77 @@
+.page {
+  padding-top: 40px;
+}
+
+.header {
+  margin-bottom: 28px;
+}
+
+.header h1 {
+  font-size: clamp(28px, 4vw, 36px);
+}
+
+.lead {
+  margin-top: 8px;
+  max-width: 68ch;
+  color: var(--color-text-muted);
+}
+
+.updated {
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.error {
+  color: var(--color-danger);
+}
+
+.skeleton {
+  height: 240px;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-muted);
+}
+
+.list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.source {
+  padding: 18px 20px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.name {
+  font-size: 17px;
+}
+
+.name a:hover {
+  color: var(--color-brand);
+}
+
+.meta {
+  margin-top: 4px;
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+.meta a,
+.footnote a {
+  color: var(--color-brand);
+  font-weight: 500;
+}
+
+.footnote {
+  margin-top: 28px;
+  max-width: 68ch;
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
