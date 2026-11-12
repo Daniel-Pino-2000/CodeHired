@@ -1,5 +1,7 @@
 # CodeHired
 
+[![CI](https://github.com/Daniel-Pino-2000/CodeHired/actions/workflows/ci.yml/badge.svg)](https://github.com/Daniel-Pino-2000/CodeHired/actions/workflows/ci.yml)
+
 CodeHired is a web platform that helps developers find and apply for programming jobs. It brings job listings, search, and application tracking together in one place, so candidates can go from browsing to applying without bouncing between multiple sites.
 
 ## Features
@@ -18,7 +20,7 @@ CodeHired is a web platform that helps developers find and apply for programming
 | **Frontend** (`apps/web`) | React 19, React Router, Vite, CSS Modules |
 | **Backend** (`apps/api`) | Node.js, Express 5, TypeScript, Zod |
 | **Database** | SQLite (better-sqlite3) |
-| **Tooling** | pnpm workspaces, ESLint |
+| **Tooling** | pnpm workspaces, ESLint, GitHub Actions |
 
 ## Getting Started
 
