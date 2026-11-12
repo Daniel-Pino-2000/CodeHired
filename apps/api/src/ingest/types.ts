@@ -36,6 +36,10 @@ export interface Source<RawJob = unknown> {
   // The source only gives a snippet of the description (Adzuna, JSearch): the job page then sends
   // candidates to the original posting to read the rest
   snippetOnly?: boolean
+  // How often the source may be fetched, from its terms or our own rules (docs/data-sources.md):
+  // `pnpm ingest --due` skips it until this many hours have passed since its last run started.
+  // Unset means every scheduled run may fetch it.
+  minHoursBetweenRuns?: number
   // Throwing ends the run as 'failed'; a source made of many boards should skip a broken one instead
   fetchJobs (context: FetchContext): AsyncIterable<RawJob>
   // May throw: the runner counts it as a failed job and moves on

@@ -1,33 +1,16 @@
 // `pnpm ingest`: fetch jobs from external sources into the database in DATABASE_URL
+import { appendFile } from 'node:fs/promises'
 import { CONFIG } from '../config.js'
 import { db } from '../db/database.js'
 import { JobModel } from '../models/job.js'
+import { IngestionRunModel } from '../models/ingestion-run.js'
 import { runMigrations } from '../db/migrations.js'
 import { parseIngestArgs, USAGE, type IngestArgs } from './args.js'
-import { runIngestion, type RunSummary } from './runner.js'
+import { formatDatabaseLine, formatMarkdownReport, formatNotDueLine, formatSummaryLine } from './report.js'
+import { runIngestion } from './runner.js'
+import { splitDueSources, type NotDue } from './schedule.js'
 import { resolveSources } from './sources/index.js'
 import type { Source } from './types.js'
-
-function formatSummary (summary: RunSummary) {
-  const counts = `fetched ${summary.fetched}, inserted ${summary.inserted}, updated ${summary.updated}, ` +
-    `unchanged ${summary.unchanged}, skipped ${summary.failed}, closed ${summary.closed}`
-  const outcome = summary.status === 'failed' ? ` FAILED: ${summary.error}` : ''
-  return `${summary.source}: ${counts}${outcome}`
-}
-
-// Turso's free plan: 5 GB of storage (also 500M rows read and 10M rows written a month)
-const FREE_STORAGE_BYTES = 5 * 1024 ** 3
-
-const formatBytes = (bytes: number) => `${(bytes / 1024 ** 2).toFixed(1)} MB`
-
-async function databaseSummary () {
-  const stats = await JobModel.stats()
-  const size = stats.bytes === null ? 'size unknown' : `${formatBytes(stats.bytes)} of the ${formatBytes(FREE_STORAGE_BYTES)} free tier`
-  const line = `Database: ${stats.listed} jobs listed, ${stats.duplicates} duplicates, ${stats.closed} closed ` +
-    `(${stats.total} rows), ${size}`
-  const nearLimit = stats.bytes !== null && stats.bytes > FREE_STORAGE_BYTES * 0.8
-  return nearLimit ? `${line}\nWARNING: the database is above 80% of the free storage` : line
-}
 
 let args: IngestArgs
 let sources: readonly Source[]
@@ -55,13 +38,30 @@ if (applied.length > 0) {
 }
 
 const started = Date.now()
-const summaries = await runIngestion(sources, { dryRun: args.dryRun })
+
+let notDue: NotDue[] = []
+if (args.due) {
+  const split = splitDueSources(sources, await IngestionRunModel.lastStarted())
+  sources = split.due
+  notDue = split.notDue
+  for (const skipped of notDue) console.log(formatNotDueLine(skipped))
+}
+
+// With nothing due, the housekeeping is skipped too: the last run already did it
+const summaries = sources.length > 0 ? await runIngestion(sources, { dryRun: args.dryRun }) : []
 
 for (const summary of summaries) {
-  console.log(formatSummary(summary))
+  console.log(formatSummaryLine(summary))
 }
-if (!args.dryRun) console.log(await databaseSummary())
-console.log(`${args.dryRun ? 'Dry run, nothing written. ' : ''}Done in ${((Date.now() - started) / 1000).toFixed(1)}s`)
+const database = args.dryRun ? null : await JobModel.stats()
+if (database) console.log(formatDatabaseLine(database))
+const durationMs = Date.now() - started
+console.log(`${args.dryRun ? 'Dry run, nothing written. ' : ''}Done in ${(durationMs / 1000).toFixed(1)}s`)
+
+// On GitHub Actions, the same report as a table on the run's page
+if (process.env.GITHUB_STEP_SUMMARY) {
+  await appendFile(process.env.GITHUB_STEP_SUMMARY, formatMarkdownReport({ summaries, notDue, database, dryRun: args.dryRun, durationMs }))
+}
 
 db.close()
 
