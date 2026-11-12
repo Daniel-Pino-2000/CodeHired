@@ -44,6 +44,16 @@ function JobDetail ({ id }) {
               <p className={styles.meta}>
                 {job.company} · {job.location} · <time dateTime={job.createdAt}>Posted {timeAgo(job.createdAt)}</time>
               </p>
+              {/* Required by the sources' terms: name the source and link back to the original
+                  posting with a followed link (no rel="nofollow") */}
+              {job.source && (
+                <p className={styles.source}>
+                  Found on{' '}
+                  <a href={job.source.url} target='_blank' rel='noopener noreferrer'>
+                    {job.source.name}
+                  </a>
+                </p>
+              )}
             </div>
             <button
               type='button'

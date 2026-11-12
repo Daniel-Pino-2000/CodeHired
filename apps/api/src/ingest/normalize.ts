@@ -30,6 +30,23 @@ export function decodeEntities (text: string) {
   })
 }
 
+const strictUtf8 = new TextDecoder('utf-8', { fatal: true })
+
+// Undoes mojibake: UTF-8 text that was decoded as Latin-1 somewhere upstream, so "—" arrives as
+// "â\u0080\u0094" ("â" plus two control characters) and "é" as "Ã©". Such a string only
+// holds characters up to U+00FF, and its Latin-1 bytes are valid UTF-8. Real Latin-1 text with
+// accents almost never is, so anything else is returned unchanged.
+export function repairMojibake (text: string) {
+  // ASCII only (nothing to repair), or characters Latin-1 cannot hold (already decoded right)
+  if (!/[\u0080-ÿ]/.test(text) || /[^\u0000-ÿ]/.test(text)) return text
+
+  try {
+    return strictUtf8.decode(Buffer.from(text, 'latin1'))
+  } catch {
+    return text
+  }
+}
+
 // Plain text with paragraphs separated by a blank line, which is how the web app renders
 // `description` today. The HTML itself is kept in `description_html` for #9.
 export function htmlToText (html: string) {

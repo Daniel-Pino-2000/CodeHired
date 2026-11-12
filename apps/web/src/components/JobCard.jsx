@@ -22,6 +22,8 @@ export function JobCard ({ job }) {
           </h3>
           <p className={styles.meta}>
             {job.company} · {job.location}
+            {/* Credit the source, as its terms require; the detail page links to the posting */}
+            {job.source && <> · via {job.source.name}</>}
           </p>
         </header>
 

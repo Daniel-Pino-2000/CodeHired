@@ -10,6 +10,7 @@ import {
   inferLevel,
   inferWorkplace,
   normalizeTechnologies,
+  repairMojibake,
   toWholeNumber
 } from '../src/ingest/normalize.js'
 import { normalizedJobSchema } from '../src/ingest/schema.js'
@@ -39,6 +40,23 @@ describe('htmlToText', () => {
 
   test('decodes entities only after removing tags', () => {
     assert.equal(htmlToText('<p>Tom &amp; Jerry write &lt;b&gt; tags</p>'), 'Tom & Jerry write <b> tags')
+  })
+})
+
+describe('repairMojibake', () => {
+  // How a mis-decoded string looks: its UTF-8 bytes read one by one as Latin-1
+  const garble = (text: string) => Buffer.from(text, 'utf8').toString('latin1')
+
+  test('restores UTF-8 text that was decoded as Latin-1', () => {
+    for (const text of ['data—moving', 'Zürich · café', 'We’re hiring 🚀', '$85,000–$100,000']) {
+      assert.equal(repairMojibake(garble(text)), text)
+    }
+  })
+
+  test('leaves correct text alone', () => {
+    for (const text of ['plain ASCII', 'Café in São Paulo', 'data—moving', 'Zürich 🚀', '']) {
+      assert.equal(repairMojibake(text), text)
+    }
   })
 })
 

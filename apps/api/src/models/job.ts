@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto'
 import type { InStatement, InValue, Row } from '@libsql/client'
 import { db } from '../db/database.js'
 import type { NormalizedJob } from '../ingest/schema.js'
+import { getAttribution } from '../ingest/sources/index.js'
 import type { Job, JobFilters, Paginated } from '../types.js'
 import { toIsoSeconds } from '../utils/dates.js'
 
@@ -19,9 +20,11 @@ interface JobRow {
   technologies: string
   description_text: string
   created_at: string
+  source: string
+  source_url: string | null
 }
 
-export type NewJob = Omit<Job, 'id' | 'createdAt'>
+export type NewJob = Omit<Job, 'id' | 'createdAt' | 'source'>
 
 function toJob (row: Row): Job {
   const job = row as unknown as JobRow
@@ -39,7 +42,10 @@ function toJob (row: Row): Job {
     currency: job.currency,
     technologies: JSON.parse(job.technologies) as string[],
     description: job.description_text,
-    createdAt: job.created_at
+    createdAt: job.created_at,
+    source: job.source_url
+      ? { name: getAttribution(job.source)?.label ?? job.source, url: job.source_url }
+      : null
   }
 }
 

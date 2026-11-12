@@ -2,15 +2,26 @@ import type { Source } from '../types.js'
 import { createAshbySource } from './ashby.js'
 import { createFixtureSource } from './fixture.js'
 import { createGreenhouseSource } from './greenhouse.js'
+import { createHimalayasSource } from './himalayas.js'
+import { createJobicySource } from './jobicy.js'
 import { createLeverSource } from './lever.js'
+import { createRemoteOkSource } from './remoteok.js'
 
 // Every source `pnpm ingest` knows about. New adapters are added here.
 export const SOURCES: readonly Source[] = [
   createFixtureSource(),
   createGreenhouseSource(),
   createLeverSource(),
-  createAshbySource()
+  createAshbySource(),
+  createRemoteOkSource(),
+  createHimalayasSource(),
+  createJobicySource()
 ]
+
+// How a source must be credited where its jobs are shown; undefined for jobs created here (the seed)
+export function getAttribution (sourceId: string) {
+  return SOURCES.find((source) => source.id === sourceId)?.attribution
+}
 
 // The sources named on the command line, or every real source when none is named
 export function resolveSources (ids: readonly string[], { isLocalDatabase }: { isLocalDatabase: boolean }) {
