@@ -13,6 +13,7 @@
     "build": "pnpm -r build",
     "lint": "pnpm -r --if-present lint",
     "typecheck": "pnpm -r --if-present typecheck",
+    "test": "pnpm -r --if-present test",
     "db:seed": "pnpm --filter @codehired/api db:seed"
   }
 }

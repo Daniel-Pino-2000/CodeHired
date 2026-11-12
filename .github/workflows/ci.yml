@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   check:
-    name: Lint, typecheck and build
+    name: Lint, typecheck, test and build
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
@@ -26,6 +26,9 @@ jobs:
 
       - name: Typecheck
         run: pnpm typecheck
+
+      - name: Test
+        run: pnpm test
 
       - name: Build
         run: pnpm build
