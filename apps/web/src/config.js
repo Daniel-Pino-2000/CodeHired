@@ -57,7 +57,8 @@ export const MIN_SALARIES = [50000, 75000, 100000, 125000, 150000, 200000].map((
   label: `$${value / 1000}k+`
 }))
 
-// GET /jobs `sort`
+// GET /jobs `sort`. With a text search, results are ranked by relevance first
+export const RELEVANCE_SORT = { value: 'relevance', label: 'Best match' }
 export const SORTS = [
   { value: 'newest', label: 'Newest' },
   { value: 'salary_desc', label: 'Highest salary' }
