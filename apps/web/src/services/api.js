@@ -22,7 +22,7 @@ export async function getJson (path, { signal } = {}) {
 // Every query parameter GET /jobs understands
 const JOBS_PARAMS = [
   'text', 'technology', 'level', 'workplace', 'employmentType', 'postedWithin', 'state',
-  'minSalary', 'hasSalary', 'source', 'sort', 'limit', 'offset'
+  'minSalary', 'hasSalary', 'source', 'company', 'sort', 'limit', 'offset'
 ]
 
 // Builds `/jobs?text=...&level=...`, skipping empty filters
@@ -38,5 +38,8 @@ export function jobsPath (filters) {
 }
 
 export const jobPath = (id) => `/jobs/${encodeURIComponent(id)}`
+
+export const companiesPath = ({ limit, offset = 0 }) => `/companies?${new URLSearchParams({ limit, offset })}`
+export const companyPath = (slug) => `/companies/${encodeURIComponent(slug)}`
 
 export const SOURCES_PATH = '/sources'

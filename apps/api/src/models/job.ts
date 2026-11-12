@@ -7,6 +7,8 @@ import { getSource } from '../ingest/sources/index.js'
 import { POSTED_WITHIN_HOURS, type Job, type JobDetail, type JobFilters, type JobSort, type JobSource, type Paginated } from '../types.js'
 import { toIsoSeconds } from '../utils/dates.js'
 import { sanitizeDescriptionHtml } from '../utils/sanitize.js'
+import { CompanyModel } from './company.js'
+import { LISTED } from './listed.js'
 
 interface JobRow {
   id: string
@@ -26,17 +28,23 @@ interface JobRow {
   source: string
   source_url: string | null
   publisher: string | null
+  // From the companies JOIN (JOBS_WITH_COMPANY)
+  company_id: number | null
+  company_name: string | null
+  company_slug: string | null
+  company_logo_url: string | null
 }
 
-export type NewJob = Omit<Job, 'id' | 'createdAt' | 'postedAt' | 'source' | 'descriptionIsSnippet'>
+export type NewJob = Omit<Job, 'id' | 'createdAt' | 'postedAt' | 'source' | 'descriptionIsSnippet' | 'companyProfile'>
 
-// Jobs that are not shown: closed (gone from their source), copies of a job listed from a
-// higher-priority source, and the fictional seed jobs outside a local database
-const LISTED = [
-  'jobs.closed_at IS NULL',
-  'jobs.duplicate_of IS NULL',
-  ...(CONFIG.IS_LOCAL_DATABASE ? [] : ["jobs.source <> 'seed'"])
-]
+// Every job column plus its company's. `companies` shares only `id` with `jobs`, so columns
+// of `jobs` can stay unqualified in WHERE clauses, but `id` cannot.
+const JOBS_WITH_COMPANY = `
+  jobs LEFT JOIN companies ON companies.id = jobs.company_id
+`
+const JOB_COLUMNS = `
+  jobs.*, companies.name AS company_name, companies.slug AS company_slug, companies.logo_url AS company_logo_url
+`
 
 const HOUR_MS = 60 * 60 * 1000
 
@@ -45,9 +53,9 @@ const TOP_SALARY = 'COALESCE(salary_max, salary_min)'
 
 // `id` last, so pages never overlap when the other keys tie
 const ORDER_BY: Record<JobSort, string> = {
-  newest: 'created_at DESC, id',
+  newest: 'created_at DESC, jobs.id',
   // Jobs without a salary come after every job with one, newest first among equals
-  salary_desc: `${TOP_SALARY} IS NULL, ${TOP_SALARY} DESC, created_at DESC, id`
+  salary_desc: `${TOP_SALARY} IS NULL, ${TOP_SALARY} DESC, created_at DESC, jobs.id`
 }
 
 // Rows of `jobs` or `job_sources` without a posting URL (the seed) have no source to show
@@ -80,7 +88,10 @@ function toJob (row: Row): Job {
     descriptionIsSnippet: getSource(job.source)?.snippetOnly ?? false,
     createdAt: job.created_at,
     postedAt: job.posted_at,
-    source: toJobSource(job)
+    source: toJobSource(job),
+    companyProfile: job.company_id !== null && job.company_slug !== null
+      ? { id: Number(job.company_id), name: job.company_name!, slug: job.company_slug, logoUrl: job.company_logo_url }
+      : null
   }
 }
 
@@ -97,6 +108,7 @@ export class JobModel {
     minSalary,
     hasSalary,
     source,
+    company,
     sort = 'newest',
     limit,
     offset
@@ -147,14 +159,18 @@ export class JobModel {
       where.push('source = @source')
       args.source = source
     }
+    if (company) {
+      where.push('companies.slug = @company')
+      args.company = company
+    }
 
     const whereClause = `WHERE ${where.join(' AND ')}`
 
     // Both queries in one round trip (matters with a hosted database)
     const [countResult, pageResult] = await db.batch([
-      { sql: `SELECT COUNT(*) AS total FROM jobs ${whereClause}`, args },
+      { sql: `SELECT COUNT(*) AS total FROM ${JOBS_WITH_COMPANY} ${whereClause}`, args },
       {
-        sql: `SELECT * FROM jobs ${whereClause} ORDER BY ${ORDER_BY[sort]} LIMIT @limit OFFSET @offset`,
+        sql: `SELECT ${JOB_COLUMNS} FROM ${JOBS_WITH_COMPANY} ${whereClause} ORDER BY ${ORDER_BY[sort]} LIMIT @limit OFFSET @offset`,
         args: { ...args, limit, offset }
       }
     ], 'read')
@@ -171,7 +187,7 @@ export class JobModel {
   static async getById (id: string): Promise<JobDetail | undefined> {
     const seed = CONFIG.IS_LOCAL_DATABASE ? '' : "AND source <> 'seed'"
     const [jobResult, sourcesResult] = await db.batch([
-      { sql: `SELECT * FROM jobs WHERE id = ? ${seed}`, args: [id] },
+      { sql: `SELECT ${JOB_COLUMNS} FROM ${JOBS_WITH_COMPANY} WHERE jobs.id = ? ${seed}`, args: [id] },
       // Where else the same opening is posted: every row of the group but the job itself
       {
         sql: `
@@ -420,6 +436,7 @@ export class JobModel {
   static async create (job: NewJob & { createdAt?: string, state?: string | null }): Promise<Job> {
     const id = randomUUID()
     await db.execute(JobModel.insertStatement({ ...job, id }))
+    await CompanyModel.linkJobs()
     return (await JobModel.getById(id))!
   }
 

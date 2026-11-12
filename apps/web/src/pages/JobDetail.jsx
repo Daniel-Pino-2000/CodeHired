@@ -9,6 +9,7 @@ import {
   timeAgo,
   workplaceLabel
 } from '../utils/format.js'
+import { CompanyAvatar } from '../components/CompanyAvatar.jsx'
 import NotFoundPage from './NotFound.jsx'
 import styles from './JobDetail.module.css'
 
@@ -63,11 +64,14 @@ function JobDetail ({ job }) {
       <title>{`${job.title} at ${job.company} · CodeHired`}</title>
 
       <header className={styles.header}>
-        <div className={styles.avatar} aria-hidden='true'>{job.company.charAt(0)}</div>
+        <CompanyAvatar name={job.company} logoUrl={job.companyProfile?.logoUrl} size='lg' />
         <div className={styles.heading}>
           <h1 className={styles.title}>{job.title}</h1>
           <p className={styles.meta}>
-            {job.company} · {job.location} · <time dateTime={job.createdAt}>Posted {timeAgo(job.createdAt)}</time>
+            {job.companyProfile
+              ? <Link to={`/companies/${job.companyProfile.slug}`} className={styles.company}>{job.company}</Link>
+              : job.company}
+            {' · '}{job.location} · <time dateTime={job.createdAt}>Posted {timeAgo(job.createdAt)}</time>
           </p>
           {/* Required by the sources' terms: name the source and link back to the original posting */}
           {source && (

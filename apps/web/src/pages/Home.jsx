@@ -1,12 +1,44 @@
 import { useId } from 'react'
 import { Link, useNavigate } from 'react-router'
+import { CompanyAvatar } from '../components/CompanyAvatar.jsx'
 import { JobList } from '../components/JobList.jsx'
 import { TECHNOLOGIES } from '../config.js'
-import { useJobs } from '../hooks/useJobs.js'
+import { useCompanies, useJobs } from '../hooks/useJobs.js'
 import styles from './Home.module.css'
 
 const POPULAR_TECHNOLOGIES = ['react', 'typescript', 'node', 'python', 'go', 'docker']
 const LATEST_JOBS_COUNT = 5
+const HIRING_COMPANIES_COUNT = 8
+
+// The companies with the most open jobs. Hidden until there are some, and on errors (the job
+// list above already reports those).
+function HiringCompanies () {
+  const { companies } = useCompanies({ limit: HIRING_COMPANIES_COUNT })
+  if (companies.length === 0) return null
+
+  return (
+    <section className={`container ${styles.companies}`}>
+      <header className={styles.sectionHeader}>
+        <h2>Companies hiring now</h2>
+      </header>
+      <ul className={styles.companyList}>
+        {companies.map((company) => (
+          <li key={company.id}>
+            <Link to={`/companies/${company.slug}`} className={styles.company}>
+              <CompanyAvatar name={company.name} logoUrl={company.logoUrl} size='sm' />
+              <span className={styles.companyText}>
+                <span className={styles.companyName}>{company.name}</span>
+                <span className={styles.companyJobs}>
+                  {company.openJobs} open {company.openJobs === 1 ? 'job' : 'jobs'}
+                </span>
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
 
 export default function HomePage () {
   const id = useId()
@@ -62,6 +94,8 @@ export default function HomePage () {
         </header>
         <JobList jobs={jobs} loading={loading} error={error} emptyMessage='No jobs have been posted yet.' />
       </section>
+
+      <HiringCompanies />
     </>
   )
 }

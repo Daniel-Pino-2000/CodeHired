@@ -1,5 +1,6 @@
 import { Link } from 'react-router'
 import { formatSalary, levelLabel, sourceLabel, technologyLabel, timeAgo, workplaceLabel } from '../utils/format.js'
+import { CompanyAvatar } from './CompanyAvatar.jsx'
 import styles from './JobCard.module.css'
 
 const MAX_TECHNOLOGIES = 4
@@ -10,9 +11,7 @@ export function JobCard ({ job }) {
 
   return (
     <article className={styles.card}>
-      <div className={styles.avatar} aria-hidden='true'>
-        {job.company.charAt(0)}
-      </div>
+      <CompanyAvatar name={job.company} logoUrl={job.companyProfile?.logoUrl} />
 
       <div className={styles.body}>
         <header className={styles.header}>
@@ -21,7 +20,11 @@ export function JobCard ({ job }) {
             <Link to={`/jobs/${job.id}`} className={styles.link}>{job.title}</Link>
           </h3>
           <p className={styles.meta}>
-            {job.company} · {job.location}
+            {/* Above the card-wide link, so it opens the company page instead */}
+            {job.companyProfile
+              ? <Link to={`/companies/${job.companyProfile.slug}`} className={styles.company}>{job.company}</Link>
+              : job.company}
+            {' · '}{job.location}
             {/* Credit the source, as its terms require; the detail page links to the posting */}
             {job.source && <> · via {sourceLabel(job.source)}</>}
           </p>

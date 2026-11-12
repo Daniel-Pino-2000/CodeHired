@@ -1,4 +1,5 @@
 import { jobSchema } from '../schemas/job.js'
+import { CompanyModel } from '../models/company.js'
 import { JobModel } from '../models/job.js'
 import { toIsoSeconds } from '../utils/dates.js'
 import { db } from './database.js'
@@ -14,5 +15,6 @@ export async function seedJobs () {
   })
 
   await db.batch(inserts, 'write')
+  await CompanyModel.linkJobs()
   return SEED_JOBS.length
 }
