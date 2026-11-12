@@ -1,7 +1,9 @@
 import type { InStatement } from '@libsql/client'
 import type { z } from 'zod'
 import { db } from '../db/database.js'
+import { CompanyModel } from '../models/company.js'
 import { IngestionRunModel, type RunCounts } from '../models/ingestion-run.js'
+import { COMPANIES } from './companies.js'
 import { JobModel } from '../models/job.js'
 import { toIsoSeconds } from '../utils/dates.js'
 import { fingerprint, SOURCE_PRIORITY } from './dedupe.js'
@@ -188,5 +190,9 @@ export async function runIngestion (sources: readonly Source[], options: IngestO
     priorities.set(source.id, source.priority ?? SOURCE_PRIORITY.unknown)
   }
   await JobModel.rebuildDuplicates(priorities, SOURCE_PRIORITY.unknown)
+
+  // Company pages: the boards CodeHired reads, then a company for every new job
+  await CompanyModel.syncKnown(COMPANIES)
+  await CompanyModel.linkJobs()
   return summaries
 }

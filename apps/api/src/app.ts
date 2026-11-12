@@ -1,6 +1,7 @@
 import express from 'express'
 import { cors } from './middlewares/cors.js'
 import { errorHandler, notFound } from './middlewares/errors.js'
+import { companiesRouter } from './routes/companies.js'
 import { jobsRouter } from './routes/jobs.js'
 import { sourcesRouter } from './routes/sources.js'
 
@@ -17,6 +18,7 @@ export function createApp () {
   })
 
   app.use('/jobs', jobsRouter)
+  app.use('/companies', companiesRouter)
   app.use('/sources', sourcesRouter)
 
   app.use(notFound)

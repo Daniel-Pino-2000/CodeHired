@@ -1,0 +1,30 @@
+.avatar {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  background: var(--color-brand-soft);
+  color: var(--color-brand);
+  font-weight: 800;
+  object-fit: contain;
+}
+
+.sm {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  font-size: 17px;
+}
+
+.md {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  font-size: 20px;
+}
+
+.lg {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-lg);
+  font-size: 28px;
+}

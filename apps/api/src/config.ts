@@ -17,5 +17,7 @@ export const CONFIG = {
     .map((origin) => origin.trim())
     .filter(Boolean),
   DEFAULT_PAGE_SIZE: 10,
-  MAX_PAGE_SIZE: 50
+  MAX_PAGE_SIZE: 50,
+  DEFAULT_COMPANIES_PAGE_SIZE: 24,
+  MAX_COMPANIES_PAGE_SIZE: 100
 } as const

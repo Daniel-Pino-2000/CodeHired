@@ -36,6 +36,31 @@ export interface Job {
   // Where the job was found, with a link to the original posting; null for jobs created here.
   // Showing it is what the sources' terms ask for (docs/data-sources.md).
   source: JobSource | null
+  // The company's page on CodeHired. `company` stays the name as the posting wrote it; this is
+  // the company it was matched to ("Acme, Inc." → Acme). Null until the job is linked.
+  companyProfile: CompanyRef | null
+}
+
+export interface CompanyRef {
+  id: number
+  name: string
+  // /companies/{slug}
+  slug: string
+  logoUrl: string | null
+}
+
+// GET /companies and GET /companies/:slug
+export interface Company extends CompanyRef {
+  website: string | null
+  // The ATS CodeHired reads the company's own board on ('greenhouse', 'lever', 'ashby'), if any
+  ats: string | null
+  // Listed jobs, counted like GET /jobs counts them
+  openJobs: number
+}
+
+export interface CompanyFilters {
+  limit: number
+  offset: number
 }
 
 // One place a job is posted
@@ -79,6 +104,8 @@ export interface JobFilters {
   minSalary?: number
   hasSalary?: boolean
   source?: string
+  // A company's slug
+  company?: string
   sort?: JobSort
   limit: number
   offset: number

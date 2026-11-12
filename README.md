@@ -136,8 +136,10 @@ Without them every run ends early with an "Ingestion skipped" notice, and stays 
 | Method | Endpoint | Description |
 | --- | --- | --- |
 | `GET` | `/health` | Health check |
-| `GET` | `/jobs` | List jobs. Filters (they combine): `text`, `technology`, `level` (`intern`, `junior`, `mid`, `senior`, `staff`, `lead`), `workplace` (`remote`, `hybrid`, `onsite`), `employmentType` (`full-time`, `part-time`, `contract`, `internship`), `postedWithin` (`24h`, `3d`, `7d`, `30d`), `state` (US state code, e.g. `TX`), `minSalary` (yearly USD; matches the top of the range, so jobs without a salary are left out), `hasSalary=true`, `source` (e.g. `greenhouse`). `sort`: `newest` (default) or `salary_desc` (jobs without a salary last). `limit` (max 50), `offset` |
+| `GET` | `/jobs` | List jobs. Filters (they combine): `text`, `technology`, `level` (`intern`, `junior`, `mid`, `senior`, `staff`, `lead`), `workplace` (`remote`, `hybrid`, `onsite`), `employmentType` (`full-time`, `part-time`, `contract`, `internship`), `postedWithin` (`24h`, `3d`, `7d`, `30d`), `state` (US state code, e.g. `TX`), `minSalary` (yearly USD; matches the top of the range, so jobs without a salary are left out), `hasSalary=true`, `source` (e.g. `greenhouse`), `company` (a company's slug). `sort`: `newest` (default) or `salary_desc` (jobs without a salary last). `limit` (max 50), `offset` |
 | `GET` | `/jobs/:id` | Get one job, plus `alsoPostedOn`: the other places the same opening was found |
+| `GET` | `/companies` | Companies with open jobs, the most open jobs first. Query: `limit` (max 100, default 24), `offset` |
+| `GET` | `/companies/:slug` | One company, with its open-job count. Its jobs: `GET /jobs?company=:slug` |
 | `GET` | `/sources` | Every data source with its credit and terms links, and when it was last refreshed |
 
 `GET /jobs` responds with `{ data, total, limit, offset }`. Each job has:
@@ -145,6 +147,9 @@ Without them every run ends early with an "Ingestion skipped" notice, and stays 
 - `source`: where it was found, `{ id, name, publisher, url }`. `url` is the original posting, where candidates apply; `publisher` is the site that published it when the source collects jobs from others (JSearch → LinkedIn). `null` for jobs created here (the local demo data)
 - `postedAt`: the posting date the source gave, if any. `createdAt` falls back to when CodeHired first saw the job
 - `descriptionIsSnippet`: `true` when the source only gives part of the description
+- `companyProfile`: the company the job was matched to, `{ id, name, slug, logoUrl }` (its page is `/companies/{slug}`). `company` stays the name as the posting wrote it
+
+Companies are a table of their own (`companies`, linked by `jobs.company_id`). After every ingestion run and seed, the companies of `companies.json` are written with their website and ATS, and every job without a company is matched to one by the normalized name the deduplication uses (`Acme, Inc.` = `ACME`). A new name creates a company. A company's `openJobs` counts its jobs the way `GET /jobs` lists them: no closed jobs, no duplicates. `logoUrl` is always `null` for now: no source CodeHired uses offers logos it may show, so the web app shows the company's initial.
 
 `GET /jobs/:id` adds `alsoPostedOn` and `descriptionHtml`: the source's formatted description, or `null` when it only gave plain text (then use `description`).
 

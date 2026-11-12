@@ -8,6 +8,15 @@ const emptyToUndefined = (value: unknown) => (value === '' ? undefined : value)
 
 const MAX_SALARY_FILTER = 2_000_000
 
+// What CompanyModel makes slugs of: lowercase letters and digits, single dashes between words
+export const COMPANY_SLUG = z.string().trim().toLowerCase().max(120).regex(/^[a-z0-9]+(-[a-z0-9]+)*$/)
+
+// Query string for GET /companies
+export const companyFiltersSchema = z.object({
+  limit: z.coerce.number().int().min(1).max(CONFIG.MAX_COMPANIES_PAGE_SIZE).default(CONFIG.DEFAULT_COMPANIES_PAGE_SIZE),
+  offset: z.coerce.number().int().min(0).default(0)
+})
+
 export const jobFiltersSchema = z.object({
   text: z.preprocess(emptyToUndefined, z.string().trim().max(100).optional()),
   technology: z.preprocess(emptyToUndefined, z.string().trim().max(50).optional()),
@@ -28,6 +37,8 @@ export const jobFiltersSchema = z.object({
   hasSalary: z.preprocess(emptyToUndefined, z.stringbool().optional()),
   // `jobs.source`: `greenhouse`, `remoteok`... (GET /sources lists them)
   source: z.preprocess(emptyToUndefined, z.string().trim().toLowerCase().regex(/^[a-z0-9-]{1,40}$/).optional()),
+  // A company's slug (GET /companies lists them)
+  company: z.preprocess(emptyToUndefined, COMPANY_SLUG.optional()),
   sort: z.preprocess(emptyToUndefined, z.enum(JOB_SORTS).default('newest')),
   limit: z.coerce.number().int().min(1).max(CONFIG.MAX_PAGE_SIZE).default(CONFIG.DEFAULT_PAGE_SIZE),
   offset: z.coerce.number().int().min(0).default(0)

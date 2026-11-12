@@ -17,18 +17,6 @@
   transform: translateY(-1px);
 }
 
-.avatar {
-  display: grid;
-  place-items: center;
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-md);
-  background: var(--color-brand-soft);
-  color: var(--color-brand);
-  font-weight: 800;
-  font-size: 20px;
-}
-
 .body {
   min-width: 0;
 }
@@ -53,6 +41,18 @@
   margin-top: 2px;
   color: var(--color-text-muted);
   font-size: 14px;
+}
+
+.company {
+  position: relative;
+  z-index: 1;
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.company:hover {
+  color: var(--color-brand);
+  text-decoration: underline;
 }
 
 .tags {
