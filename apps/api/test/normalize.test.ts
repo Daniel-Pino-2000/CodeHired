@@ -50,15 +50,22 @@ describe('decodeEntities', () => {
 
 describe('inferLevel', () => {
   const cases: Record<string, string> = {
-    'Software Engineering Intern': 'junior',
+    'Software Engineering Intern': 'intern',
+    'Software Engineer Co-op (Summer 2027)': 'intern',
     'Junior Developer': 'junior',
     'Associate Software Engineer': 'junior',
+    'Software Engineer I': 'junior',
     'Senior Backend Engineer': 'senior',
     'Sr. Data Engineer': 'senior',
-    'Staff Engineer': 'lead',
-    'Senior Staff Engineer': 'lead',
+    'Software Engineer III': 'senior',
+    'Staff Engineer': 'staff',
+    'Senior Staff Engineer': 'staff',
+    'Principal Software Engineer': 'staff',
+    'Staff Engineer, Tech Lead': 'lead',
     'Engineering Manager': 'lead',
-    'Backend Engineer': 'mid'
+    'Head of Platform': 'lead',
+    'Backend Engineer': 'mid',
+    'Software Engineer II': 'mid'
   }
 
   for (const [title, level] of Object.entries(cases)) {
@@ -151,9 +158,9 @@ describe('fixture source normalization', () => {
 
   test('infers internships and contracts from the title and employment type', () => {
     assert.equal(normalizeFixture('4003').employmentType, 'internship')
-    assert.equal(normalizeFixture('4003').level, 'junior')
+    assert.equal(normalizeFixture('4003').level, 'intern')
     assert.equal(normalizeFixture('4005').employmentType, 'contract')
-    assert.equal(normalizeFixture('4004').level, 'lead')
+    assert.equal(normalizeFixture('4004').level, 'staff')
     assert.equal(normalizeFixture('4004').postedAt, null)
   })
 })

@@ -49,11 +49,14 @@ export function htmlToText (html: string) {
     .trim()
 }
 
+// From the title only, most specific first: "Senior Staff Engineer" is staff, "Staff Engineer,
+// Tech Lead" is lead, "Software Engineer III" is senior
 export function inferLevel (title: string): Level {
-  if (/\bintern(ship)?\b/i.test(title)) return 'junior'
-  if (/\b(lead|principal|staff|head|director|manager|architect|vp)\b/i.test(title)) return 'lead'
-  if (/\b(senior|sr)\b/i.test(title)) return 'senior'
-  if (/\b(junior|jr|entry[- ]level|graduate|new grad|associate)\b/i.test(title)) return 'junior'
+  if (/\b(intern(ship)?|co-?op)\b/i.test(title)) return 'intern'
+  if (/\b(lead|head of|director|manager|vp|vice president|chief|cto)\b/i.test(title)) return 'lead'
+  if (/\b(staff|principal|distinguished|fellow|architect)\b/i.test(title)) return 'staff'
+  if (/\b(senior|sr)\b|\b(iii|iv|3|4)\s*$/i.test(title)) return 'senior'
+  if (/\b(junior|jr|entry[- ]level|graduate|new grad|associate)\b|\b(i|1)\s*$/i.test(title)) return 'junior'
   return 'mid'
 }
 
@@ -68,6 +71,15 @@ export function inferEmploymentType (text: string): EmploymentType {
 export function inferWorkplace ({ remote, text = '' }: { remote: boolean, text?: string }): Workplace {
   if (remote) return 'remote'
   return /\bhybrid\b/i.test(text) ? 'hybrid' : 'onsite'
+}
+
+// Phrases that describe this role's schedule, not the company's ("we are a hybrid company" is not enough)
+const HYBRID_ROLE = /\b(hybrid (role|position|schedule|work(ing)?|model|arrangement)|this role is hybrid|(\d|two|three|four) days (a|per|each) week (in|at) (the|our) (office|hq))\b/i
+
+// An on-site job whose description says the role is hybrid. Remote is never inferred from the
+// description: benefits sections mention "remote" for all sorts of reasons.
+export function refineWorkplace (workplace: Workplace, description: string): Workplace {
+  return workplace === 'onsite' && HYBRID_ROLE.test(description) ? 'hybrid' : workplace
 }
 
 interface Place {

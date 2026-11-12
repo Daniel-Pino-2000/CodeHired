@@ -52,7 +52,7 @@ describe('runMigrations', () => {
       VALUES ('job-1', 'Engineer', 'Acme', 'Remote', 'remote', 'mid', 'A job created before 002', '2026-01-01T00:00:00Z')
     `)
 
-    assert.deepEqual(await runMigrations(client), ['002_ingestion.sql'])
+    assert.deepEqual(await runMigrations(client), ['002_ingestion.sql', '003_dedupe_and_levels.sql'])
 
     const { rows: [job] } = await client.execute("SELECT * FROM jobs WHERE id = 'job-1'")
     assert.equal(job.source, 'seed')
@@ -65,6 +65,44 @@ describe('runMigrations', () => {
       INSERT INTO jobs (id, source, source_id, title, company, location, workplace, level, description_text)
       VALUES ('job-2', 'seed', 'job-1', 'Engineer', 'Acme', 'Remote', 'remote', 'mid', 'Same source and source_id')
     `), /UNIQUE/)
+  })
+
+  test('003 rebuilds jobs with the intern and staff levels and keeps every row', async () => {
+    const client = createClient({ url: ':memory:' })
+    const realDir = new URL('../src/db/migrations/', import.meta.url)
+    const upTo002 = await migrationsDir(Object.fromEntries(await Promise.all(
+      ['001_create_jobs.sql', '002_ingestion.sql'].map(async (file) => [file, await readFile(new URL(file, realDir), 'utf8')])
+    )))
+    await runMigrations(client, upTo002)
+    await client.execute(`
+      INSERT INTO jobs (id, source, source_id, title, company, location, workplace, level, description_text, closed_at)
+      VALUES ('job-1', 'lever', 'acme:1', 'Engineer', 'Acme', 'Austin, TX', 'onsite', 'lead', 'A job stored before 003', '2026-10-01T00:00:00Z')
+    `)
+
+    assert.deepEqual(await runMigrations(client), ['003_dedupe_and_levels.sql'])
+
+    const { rows: [job] } = await client.execute("SELECT * FROM jobs WHERE id = 'job-1'")
+    assert.deepEqual(
+      [job.source, job.source_id, job.level, job.closed_at, job.fingerprint, job.duplicate_of],
+      ['lever', 'acme:1', 'lead', '2026-10-01T00:00:00Z', null, null]
+    )
+    for (const level of ['intern', 'staff']) {
+      await client.execute({
+        sql: "INSERT INTO jobs (id, title, company, location, workplace, level, description_text) VALUES (?, 'Engineer', 'Acme', 'Remote', 'remote', ?, 'A new level')",
+        args: [`job-${level}`, level]
+      })
+    }
+    await assert.rejects(client.execute(`
+      INSERT INTO jobs (id, title, company, location, workplace, level, description_text)
+      VALUES ('job-x', 'Engineer', 'Acme', 'Remote', 'remote', 'principal', 'Not a level')
+    `), /CHECK/)
+    await assert.rejects(client.execute(`
+      INSERT INTO jobs (id, source, source_id, title, company, location, workplace, level, description_text)
+      VALUES ('job-y', 'lever', 'acme:1', 'Engineer', 'Acme', 'Remote', 'remote', 'mid', 'The unique index survived')
+    `), /UNIQUE/)
+    assert.ok((await tableNames(client)).includes('job_sources'))
+    const { rows: [run] } = await client.execute("INSERT INTO ingestion_runs (source, started_at) VALUES ('lever', '2026-10-30T00:00:00Z') RETURNING closed")
+    assert.equal(run.closed, 0)
   })
 
   test('is idempotent: a second run applies nothing', async () => {

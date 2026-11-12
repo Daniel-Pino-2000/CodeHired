@@ -23,6 +23,7 @@ interface BoardSourceDefinition<Posting> {
   id: string
   name: string
   attribution: Attribution
+  priority: number
   companies: readonly Company[]
   http?: HttpClient
   // Every posting on one company's board
@@ -36,6 +37,7 @@ export function createBoardSource<Posting> ({
   id,
   name,
   attribution,
+  priority,
   companies,
   http = createHttpClient(),
   fetchBoard,
@@ -46,6 +48,8 @@ export function createBoardSource<Posting> ({
     id,
     name,
     attribution,
+    priority,
+    listsOnlyOpenJobs: true,
     async * fetchJobs ({ logger }) {
       // Every board is requested up front and the HTTP client keeps only a few in flight. Only the
       // kept postings stay in memory while earlier boards are being written.
