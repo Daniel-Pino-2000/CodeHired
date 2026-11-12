@@ -7,6 +7,7 @@ import { getSource } from '../ingest/sources/index.js'
 import { POSTED_WITHIN_HOURS, type Job, type JobDetail, type JobFilters, type JobSort, type JobSource, type Paginated } from '../types.js'
 import { toIsoSeconds } from '../utils/dates.js'
 import { sanitizeDescriptionHtml } from '../utils/sanitize.js'
+import { toFtsQuery } from '../utils/search.js'
 import { CompanyModel } from './company.js'
 import { LISTED } from './listed.js'
 
@@ -45,18 +46,35 @@ const JOBS_WITH_COMPANY = `
 const JOB_COLUMNS = `
   jobs.*, companies.name AS company_name, companies.slug AS company_slug, companies.logo_url AS company_logo_url
 `
+// The same, narrowed by a text search: only jobs whose words match (migration 005). The index's
+// columns share names with `jobs` (title, company, description_text, technologies), so those
+// must be qualified wherever this is used.
+const MATCHING_JOBS_WITH_COMPANY = `
+  jobs_fts JOIN jobs ON jobs.rowid = jobs_fts.rowid
+  LEFT JOIN companies ON companies.id = jobs.company_id
+`
 
 const HOUR_MS = 60 * 60 * 1000
 
 // The highest salary a job states: the top of its range, or its only number
 const TOP_SALARY = 'COALESCE(salary_max, salary_min)'
 
+// bm25 weights per indexed column, in the order of migration 005: a word in the title counts
+// most, then the company and the technologies, then the description
+const RELEVANCE = 'bm25(jobs_fts, 10.0, 6.0, 1.0, 4.0)'
+
 // `id` last, so pages never overlap when the other keys tie
-const ORDER_BY: Record<JobSort, string> = {
+const ORDER_BY: Record<Exclude<JobSort, 'relevance'>, string> = {
   newest: 'created_at DESC, jobs.id',
   // Jobs without a salary come after every job with one, newest first among equals
   salary_desc: `${TOP_SALARY} IS NULL, ${TOP_SALARY} DESC, created_at DESC, jobs.id`
 }
+
+// Lower bm25 is a better match. Without a text search there is nothing to rank: newest first.
+const orderBy = (sort: JobSort, isSearch: boolean) =>
+  sort === 'relevance'
+    ? isSearch ? `${RELEVANCE}, created_at DESC, jobs.id` : ORDER_BY.newest
+    : ORDER_BY[sort]
 
 // Rows of `jobs` or `job_sources` without a posting URL (the seed) have no source to show
 function toJobSource (row: { source: string, source_url: string | null, publisher: string | null }): JobSource | null {
@@ -118,9 +136,12 @@ export class JobModel {
     const where: string[] = [...LISTED]
     const args: Record<string, InValue> = {}
 
-    if (text) {
-      where.push('(title LIKE @text OR company LIKE @text OR description_text LIKE @text)')
-      args.text = `%${text}%`
+    // Every word in the title, company, description or technologies (FTS5). Text with nothing
+    // searchable in it ("!!") filters nothing.
+    const match = text ? toFtsQuery(text) : null
+    if (match) {
+      where.push('jobs_fts MATCH @match')
+      args.match = match
     }
     if (technology) {
       where.push('EXISTS (SELECT 1 FROM json_each(jobs.technologies) WHERE lower(value) = lower(@technology))')
@@ -165,12 +186,13 @@ export class JobModel {
     }
 
     const whereClause = `WHERE ${where.join(' AND ')}`
+    const from = match ? MATCHING_JOBS_WITH_COMPANY : JOBS_WITH_COMPANY
 
     // Both queries in one round trip (matters with a hosted database)
     const [countResult, pageResult] = await db.batch([
-      { sql: `SELECT COUNT(*) AS total FROM ${JOBS_WITH_COMPANY} ${whereClause}`, args },
+      { sql: `SELECT COUNT(*) AS total FROM ${from} ${whereClause}`, args },
       {
-        sql: `SELECT ${JOB_COLUMNS} FROM ${JOBS_WITH_COMPANY} ${whereClause} ORDER BY ${ORDER_BY[sort]} LIMIT @limit OFFSET @offset`,
+        sql: `SELECT ${JOB_COLUMNS} FROM ${from} ${whereClause} ORDER BY ${orderBy(sort, match !== null)} LIMIT @limit OFFSET @offset`,
         args: { ...args, limit, offset }
       }
     ], 'read')

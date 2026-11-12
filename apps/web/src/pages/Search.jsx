@@ -4,7 +4,7 @@ import { ActiveFilters } from '../components/ActiveFilters.jsx'
 import { JobList } from '../components/JobList.jsx'
 import { Pagination } from '../components/Pagination.jsx'
 import { SearchFilters } from '../components/SearchFilters.jsx'
-import { MAIN_FILTER_KEYS, MORE_FILTER_KEYS, PAGE_SIZE, SORTS } from '../config.js'
+import { MAIN_FILTER_KEYS, MORE_FILTER_KEYS, PAGE_SIZE, RELEVANCE_SORT, SORTS } from '../config.js'
 import { useJobs, useSources } from '../hooks/useJobs.js'
 import { updatedAgo } from '../utils/format.js'
 import styles from './Search.module.css'
@@ -20,9 +20,16 @@ export default function SearchPage () {
   const sort = searchParams.get('sort') ?? ''
   const currentPage = Math.max(1, Number(searchParams.get('page')) || 1)
 
+  // A text search is ranked by relevance unless another order is picked; "Best match" only
+  // exists while there is text to match. The default order stays out of the URL.
+  const isTextSearch = Boolean(filters.text.trim())
+  const sortOptions = isTextSearch ? [RELEVANCE_SORT, ...SORTS] : SORTS
+  const defaultSort = sortOptions[0].value
+  const activeSort = sortOptions.some((option) => option.value === sort) ? sort : defaultSort
+
   const { jobs, total, loading, error } = useJobs({
     ...filters,
-    sort,
+    sort: activeSort,
     limit: PAGE_SIZE,
     offset: (currentPage - 1) * PAGE_SIZE
   })
@@ -80,10 +87,10 @@ export default function SearchPage () {
           <select
             id={sortId}
             className='select'
-            value={sort || 'newest'}
-            onChange={(event) => handleFiltersChange({ sort: event.target.value === 'newest' ? null : event.target.value })}
+            value={activeSort}
+            onChange={(event) => handleFiltersChange({ sort: event.target.value === defaultSort ? null : event.target.value })}
           >
-            {SORTS.map(({ value, label }) => <option key={value} value={value}>{label}</option>)}
+            {sortOptions.map(({ value, label }) => <option key={value} value={value}>{label}</option>)}
           </select>
         </div>
       </div>

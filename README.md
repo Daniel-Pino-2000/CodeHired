@@ -136,11 +136,13 @@ Without them every run ends early with an "Ingestion skipped" notice, and stays 
 | Method | Endpoint | Description |
 | --- | --- | --- |
 | `GET` | `/health` | Health check |
-| `GET` | `/jobs` | List jobs. Filters (they combine): `text`, `technology`, `level` (`intern`, `junior`, `mid`, `senior`, `staff`, `lead`), `workplace` (`remote`, `hybrid`, `onsite`), `employmentType` (`full-time`, `part-time`, `contract`, `internship`), `postedWithin` (`24h`, `3d`, `7d`, `30d`), `state` (US state code, e.g. `TX`), `minSalary` (yearly USD; matches the top of the range, so jobs without a salary are left out), `hasSalary=true`, `source` (e.g. `greenhouse`), `company` (a company's slug). `sort`: `newest` (default) or `salary_desc` (jobs without a salary last). `limit` (max 50), `offset` |
+| `GET` | `/jobs` | List jobs. Filters (they combine): `text` (full-text search, see below), `technology`, `level` (`intern`, `junior`, `mid`, `senior`, `staff`, `lead`), `workplace` (`remote`, `hybrid`, `onsite`), `employmentType` (`full-time`, `part-time`, `contract`, `internship`), `postedWithin` (`24h`, `3d`, `7d`, `30d`), `state` (US state code, e.g. `TX`), `minSalary` (yearly USD; matches the top of the range, so jobs without a salary are left out), `hasSalary=true`, `source` (e.g. `greenhouse`), `company` (a company's slug). `sort`: `newest` (default), `salary_desc` (jobs without a salary last) or `relevance` (best match first; without `text` it is `newest`). `limit` (max 50), `offset` |
 | `GET` | `/jobs/:id` | Get one job, plus `alsoPostedOn`: the other places the same opening was found |
 | `GET` | `/companies` | Companies with open jobs, the most open jobs first. Query: `limit` (max 100, default 24), `offset` |
 | `GET` | `/companies/:slug` | One company, with its open-job count. Its jobs: `GET /jobs?company=:slug` |
 | `GET` | `/sources` | Every data source with its credit and terms links, and when it was last refreshed |
+
+**Text search** uses an SQLite [FTS5](https://www.sqlite.org/fts5.html) index over the title, company, description and technologies (migration `005_jobs_fts.sql`, kept in sync by triggers on `jobs`). Every word must match. Words of 3+ characters also match longer words (`front` finds "Frontend"), and so does a word typed with `*` (`go*`); shorter words match only themselves, so `go` does not find "Google". Case and accents are ignored, and `C++` and `C#` are words of their own. FTS5 operators typed in the box are searched as plain words. `sort=relevance` ranks with `bm25()`, a title match weighing most.
 
 `GET /jobs` responds with `{ data, total, limit, offset }`. Each job has:
 
