@@ -6,7 +6,7 @@ import { JobModel } from '../models/job.js'
 import { IngestionRunModel } from '../models/ingestion-run.js'
 import { runMigrations } from '../db/migrations.js'
 import { parseIngestArgs, USAGE, type IngestArgs } from './args.js'
-import { formatDatabaseLine, formatMarkdownReport, formatNotDueLine, formatSummaryLine } from './report.js'
+import { formatDatabaseLine, formatMarkdownReport, formatNotDueLine, formatSourceLines, formatSummaryLine } from './report.js'
 import { runIngestion } from './runner.js'
 import { splitDueSources, type NotDue } from './schedule.js'
 import { resolveSources, splitConfiguredSources } from './sources/index.js'
@@ -62,7 +62,10 @@ for (const summary of summaries) {
   console.log(formatSummaryLine(summary))
 }
 const database = args.dryRun ? null : await JobModel.stats()
-if (database) console.log(formatDatabaseLine(database))
+if (database) {
+  console.log(formatDatabaseLine(database))
+  for (const line of formatSourceLines(database.sources)) console.log(line)
+}
 const durationMs = Date.now() - started
 console.log(`${args.dryRun ? 'Dry run, nothing written. ' : ''}Done in ${(durationMs / 1000).toFixed(1)}s`)
 
