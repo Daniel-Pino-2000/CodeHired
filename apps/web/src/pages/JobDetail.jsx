@@ -10,6 +10,7 @@ import {
   workplaceLabel
 } from '../utils/format.js'
 import { CompanyAvatar } from '../components/CompanyAvatar.jsx'
+import { SourceCredit } from '../components/SourceCredit.jsx'
 import NotFoundPage from './NotFound.jsx'
 import styles from './JobDetail.module.css'
 
@@ -77,6 +78,7 @@ function JobDetail ({ job }) {
           {source && (
             <p className={styles.source}>
               Found on <ExternalLink href={source.url}>{publisher}</ExternalLink>
+              {source.credit && <> <SourceCredit credit={source.credit} className={styles.credit} /></>}
             </p>
           )}
         </div>

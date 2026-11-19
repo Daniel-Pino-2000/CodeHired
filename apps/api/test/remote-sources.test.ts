@@ -104,7 +104,9 @@ describe('Himalayas source', () => {
       [himalayasSearchUrl('engineer', 2)]: empty
     })
 
-    const jobs = await collect(createHimalayasSource({ http: testHttp(fetch), queries: ['developer', 'engineer'], pagesPerQuery: 3 }))
+    // When the fixture was recorded: its jobs expire from mid-November 2026 on
+    const recordedAt = () => Date.parse('2026-11-01T00:00:00Z')
+    const jobs = await collect(createHimalayasSource({ http: testHttp(fetch), queries: ['developer', 'engineer'], pagesPerQuery: 3, now: recordedAt }))
 
     assert.deepEqual(urls, [
       'https://himalayas.app/jobs/api/search?q=developer&country=US&sort=recent&page=1',
@@ -168,7 +170,8 @@ describe('GET /jobs/:id', () => {
       id: 'remoteok',
       name: 'Remote OK',
       publisher: null,
-      url: 'https://remoteOK.com/remote-jobs/remote-front-end-developer-edconic-1137597'
+      url: 'https://remoteOK.com/remote-jobs/remote-front-end-developer-edconic-1137597',
+      credit: null
     })
     assert.equal(detail.body.descriptionIsSnippet, false)
     assert.equal(detail.body.postedAt, job.postedAt)

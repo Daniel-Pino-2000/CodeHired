@@ -1,0 +1,26 @@
+/* At least 116 x 23 px, the size Adzuna's terms ask for */
+.credit {
+  /* Above a card-wide link (JobCard's ::after), so it opens the source instead of the job */
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-width: 116px;
+  min-height: 23px;
+  padding: 2px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm, 6px);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.credit:hover {
+  border-color: var(--color-brand);
+  color: var(--color-brand);
+}

@@ -149,7 +149,7 @@ export async function ingestSource<RawJob> (source: Source<RawJob>, options: Ing
     if (status === 'succeeded') {
       counts.closed = await JobModel.closeStale(source.id, {
         runId,
-        runs: CLOSE_AFTER_MISSED_RUNS,
+        runs: source.seesOnlyRecentJobs ? null : CLOSE_AFTER_MISSED_RUNS,
         maxPostedAt: source.devOnly || source.listsOnlyOpenJobs
           ? null
           : toIsoSeconds(new Date(now.getTime() - MAX_JOB_AGE_DAYS * DAY_MS)),

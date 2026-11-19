@@ -1,6 +1,7 @@
 import { Link } from 'react-router'
 import { formatSalary, levelLabel, sourceLabel, technologyLabel, timeAgo, workplaceLabel } from '../utils/format.js'
 import { CompanyAvatar } from './CompanyAvatar.jsx'
+import { SourceCredit } from './SourceCredit.jsx'
 import styles from './JobCard.module.css'
 
 const MAX_TECHNOLOGIES = 4
@@ -42,6 +43,7 @@ export function JobCard ({ job }) {
 
       <div className={styles.aside}>
         {salary && <p className={styles.salary}>{salary}</p>}
+        <SourceCredit credit={job.source?.credit} />
         <time className={styles.date} dateTime={job.createdAt}>{timeAgo(job.createdAt)}</time>
       </div>
     </article>
