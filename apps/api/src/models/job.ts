@@ -25,6 +25,7 @@ interface JobRow {
   description_text: string
   created_at: string
   posted_at: string | null
+  closes_at: string | null
   source: string
   source_url: string | null
   publisher: string | null
@@ -35,7 +36,7 @@ interface JobRow {
   company_logo_url: string | null
 }
 
-export type NewJob = Omit<Job, 'id' | 'createdAt' | 'postedAt' | 'source' | 'descriptionIsSnippet' | 'companyProfile'>
+export type NewJob = Omit<Job, 'id' | 'createdAt' | 'postedAt' | 'closesAt' | 'source' | 'descriptionIsSnippet' | 'companyProfile'>
 
 // Every job column plus its company's. `companies` shares only `id` with `jobs`, so columns
 // of `jobs` can stay unqualified in WHERE clauses, but `id` cannot.
@@ -90,6 +91,7 @@ function toJob (row: Row): Job {
     descriptionIsSnippet: getSource(job.source)?.snippetOnly ?? false,
     createdAt: job.created_at,
     postedAt: job.posted_at,
+    closesAt: job.closes_at ?? null,
     source: toJobSource(job),
     companyProfile: job.company_id !== null && job.company_slug !== null
       ? { id: Number(job.company_id), name: job.company_name!, slug: job.company_slug, logoUrl: job.company_logo_url }
@@ -267,11 +269,11 @@ export class JobModel {
         INSERT INTO jobs (id, source, source_id, source_url, publisher, title, company, location,
                           city, state, country, remote, workplace, level, employment_type,
                           salary_min, salary_max, currency, technologies, description_text,
-                          description_html, posted_at, content_hash, fingerprint, last_seen_at, created_at)
+                          description_html, posted_at, closes_at, content_hash, fingerprint, last_seen_at, created_at)
         VALUES (@id, @source, @sourceId, @sourceUrl, @publisher, @title, @company, @location,
                 @city, @state, @country, @remote, @workplace, @level, @employmentType,
                 @salaryMin, @salaryMax, @currency, @technologies, @description,
-                @descriptionHtml, @postedAt, @contentHash, @fingerprint, @seenAt, COALESCE(@postedAt, @seenAt))
+                @descriptionHtml, @postedAt, @closesAt, @contentHash, @fingerprint, @seenAt, COALESCE(@postedAt, @seenAt))
         ON CONFLICT (source, source_id) DO UPDATE SET
           source_url       = excluded.source_url,
           publisher        = excluded.publisher,
@@ -292,6 +294,7 @@ export class JobModel {
           description_text = excluded.description_text,
           description_html = excluded.description_html,
           posted_at        = excluded.posted_at,
+          closes_at        = excluded.closes_at,
           content_hash     = excluded.content_hash,
           fingerprint      = excluded.fingerprint,
           last_seen_at     = excluded.last_seen_at,
@@ -320,6 +323,7 @@ export class JobModel {
         description: job.description,
         descriptionHtml: job.descriptionHtml,
         postedAt: job.postedAt,
+        closesAt: job.closesAt,
         contentHash,
         fingerprint,
         seenAt
@@ -337,7 +341,8 @@ export class JobModel {
   }
 
   // Closes the open jobs of a source that its last `runs` successful runs (`runId` counts as one)
-  // did not see, and, unless `maxPostedAt` is null, the ones posted before it. Returns how many.
+  // did not see, the ones whose application deadline has passed and, unless `maxPostedAt` is null,
+  // the ones posted before it. Returns how many.
   static async closeStale (source: string, { runId, runs, maxPostedAt, now }: {
     runId: number
     // Null: only the age rule applies (sources whose runs only see the newest postings)
@@ -356,6 +361,7 @@ export class JobModel {
             LIMIT 1 OFFSET COALESCE(@offset, 0)
           ))
           OR COALESCE(posted_at, created_at) < @maxPostedAt
+          OR closes_at <= @now
         )
       `,
       // Fewer runs than `runs` so far: the subquery is NULL and only the age rule applies

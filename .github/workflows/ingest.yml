@@ -73,6 +73,9 @@ jobs:
           # Sources with a key are skipped while their secrets are unset
           ADZUNA_APP_ID: ${{ secrets.ADZUNA_APP_ID }}
           ADZUNA_APP_KEY: ${{ secrets.ADZUNA_APP_KEY }}
+          USAJOBS_API_KEY: ${{ secrets.USAJOBS_API_KEY }}
+          # The email the key was issued to: USAJobs requires it as the User-Agent
+          USAJOBS_USER_AGENT: ${{ secrets.USAJOBS_USER_AGENT }}
           NODE_ENV: production
           # Inputs reach the script through the environment, never pasted into it
           SOURCES: ${{ inputs.sources }}

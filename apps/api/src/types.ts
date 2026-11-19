@@ -33,6 +33,8 @@ export interface Job {
   createdAt: string
   // The posting date the source gave, when it gave one
   postedAt: string | null
+  // The application deadline the source gave (USAJobs), when it gave one
+  closesAt: string | null
   // Where the job was found, with a link to the original posting; null for jobs created here.
   // Showing it is what the sources' terms ask for (docs/data-sources.md).
   source: JobSource | null

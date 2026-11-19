@@ -7,6 +7,7 @@ import { createHimalayasSource } from './himalayas.js'
 import { createJobicySource } from './jobicy.js'
 import { createLeverSource } from './lever.js'
 import { createRemoteOkSource } from './remoteok.js'
+import { createUsaJobsSource } from './usajobs.js'
 
 // Every source `pnpm ingest` knows about. New adapters are added here.
 export const SOURCES: readonly Source[] = [
@@ -17,7 +18,8 @@ export const SOURCES: readonly Source[] = [
   createRemoteOkSource(),
   createHimalayasSource(),
   createJobicySource(),
-  createAdzunaSource()
+  createAdzunaSource(),
+  createUsaJobsSource()
 ]
 
 // The environment variables a source needs that are unset

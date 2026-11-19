@@ -2,6 +2,7 @@ import { Link, useParams } from 'react-router'
 import { useJob } from '../hooks/useJobs.js'
 import {
   employmentTypeLabel,
+  formatDate,
   formatSalary,
   levelLabel,
   sourceLabel,
@@ -121,6 +122,13 @@ function JobDetail ({ job }) {
               <dt>Contract</dt>
               <dd>{employmentTypeLabel(job.employmentType)}</dd>
             </div>
+            {/* Only some sources state a deadline (USAJobs); the job is no longer listed after it */}
+            {job.closesAt && (
+              <div>
+                <dt>Apply by</dt>
+                <dd><time dateTime={job.closesAt}>{formatDate(job.closesAt)}</time></dd>
+              </div>
+            )}
           </dl>
 
           {job.technologies.length > 0 && (
