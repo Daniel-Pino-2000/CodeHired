@@ -48,6 +48,19 @@ Boards that list remote jobs from many companies. Their terms differ a lot, so e
 - The [`/sources`](../apps/web/src/pages/Sources.jsx) page, linked from the footer, names every source and links to it and to its terms (`Source.attribution`). It is served by `GET /sources`, which only lists real sources.
 - If CodeHired ever adds `JobPosting` structured data or a public feed, it must leave out Himalayas jobs.
 
+## Job search APIs
+
+Aggregators with an official API and a free key. They rank below company boards and USAJobs when the same job is on several sources.
+
+| Source (`pnpm ingest --source=`) | API | Terms | Attribution rule | Limits |
+| --- | --- | --- | --- | --- |
+| `adzuna` | `GET api.adzuna.com/v1/api/jobs/us/search/{page}?category=it-jobs&results_per_page=50&max_days_old=2&sort_by=date`, with `app_id` and `app_key` (`ADZUNA_APP_ID`, `ADZUNA_APP_KEY`) | [Terms of service](https://developer.adzuna.com/docs/terms_of_service) (reviewed 2026-11-19): publishing Adzuna listings is a permitted use; no resale of the data, no sales prospecting or lead generation, never contact the advertisers, one account per person. The free key is meant for evaluation; commercial use beyond a trial needs a licence. CodeHired is a non-commercial portfolio project | Every advert shown is labelled "Adzuna", at least 116 x 23 pixels, linked to adzuna.com: the "Jobs by Adzuna" badge on each card and job page (`Attribution.credit`). Salary estimates would need "Adzuna Jobsworth" credit, so we drop salaries Adzuna predicted (`salary_is_predicted`) | Defaults: 25 calls a minute, 250 a day, 1,000 a week, 2,500 a month. Our budget (`ADZUNA_BUDGET`): **80 a day**, 900 a week, 2,400 a month, counted in `api_usage` before each call; a run stops when any is reached. One call every 3 seconds, at most 20 pages (1,000 jobs) a run |
+
+- **Snippets only.** Adzuna returns the start of the description. We store it (`snippetOnly`), and the job page sends candidates to `redirect_url` (our `source_url`) to read the rest and apply.
+- **Partial listings.** A run only sees the last 2 days of postings, so Adzuna jobs are closed for their age (45 days), never for missing from a run (`seesOnlyRecentJobs`).
+- **The key stays secret.** It goes in the query string, so error messages are scrubbed of it before they reach a log.
+- If CodeHired is ever used commercially (ads, paid plans, selling leads), Adzuna requires a licence agreement first.
+
 ## Not enabled
 
 | Source | Why |

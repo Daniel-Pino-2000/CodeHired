@@ -73,6 +73,8 @@ export interface JobSource {
   publisher: string | null
   // The original posting, where candidates read the full job and apply
   url: string
+  // A label the source's terms require next to each of its jobs, linked to the source
+  credit: { text: string, url: string } | null
 }
 
 // GET /jobs/:id adds the formatted description and the other places the same opening was found

@@ -10,6 +10,13 @@ export interface Attribution {
   url: string
   // Where its terms of use (or the API docs that stand in for them) live, linked from /sources
   termsUrl?: string
+  // A label the terms require on every job shown (Adzuna: "Jobs by Adzuna" linked to adzuna.com)
+  credit?: SourceCredit
+}
+
+export interface SourceCredit {
+  text: string
+  url: string
 }
 
 // What the runner hands to `fetchJobs`
@@ -36,6 +43,12 @@ export interface Source<RawJob = unknown> {
   // The source only gives a snippet of the description (Adzuna, JSearch): the job page then sends
   // candidates to the original posting to read the rest
   snippetOnly?: boolean
+  // A run fetches only the newest postings (a quota-limited search API), so a job a run did not
+  // see may well still be open: such jobs are closed for their age only, never for missed runs
+  seesOnlyRecentJobs?: boolean
+  // Environment variables the source needs, like an API key. A full run skips the source while
+  // any is unset; naming it with `--source=` is then an error.
+  requiredEnv?: readonly string[]
   // How often the source may be fetched, from its terms or our own rules (docs/data-sources.md):
   // `pnpm ingest --due` skips it until this many hours have passed since its last run started.
   // Unset means every scheduled run may fetch it.

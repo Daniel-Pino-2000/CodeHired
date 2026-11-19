@@ -61,11 +61,13 @@ const ORDER_BY: Record<JobSort, string> = {
 // Rows of `jobs` or `job_sources` without a posting URL (the seed) have no source to show
 function toJobSource (row: { source: string, source_url: string | null, publisher: string | null }): JobSource | null {
   if (!row.source_url) return null
+  const attribution = getSource(row.source)?.attribution
   return {
     id: row.source,
-    name: getSource(row.source)?.attribution.label ?? row.source,
+    name: attribution?.label ?? row.source,
     publisher: row.publisher,
-    url: row.source_url
+    url: row.source_url,
+    credit: attribution?.credit ?? null
   }
 }
 
@@ -338,7 +340,8 @@ export class JobModel {
   // did not see, and, unless `maxPostedAt` is null, the ones posted before it. Returns how many.
   static async closeStale (source: string, { runId, runs, maxPostedAt, now }: {
     runId: number
-    runs: number
+    // Null: only the age rule applies (sources whose runs only see the newest postings)
+    runs: number | null
     maxPostedAt: string | null
     now: string
   }): Promise<number> {
@@ -346,17 +349,17 @@ export class JobModel {
       sql: `
         UPDATE jobs SET closed_at = @now
         WHERE source = @source AND closed_at IS NULL AND (
-          last_seen_at < (
+          (@offset IS NOT NULL AND last_seen_at < (
             SELECT started_at FROM ingestion_runs
             WHERE source = @source AND (status = 'succeeded' OR id = @runId)
             ORDER BY started_at DESC, id DESC
-            LIMIT 1 OFFSET @offset
-          )
+            LIMIT 1 OFFSET COALESCE(@offset, 0)
+          ))
           OR COALESCE(posted_at, created_at) < @maxPostedAt
         )
       `,
       // Fewer runs than `runs` so far: the subquery is NULL and only the age rule applies
-      args: { source, runId, offset: runs - 1, maxPostedAt, now }
+      args: { source, runId, offset: runs === null ? null : runs - 1, maxPostedAt, now }
     })
     return rowsAffected
   }

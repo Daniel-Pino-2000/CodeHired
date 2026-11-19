@@ -9,7 +9,7 @@ import { parseIngestArgs, USAGE, type IngestArgs } from './args.js'
 import { formatDatabaseLine, formatMarkdownReport, formatNotDueLine, formatSummaryLine } from './report.js'
 import { runIngestion } from './runner.js'
 import { splitDueSources, type NotDue } from './schedule.js'
-import { resolveSources } from './sources/index.js'
+import { resolveSources, splitConfiguredSources } from './sources/index.js'
 import type { Source } from './types.js'
 
 let args: IngestArgs
@@ -17,6 +17,14 @@ let sources: readonly Source[]
 try {
   args = parseIngestArgs(process.argv.slice(2))
   sources = resolveSources(args.sourceIds, { isLocalDatabase: CONFIG.IS_LOCAL_DATABASE })
+  const { ready, unconfigured } = splitConfiguredSources(sources)
+  if (args.sourceIds.length > 0 && unconfigured.length > 0) {
+    throw new Error(unconfigured.map(({ source, missing }) => `Source "${source.id}" needs ${missing.join(' and ')}`).join('\n'))
+  }
+  for (const { source, missing } of unconfigured) {
+    console.log(`${source.id}: skipped, set ${missing.join(' and ')} to enable it`)
+  }
+  sources = ready
 } catch (error) {
   console.error(`${(error as Error).message}\n\n${USAGE}`)
   process.exit(2)

@@ -88,12 +88,15 @@ interface HimalayasOptions {
   http?: HttpClient
   queries?: readonly string[]
   pagesPerQuery?: number
+  // The clock that decides which jobs have expired, injected by tests with recorded jobs
+  now?: () => number
 }
 
 export function createHimalayasSource ({
   http = createHttpClient({ concurrency: 1 }),
   queries = HIMALAYAS_QUERIES,
-  pagesPerQuery = HIMALAYAS_PAGES_PER_QUERY
+  pagesPerQuery = HIMALAYAS_PAGES_PER_QUERY,
+  now = Date.now
 }: HimalayasOptions = {}): Source<HimalayasJob> {
   return {
     id: 'himalayas',
@@ -118,7 +121,7 @@ export function createHimalayasSource ({
             if (seen.has(job.guid)) continue
             seen.add(job.guid)
             total++
-            if (!keepHimalayasJob(job)) continue
+            if (!keepHimalayasJob(job, now())) continue
             kept++
             yield job
           }

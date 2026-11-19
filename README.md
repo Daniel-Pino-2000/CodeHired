@@ -98,13 +98,13 @@ On the way, every job is tagged with the technologies its title and description 
 
 After each run:
 
-- **Expiry.** A job that the last 3 successful runs of its source did not see is closed. So is a job posted more than 45 days ago, except on company boards, which remove filled roles themselves. Closed jobs disappear from `GET /jobs` and are deleted 60 days later.
+- **Expiry.** A job that the last 3 successful runs of its source did not see is closed. So is a job posted more than 45 days ago, except on company boards, which remove filled roles themselves. Search APIs with a quota (Adzuna) only return the newest postings, so their jobs close for their age only. Closed jobs disappear from `GET /jobs` and are deleted 60 days later.
 - **Deduplication.** The same opening often comes from several sources. Jobs with the same fingerprint (company, title and place, normalized: `Acme, Inc.` = `Acme`, `Sr.` = `Senior`, `NYC` = `New York`) are listed once, from the source with the highest priority: company boards, then USAJobs, Adzuna, JSearch and remote boards. Every place a job appears is recorded in `job_sources`.
 - **Free-tier check.** The CLI prints how many jobs are listed, duplicated and closed, and the database size against Turso's free 5 GB.
 
 Adapters fetch through `apps/api/src/ingest/http.ts`, which adds timeouts, retries with exponential backoff, a concurrency limit and a `User-Agent` that identifies CodeHired.
 
-The real sources today are company career boards on **Greenhouse**, **Lever** and **Ashby**: one source per platform, reading every company listed in [`apps/api/src/ingest/companies.json`](apps/api/src/ingest/companies.json). They keep only tech roles in the US or remote from the US. A company whose board fails is logged and skipped; the run goes on. Remote jobs open to US-based applicants also come from three remote job boards whose terms allow it: **Remote OK**, **Himalayas** and **Jobicy**. Every job shows where it was found and links to the original posting, as the sources' terms require. Which sources CodeHired uses, and under what terms, is recorded in [`docs/data-sources.md`](docs/data-sources.md).
+The real sources today are company career boards on **Greenhouse**, **Lever** and **Ashby**: one source per platform, reading every company listed in [`apps/api/src/ingest/companies.json`](apps/api/src/ingest/companies.json). They keep only tech roles in the US or remote from the US. A company whose board fails is logged and skipped; the run goes on. Remote jobs open to US-based applicants also come from three remote job boards whose terms allow it: **Remote OK**, **Himalayas** and **Jobicy**. US IT jobs from thousands of other job sites come from the **Adzuna** API, once `ADZUNA_APP_ID` and `ADZUNA_APP_KEY` are set (a free key from [developer.adzuna.com](https://developer.adzuna.com/)); without them a full run skips it. Its calls are counted per day, week and month in the `api_usage` table, and a run stops before the budget in `apps/api/src/ingest/sources/adzuna.ts` (80 a day) is reached. Every job shows where it was found and links to the original posting, as the sources' terms require. Which sources CodeHired uses, and under what terms, is recorded in [`docs/data-sources.md`](docs/data-sources.md).
 
 ```bash
 pnpm ingest --source=fixture   # fictional jobs from apps/api/test/fixtures/jobs.json (local databases only)
@@ -126,6 +126,12 @@ To turn it on, add two repository secrets under **Settings → Secrets and varia
 
 Without them every run ends early with an "Ingestion skipped" notice, and stays green.
 
+Sources that need a key run once their secrets are added too, and are skipped until then:
+
+| Secret | Source | Where to get it |
+| --- | --- | --- |
+| `ADZUNA_APP_ID`, `ADZUNA_APP_KEY` | Adzuna | Free key at [developer.adzuna.com](https://developer.adzuna.com/) |
+
 - **Run it by hand:** Actions → Ingest jobs → Run workflow. Leave "Source ids" empty for the sources that are due, or name some (`remoteok,jobicy`) to run them now whatever their last run. Naming the company boards more than once a day breaks our own rule for them, so don't. "Dry run" fetches and validates without writing.
 - **Overlaps:** runs never overlap (a `concurrency` group queues them) and each one is stopped after 30 minutes.
 - **Failures:** a source that fails fails the run, and GitHub emails the repository owner; the other sources are still ingested.
@@ -144,7 +150,7 @@ Without them every run ends early with an "Ingestion skipped" notice, and stays 
 
 `GET /jobs` responds with `{ data, total, limit, offset }`. Each job has:
 
-- `source`: where it was found, `{ id, name, publisher, url }`. `url` is the original posting, where candidates apply; `publisher` is the site that published it when the source collects jobs from others (JSearch → LinkedIn). `null` for jobs created here (the local demo data)
+- `source`: where it was found, `{ id, name, publisher, url, credit }`. `url` is the original posting, where candidates apply; `publisher` is the site that published it when the source collects jobs from others (JSearch → LinkedIn); `credit` is the label the source's terms require next to each job (`{ text: 'Jobs by Adzuna', url }`), or `null`. `null` for jobs created here (the local demo data)
 - `postedAt`: the posting date the source gave, if any. `createdAt` falls back to when CodeHired first saw the job
 - `descriptionIsSnippet`: `true` when the source only gives part of the description
 - `companyProfile`: the company the job was matched to, `{ id, name, slug, logoUrl }` (its page is `/companies/{slug}`). `company` stays the name as the posting wrote it

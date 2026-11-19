@@ -90,7 +90,7 @@ describe('the same job from two sources', () => {
     const detail = await request(app).get(`/jobs/${canonical.id}`)
     assert.equal(detail.body.source.url, 'https://jobs.example.com/board-1')
     assert.deepEqual(detail.body.alsoPostedOn, [
-      { id: 'dedupe-aggregator', name: 'dedupe-aggregator', publisher: null, url: 'https://jobs.example.com/agg-1' }
+      { id: 'dedupe-aggregator', name: 'dedupe-aggregator', publisher: null, url: 'https://jobs.example.com/agg-1', credit: null }
     ])
   })
 

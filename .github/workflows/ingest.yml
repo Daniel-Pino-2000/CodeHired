@@ -70,6 +70,9 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           DATABASE_AUTH_TOKEN: ${{ secrets.DATABASE_AUTH_TOKEN }}
+          # Sources with a key are skipped while their secrets are unset
+          ADZUNA_APP_ID: ${{ secrets.ADZUNA_APP_ID }}
+          ADZUNA_APP_KEY: ${{ secrets.ADZUNA_APP_KEY }}
           NODE_ENV: production
           # Inputs reach the script through the environment, never pasted into it
           SOURCES: ${{ inputs.sources }}
