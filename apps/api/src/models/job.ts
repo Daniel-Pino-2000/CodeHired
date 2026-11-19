@@ -60,10 +60,10 @@ export type NewJob = Omit<Job, 'id' | 'createdAt' | 'postedAt' | 'closesAt' | 's
 
 // Every job column plus its company's. `companies` shares only `id` with `jobs`, so columns
 // of `jobs` can stay unqualified in WHERE clauses, but `id` cannot.
-const JOBS_WITH_COMPANY = `
+export const JOBS_WITH_COMPANY = `
   jobs LEFT JOIN companies ON companies.id = jobs.company_id
 `
-const JOB_COLUMNS = `
+export const JOB_COLUMNS = `
   jobs.*, companies.name AS company_name, companies.slug AS company_slug, companies.logo_url AS company_logo_url
 `
 // The same, narrowed by a text search: only jobs whose words match (migration 005). The index's
@@ -110,7 +110,7 @@ function toJobSource (row: { source: string, source_url: string | null, publishe
   }
 }
 
-function toJob (row: Row): Job {
+export function toJob (row: Row): Job {
   const job = row as unknown as JobRow
 
   return {

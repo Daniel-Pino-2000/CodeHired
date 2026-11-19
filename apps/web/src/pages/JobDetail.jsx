@@ -11,6 +11,7 @@ import {
   workplaceLabel
 } from '../utils/format.js'
 import { CompanyAvatar } from '../components/CompanyAvatar.jsx'
+import { SaveJobButton } from '../components/SaveJobButton.jsx'
 import { SourceCredit } from '../components/SourceCredit.jsx'
 import NotFoundPage from './NotFound.jsx'
 import styles from './JobDetail.module.css'
@@ -83,11 +84,14 @@ function JobDetail ({ job }) {
             </p>
           )}
         </div>
-        {/* Applications happen on the original posting; jobs created here (the local demo data)
-            have none */}
-        {source
-          ? <ExternalLink href={source.url} className='button button-primary'>Apply on {publisher} ↗</ExternalLink>
-          : <p className={styles.sample}>Sample job: there is no posting to apply to</p>}
+        <div className={styles.actions}>
+          <SaveJobButton job={job} />
+          {/* Applications happen on the original posting; jobs created here (the local demo data)
+              have none */}
+          {source
+            ? <ExternalLink href={source.url} className='button button-primary'>Apply on {publisher} ↗</ExternalLink>
+            : <p className={styles.sample}>Sample job: there is no posting to apply to</p>}
+        </div>
       </header>
 
       <div className={styles.layout}>
