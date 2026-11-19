@@ -48,6 +48,19 @@ Boards that list remote jobs from many companies. Their terms differ a lot, so e
 - The [`/sources`](../apps/web/src/pages/Sources.jsx) page, linked from the footer, names every source and links to it and to its terms (`Source.attribution`). It is served by `GET /sources`, which only lists real sources.
 - If CodeHired ever adds `JobPosting` structured data or a public feed, it must leave out Himalayas jobs.
 
+## Government
+
+| Source (`pnpm ingest --source=`) | API | Terms | Attribution rule | Limits |
+| --- | --- | --- | --- | --- |
+| `usajobs` | Search API: `GET data.usajobs.gov/api/search?JobCategoryCode=2210;1550&ResultsPerPage=500&SortField=opendate&SortDirection=desc&Fields=Full`, with the headers `Authorization-Key` (`USAJOBS_API_KEY`) and `User-Agent` set to the email the key was issued to (`USAJOBS_USER_AGENT`). `Host` is the URL's own host | [Terms of service](https://developer.usajobs.gov/guides/terms-of-service) (reviewed 2026-11-19): the data is public and may be modified, analyzed and redistributed without approval. Never present modified data as official, imply that OPM or an agency endorses CodeHired, claim an application was submitted, share the key, get around the limits or use an agency's seal or logo | Encouraged, not required: name USAJOBS as the source, link to the current official announcement and say that OPM does not endorse the product. We do all three: "via USAJOBS" on every card, "Apply on USAJOBS" links to the announcement (`PositionURI`), and the [`/sources`](../apps/web/src/pages/Sources.jsx) page says that CodeHired is not endorsed by OPM or any agency | [Rate limiting](https://developer.usajobs.gov/guides/rate-limiting): at most 500 rows a page and 10,000 a query; no request quota is published. We send one request at a time, one second apart, at most 20 pages a run. There are usually a few thousand open federal IT jobs, so a run takes a handful of requests |
+
+- **Categories.** 2210 is Information Technology Management, the series of almost every federal software, data and security job; 1550 is Computer Science. Every job of these series is kept (federal IT titles such as "IT Specialist (APPSW)" would fail our title filter), as long as one duty station is in the US.
+- **Whole listings.** A run fetches every open announcement, so USAJobs jobs close like a company board's: after 3 runs that did not see them, or 45 days after posting.
+- **Deadlines.** `ApplicationCloseDate` is stored as `closes_at` (USAJobs dates are Eastern Time without an offset; we convert them to UTC). The job stops being listed once it has passed, and the next run closes it.
+- **Salaries.** Federal postings always state a range; only yearly ones (`RateIntervalCode` `PA`) are stored, hourly wage-grade pay is not.
+- **Level and workplace.** The General Schedule grade gives the level (GS-7 and below junior, 9 to 11 mid, 12 and 13 senior, 14 and 15 staff; "Supervisory" titles lead). "Anywhere in the U.S. (remote job)" and `RemoteIndicator` mean remote; `TeleworkEligible` means hybrid.
+- **The email stays secret.** The `User-Agent` email is read from the environment (a repository secret), never written in the code or the logs.
+
 ## Job search APIs
 
 Aggregators with an official API and a free key. They rank below company boards and USAJobs when the same job is on several sources.

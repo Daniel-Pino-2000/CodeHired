@@ -26,6 +26,11 @@ export const normalizedJobSchema = withValidSalaryRange(jobFieldsSchema.extend({
     .transform((value) => toIsoSeconds(new Date(value)))
     .nullable()
     .default(null),
+  // The application deadline, when the source states one: the job stops being listed after it
+  closesAt: z.iso.datetime({ offset: true })
+    .transform((value) => toIsoSeconds(new Date(value)))
+    .nullable()
+    .default(null),
   // Stored sanitized (see utils/sanitize.ts): whatever an adapter passes on, the database only
   // holds HTML that is safe to render. Null when nothing is left.
   descriptionHtml: z.string().transform(sanitizeDescriptionHtml).nullable().default(null)

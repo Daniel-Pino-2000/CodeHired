@@ -30,6 +30,11 @@ export function formatSalary ({ salaryMin, salaryMax, currency }) {
   return `${range} ${isHourly ? '/ hour' : '/ year'}`
 }
 
+const calendarDate = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+
+// "Dec 2, 2026", in the reader's time zone
+export const formatDate = (isoDate) => calendarDate.format(new Date(isoDate))
+
 const relativeTime = new Intl.RelativeTimeFormat('en', { numeric: 'auto' })
 const DAY_MS = 24 * 60 * 60 * 1000
 

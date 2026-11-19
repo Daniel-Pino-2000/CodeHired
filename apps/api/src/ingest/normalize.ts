@@ -127,9 +127,11 @@ export function toWholeNumber (value: unknown) {
 }
 
 // Changes whenever any stored field of the job changes. The schema always outputs keys in the
-// same order, so equal jobs serialize to the same string.
+// same order, so equal jobs serialize to the same string. A job without a deadline hashes as it did
+// before `closesAt` existed, so adding the field did not rewrite every stored job.
 export function contentHash (job: NormalizedJob) {
-  return createHash('sha256').update(JSON.stringify(job)).digest('hex')
+  const { closesAt, ...rest } = job
+  return createHash('sha256').update(JSON.stringify(closesAt === null ? rest : job)).digest('hex')
 }
 
 // Below this a "salary" is an hourly or monthly rate, which the `jobs` columns do not hold
