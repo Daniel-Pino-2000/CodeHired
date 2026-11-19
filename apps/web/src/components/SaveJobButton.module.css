@@ -1,0 +1,59 @@
+.wrapper {
+  display: inline-grid;
+  justify-items: end;
+  gap: 4px;
+}
+
+/* Above the card-wide link in JobCard (see `.link::after` there) */
+.button {
+  position: relative;
+  z-index: 1;
+}
+
+.compact {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  background: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.compact:hover {
+  background: var(--color-brand-soft);
+  color: var(--color-brand);
+}
+
+.compact:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.placeholder {
+  display: block;
+  width: 36px;
+  height: 36px;
+}
+
+.saved {
+  color: var(--color-brand);
+}
+
+.button.saved:not(.compact) {
+  border-color: var(--color-brand);
+  background: var(--color-brand-soft);
+}
+
+.icon {
+  flex: none;
+}
+
+.error {
+  color: var(--color-danger);
+  font-size: 13px;
+}

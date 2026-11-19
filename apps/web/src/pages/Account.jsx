@@ -1,10 +1,10 @@
-import { useNavigate } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { useAuthStore } from '../store/authStore.js'
 import { formatDate } from '../utils/format.js'
 import styles from './Account.module.css'
 
 // The signed-in user's account. Behind ProtectedRoute, so `user` is always set here.
-// Saved jobs (#13), applications (#14) and the profile (#15) will link from this page.
+// Links to the saved jobs; applications (#14) and the profile (#15) will link from here too.
 export default function AccountPage () {
   const user = useAuthStore((state) => state.user)
   const logout = useAuthStore((state) => state.logout)
@@ -36,7 +36,10 @@ export default function AccountPage () {
         </div>
       </dl>
 
-      <button type='button' className='button button-secondary' onClick={handleLogout}>Log out</button>
+      <div className={styles.actions}>
+        <Link to='/saved' className='button button-secondary'>Saved jobs</Link>
+        <button type='button' className='button button-secondary' onClick={handleLogout}>Log out</button>
+      </div>
     </section>
   )
 }

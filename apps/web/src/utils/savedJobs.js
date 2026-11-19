@@ -1,0 +1,26 @@
+// Pure helpers for the saved-jobs list the favorites store keeps. The list is ordered like
+// GET /me/saved-jobs: the most recently saved first.
+
+// A job from a list or the detail page, shaped like an item of GET /me/saved-jobs. The detail
+// page's extra fields are dropped so the store keeps no full descriptions in HTML.
+export function toSavedJob (job, savedAt) {
+  const saved = { ...job, savedAt, open: job.open ?? true }
+  delete saved.descriptionHtml
+  delete saved.alsoPostedOn
+  return saved
+}
+
+export function removeSaved (jobs, id) {
+  return jobs.filter((job) => job.id !== id)
+}
+
+// Inserts the job (replacing an older copy) where its save date puts it
+export function addSaved (jobs, savedJob) {
+  const others = removeSaved(jobs, savedJob.id)
+  const index = others.findIndex((job) => job.savedAt <= savedJob.savedAt)
+  return index === -1 ? [...others, savedJob] : others.toSpliced(index, 0, savedJob)
+}
+
+export const savedIds = (jobs) => new Set(jobs.map((job) => job.id))
+
+export const savedJobPath = (id) => `/me/saved-jobs/${encodeURIComponent(id)}`

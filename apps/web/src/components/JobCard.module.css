@@ -73,6 +73,11 @@
   text-align: right;
 }
 
+/* Beats the global `.tag` colour */
+.tags .closed {
+  color: var(--color-danger);
+}
+
 .salary {
   font-weight: 600;
   font-size: 14px;

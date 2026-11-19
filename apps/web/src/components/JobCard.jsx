@@ -1,6 +1,7 @@
 import { Link } from 'react-router'
 import { formatSalary, levelLabel, sourceLabel, technologyLabel, timeAgo, workplaceLabel } from '../utils/format.js'
 import { CompanyAvatar } from './CompanyAvatar.jsx'
+import { SaveJobButton } from './SaveJobButton.jsx'
 import { SourceCredit } from './SourceCredit.jsx'
 import styles from './JobCard.module.css'
 
@@ -32,6 +33,8 @@ export function JobCard ({ job }) {
         </header>
 
         <ul className={styles.tags} aria-label='Job details'>
+          {/* Only saved jobs (GET /me/saved-jobs) can be closed */}
+          {job.open === false && <li className={`tag ${styles.closed}`}>No longer open</li>}
           <li className='tag tag-brand'>{workplaceLabel(job.workplace)}</li>
           <li className='tag'>{levelLabel(job.level)}</li>
           {job.technologies.slice(0, MAX_TECHNOLOGIES).map((technology) => (
@@ -42,6 +45,7 @@ export function JobCard ({ job }) {
       </div>
 
       <div className={styles.aside}>
+        <SaveJobButton job={job} compact />
         {salary && <p className={styles.salary}>{salary}</p>}
         <SourceCredit credit={job.source?.credit} />
         <time className={styles.date} dateTime={job.createdAt}>{timeAgo(job.createdAt)}</time>
