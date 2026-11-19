@@ -9,9 +9,11 @@ export const SOURCE_PRIORITY = {
   usaJobs: 1,
   adzuna: 2,
   jsearch: 3,
-  remoteBoard: 4,
+  // Snippets, and links that go through Jooble's own page
+  jooble: 4,
+  remoteBoard: 5,
   // Sources that do not declare a priority
-  unknown: 5,
+  unknown: 6,
   // Fictional jobs
   sample: 9
 } as const

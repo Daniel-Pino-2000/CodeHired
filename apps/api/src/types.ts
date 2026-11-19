@@ -54,7 +54,7 @@ export interface CompanyRef {
 // GET /companies and GET /companies/:slug
 export interface Company extends CompanyRef {
   website: string | null
-  // The ATS CodeHired reads the company's own board on ('greenhouse', 'lever', 'ashby'), if any
+  // The ATS CodeHired reads the company's own board on ('greenhouse', 'lever', 'ashby', 'smartrecruiters'), if any
   ats: string | null
   // Listed jobs, counted like GET /jobs counts them
   openJobs: number

@@ -61,7 +61,7 @@ describe('splitDueSources', () => {
   })
 
   test('the 6-hourly schedule runs company boards once a day and Jobicy every time', () => {
-    for (const id of ['greenhouse', 'lever', 'ashby']) {
+    for (const id of ['greenhouse', 'lever', 'ashby', 'smartrecruiters']) {
       assert.equal(getSource(id)?.minHoursBetweenRuns, 20, id)
     }
     assert.equal(getSource('jobicy')?.minHoursBetweenRuns, 1)

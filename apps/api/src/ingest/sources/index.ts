@@ -5,9 +5,11 @@ import { createFixtureSource } from './fixture.js'
 import { createGreenhouseSource } from './greenhouse.js'
 import { createHimalayasSource } from './himalayas.js'
 import { createJobicySource } from './jobicy.js'
+import { createJoobleSource } from './jooble.js'
 import { createJSearchSource } from './jsearch.js'
 import { createLeverSource } from './lever.js'
 import { createRemoteOkSource } from './remoteok.js'
+import { createSmartRecruitersSource } from './smartrecruiters.js'
 import { createUsaJobsSource } from './usajobs.js'
 
 // Every source `pnpm ingest` knows about. New adapters are added here.
@@ -16,12 +18,14 @@ export const SOURCES: readonly Source[] = [
   createGreenhouseSource(),
   createLeverSource(),
   createAshbySource(),
+  createSmartRecruitersSource(),
   createRemoteOkSource(),
   createHimalayasSource(),
   createJobicySource(),
   createAdzunaSource(),
   createUsaJobsSource(),
-  createJSearchSource()
+  createJSearchSource(),
+  createJoobleSource()
 ]
 
 // The environment variables a source needs that are unset
