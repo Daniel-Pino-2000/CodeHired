@@ -5,8 +5,8 @@ export const EMPLOYMENT_TYPES = ['full-time', 'part-time', 'contract', 'internsh
 // GET /jobs `postedWithin`, and how far back each one goes
 export const POSTED_WITHIN = ['24h', '3d', '7d', '30d'] as const
 export const POSTED_WITHIN_HOURS: Record<PostedWithin, number> = { '24h': 24, '3d': 72, '7d': 168, '30d': 720 }
-// GET /jobs `sort`
-export const JOB_SORTS = ['newest', 'salary_desc'] as const
+// GET /jobs `sort`. `relevance` ranks text search results; without `text` it is `newest`
+export const JOB_SORTS = ['newest', 'salary_desc', 'relevance'] as const
 
 export type PostedWithin = (typeof POSTED_WITHIN)[number]
 export type JobSort = (typeof JOB_SORTS)[number]

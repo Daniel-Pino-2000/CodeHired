@@ -52,7 +52,7 @@ describe('runMigrations', () => {
       VALUES ('job-1', 'Engineer', 'Acme', 'Remote', 'remote', 'mid', 'A job created before 002', '2026-01-01T00:00:00Z')
     `)
 
-    assert.deepEqual(await runMigrations(client), ['002_ingestion.sql', '003_dedupe_and_levels.sql', '004_companies.sql', '006_api_usage.sql', '007_closes_at.sql', '008_users.sql', '009_saved_jobs.sql'])
+    assert.deepEqual(await runMigrations(client), ['002_ingestion.sql', '003_dedupe_and_levels.sql', '004_companies.sql', '005_jobs_fts.sql', '006_api_usage.sql', '007_closes_at.sql', '008_users.sql', '009_saved_jobs.sql'])
 
     const { rows: [job] } = await client.execute("SELECT * FROM jobs WHERE id = 'job-1'")
     assert.equal(job.source, 'seed')
@@ -79,7 +79,7 @@ describe('runMigrations', () => {
       VALUES ('job-1', 'lever', 'acme:1', 'Engineer', 'Acme', 'Austin, TX', 'onsite', 'lead', 'A job stored before 003', '2026-10-01T00:00:00Z')
     `)
 
-    assert.deepEqual(await runMigrations(client), ['003_dedupe_and_levels.sql', '004_companies.sql', '006_api_usage.sql', '007_closes_at.sql', '008_users.sql', '009_saved_jobs.sql'])
+    assert.deepEqual(await runMigrations(client), ['003_dedupe_and_levels.sql', '004_companies.sql', '005_jobs_fts.sql', '006_api_usage.sql', '007_closes_at.sql', '008_users.sql', '009_saved_jobs.sql'])
 
     const { rows: [job] } = await client.execute("SELECT * FROM jobs WHERE id = 'job-1'")
     assert.deepEqual(
