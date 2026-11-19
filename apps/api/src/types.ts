@@ -115,6 +115,18 @@ export interface JobFilters {
   offset: number
 }
 
+export const USER_ROLES = ['candidate', 'employer'] as const
+export type UserRole = (typeof USER_ROLES)[number]
+
+// A signed-in user, as the auth routes return it. The password hash never leaves the model.
+export interface User {
+  id: number
+  email: string
+  name: string
+  role: UserRole
+  createdAt: string
+}
+
 export interface Paginated<T> {
   data: T[]
   total: number
