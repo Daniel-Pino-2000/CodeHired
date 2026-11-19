@@ -7,7 +7,7 @@ import { useCompany, useJobs } from '../hooks/useJobs.js'
 import NotFoundPage from './NotFound.jsx'
 import styles from './Company.module.css'
 
-const ATS_NAMES = { greenhouse: 'Greenhouse', lever: 'Lever', ashby: 'Ashby' }
+const ATS_NAMES = { greenhouse: 'Greenhouse', lever: 'Lever', ashby: 'Ashby', smartrecruiters: 'SmartRecruiters' }
 
 const hostname = (url) => {
   try {

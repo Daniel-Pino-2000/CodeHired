@@ -1,0 +1,203 @@
+{
+  "offset": 0,
+  "limit": 100,
+  "totalFound": 4,
+  "content": [
+    {
+      "id": "744000162575369",
+      "name": "Senior Software Engineer",
+      "uuid": "5846db2a-12b5-425b-bc1b-66583d6309e5",
+      "jobAdId": "c7e515ec-3f82-43de-8fe3-a2cee03f063e",
+      "defaultJobAd": true,
+      "refNumber": "JB0077454",
+      "company": {
+        "identifier": "ServiceNow",
+        "name": "ServiceNow"
+      },
+      "releasedDate": "2026-11-19T17:48:59.930Z",
+      "location": {
+        "city": "San Diego",
+        "region": "California",
+        "country": "us",
+        "address": "4810 Eastgate Mall",
+        "postalCode": "92121",
+        "remote": false,
+        "hybrid": false,
+        "fullLocation": "San Diego, California, United States"
+      },
+      "industry": {
+        "id": "it_and_services",
+        "label": "Information Technology And Services"
+      },
+      "department": {
+        "id": "2294038",
+        "label": "Engineering, Infrastructure and Operations"
+      },
+      "function": {
+        "id": "engineering",
+        "label": "Engineering"
+      },
+      "typeOfEmployment": {
+        "id": "permanent",
+        "label": "Full-time"
+      },
+      "experienceLevel": {
+        "id": "not_applicable",
+        "label": "Not Applicable"
+      },
+      "visibility": "PUBLIC",
+      "language": {
+        "code": "en",
+        "label": "English",
+        "labelNative": "English (US)"
+      }
+    },
+    {
+      "id": "744000162572680",
+      "name": "Solution CRM Success Engineer",
+      "uuid": "c084030b-20b5-4b25-801e-c52a0f35c356",
+      "jobAdId": "771badf5-ce64-4b53-a858-a14464eb9c68",
+      "defaultJobAd": true,
+      "refNumber": "JB0077967",
+      "company": {
+        "identifier": "ServiceNow",
+        "name": "ServiceNow"
+      },
+      "releasedDate": "2026-11-19T17:30:39.873Z",
+      "location": {
+        "city": "Austin",
+        "region": "Texas",
+        "country": "us",
+        "address": "701 Brazos Street, Suite 519",
+        "postalCode": "78701",
+        "remote": true,
+        "hybrid": false,
+        "fullLocation": "Austin, Texas, United States"
+      },
+      "industry": {
+        "id": "it_and_services",
+        "label": "Information Technology And Services"
+      },
+      "department": {
+        "id": "2294089",
+        "label": "Support and Product Success"
+      },
+      "function": {
+        "id": "consulting",
+        "label": "Consulting"
+      },
+      "typeOfEmployment": {
+        "id": "permanent",
+        "label": "Full-time"
+      },
+      "experienceLevel": {
+        "id": "not_applicable",
+        "label": "Not Applicable"
+      },
+      "visibility": "PUBLIC",
+      "language": {
+        "code": "en",
+        "label": "English",
+        "labelNative": "English (US)"
+      }
+    },
+    {
+      "id": "744000162495859",
+      "name": "Sr Staff Software Engineer",
+      "uuid": "780eb43c-0ef9-458d-b343-b7c3274dd226",
+      "jobAdId": "ddac6b58-dcf5-419e-ad60-1b108e761547",
+      "defaultJobAd": true,
+      "refNumber": "JB0077191",
+      "company": {
+        "identifier": "ServiceNow",
+        "name": "ServiceNow"
+      },
+      "releasedDate": "2026-11-19T11:40:23.223Z",
+      "location": {
+        "city": "Albany",
+        "region": "NEW YORK",
+        "country": "us",
+        "address": "Remote",
+        "postalCode": "12201",
+        "remote": true,
+        "hybrid": false,
+        "fullLocation": "Albany, NEW YORK, United States"
+      },
+      "industry": {
+        "id": "it_and_services",
+        "label": "Information Technology And Services"
+      },
+      "department": {
+        "id": "2294038",
+        "label": "Engineering, Infrastructure and Operations"
+      },
+      "function": {
+        "id": "engineering",
+        "label": "Engineering"
+      },
+      "typeOfEmployment": {
+        "id": "permanent",
+        "label": "Full-time"
+      },
+      "experienceLevel": {
+        "id": "not_applicable",
+        "label": "Not Applicable"
+      },
+      "visibility": "PUBLIC",
+      "language": {
+        "code": "en",
+        "label": "English",
+        "labelNative": "English (US)"
+      }
+    },
+    {
+      "id": "744000162570099",
+      "name": "Business Development Representative",
+      "uuid": "cb28244e-2158-48b9-8a33-bf77e3b366b9",
+      "jobAdId": "f471cbc1-3977-44eb-8d97-b4a3ab8e43de",
+      "defaultJobAd": true,
+      "refNumber": "JB0077332",
+      "company": {
+        "identifier": "ServiceNow",
+        "name": "ServiceNow"
+      },
+      "releasedDate": "2026-11-19T17:16:16.932Z",
+      "location": {
+        "city": "San Diego",
+        "region": "CALIFORNIA",
+        "country": "us",
+        "address": "4810 Eastgate Mall",
+        "postalCode": "92121",
+        "remote": false,
+        "hybrid": true,
+        "fullLocation": "San Diego, CALIFORNIA, United States"
+      },
+      "industry": {
+        "id": "it_and_services",
+        "label": "Information Technology And Services"
+      },
+      "department": {
+        "id": "2294208",
+        "label": "Sales"
+      },
+      "function": {
+        "id": "marketing",
+        "label": "Marketing"
+      },
+      "typeOfEmployment": {
+        "id": "permanent",
+        "label": "Full-time"
+      },
+      "experienceLevel": {
+        "id": "not_applicable",
+        "label": "Not Applicable"
+      },
+      "visibility": "PUBLIC",
+      "language": {
+        "code": "en",
+        "label": "English",
+        "labelNative": "English (US)"
+      }
+    }
+  ]
+}

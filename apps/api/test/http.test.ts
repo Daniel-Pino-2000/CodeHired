@@ -27,6 +27,21 @@ function fakeSleep () {
 }
 
 describe('createHttpClient', () => {
+  test('posts a JSON body, and names the method when the request fails', async () => {
+    const { fetch, calls } = fakeFetch(json({ jobs: [1] }), json({}, 403))
+    const http = createHttpClient({ fetch, retries: 0 })
+
+    assert.deepEqual(await http.postJson(URL, { keywords: 'developer', page: '1' }), { jobs: [1] })
+    assert.equal(calls[0].init.method, 'POST')
+    assert.equal(calls[0].init.body, '{"keywords":"developer","page":"1"}')
+    const headers = calls[0].init.headers as Record<string, string>
+    assert.equal(headers['Content-Type'], 'application/json')
+    assert.equal(headers['User-Agent'], USER_AGENT)
+
+    await assert.rejects(http.postJson(URL, {}), (error: unknown) =>
+      error instanceof HttpError && error.status === 403 && error.message === `POST ${URL} responded 403`)
+  })
+
   test('sends a User-Agent that names CodeHired and links the repository', async () => {
     const { fetch, calls } = fakeFetch(json({ jobs: [] }))
 
