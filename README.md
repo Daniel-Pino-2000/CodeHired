@@ -150,6 +150,11 @@ Sources that need a key run once their secrets are added too, and are skipped un
 | `GET` | `/companies` | Companies with open jobs, the most open jobs first. Query: `limit` (max 100, default 24), `offset` |
 | `GET` | `/companies/:slug` | One company, with its open-job count. Its jobs: `GET /jobs?company=:slug` |
 | `GET` | `/sources` | Every data source with its credit and terms links, and when it was last refreshed |
+| `POST` | `/auth/register` | Create a candidate account and sign in. Body: `{ email, password, name }` (password 8 to 128 characters). `201 { user }`, `409` if the email is taken |
+| `POST` | `/auth/login` | Sign in. Body: `{ email, password }`. `200 { user }`, `401` for a wrong email or password |
+| `POST` | `/auth/logout` | Sign out (clears the session cookie). `204` |
+| `GET` | `/auth/me` | The signed-in user, `{ user }`, or `401` |
+| any | `/me/*` | The signed-in user's own data (favorites, applications…). `401` without a valid session |
 
 `GET /jobs` responds with `{ data, total, limit, offset }`. Each job has:
 
@@ -168,6 +173,15 @@ Companies are a table of their own (`companies`, linked by `jobs.company_id`). A
 `GET /sources` responds with `{ updatedAt, data }`: `updatedAt` is when the latest successful ingestion run finished, and each source has `{ id, name, url, termsUrl, updatedAt }`.
 
 The fictional seed jobs are only served from a local database: a hosted one never lists them.
+
+### Accounts
+
+A `user` is `{ id, email, name, role, createdAt }`; `role` is `candidate` (`employer` is reserved). Emails are stored trimmed and lowercased, so they match in any case.
+
+- **Passwords** are hashed with argon2id ([`@node-rs/argon2`](https://github.com/napi-rs/node-rs/tree/main/packages/argon2)) and only the hash is stored. No response includes it, and the API never logs a request body: a malformed JSON body is answered with `400` and not logged.
+- **Sessions** are a JWT (HS256, [`jose`](https://github.com/panva/jose)) holding the user's id, valid for 7 days, in an `httpOnly`, `sameSite=lax` cookie named `codehired_session`, which is also `secure` everywhere except local development. It is signed with `JWT_SECRET`, which must be set outside development (`apps/api/.env.example` shows how to generate one). Logging out clears the cookie.
+- **Same origin:** the web app calls the API at `/api`. In development Vite's proxy forwards `/api/*` to <http://localhost:3000>; in production the hosting rewrites it (#21). So the cookie is first-party and needs no CORS credentials.
+- **Rate limits:** 10 failed logins and 10 registrations per IP every 15 minutes (`429` after that). The counts are kept in memory, per server instance. Behind a proxy, set `TRUST_PROXY` to the number of proxies (1 by default outside development) so the limit counts the client's IP.
 
 ## Project Structure
 

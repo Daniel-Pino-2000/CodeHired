@@ -16,6 +16,10 @@ if (CONFIG.IS_DEVELOPMENT && CONFIG.IS_LOCAL_DATABASE && await JobModel.count() 
   console.log(`Database was empty, seeded ${inserted} jobs`)
 }
 
+if (!CONFIG.JWT_SECRET) {
+  console.warn('JWT_SECRET is not set: sign-in and registration will fail until it is')
+}
+
 const app = createApp()
 
 app.listen(CONFIG.PORT, () => {
