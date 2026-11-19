@@ -1,4 +1,5 @@
-export const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
+// Same origin by default (Vite's proxy in development), so the session cookie just works
+export const API_URL = import.meta.env.VITE_API_URL ?? '/api'
 
 export const PAGE_SIZE = 10
 
