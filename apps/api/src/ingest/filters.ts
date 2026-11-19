@@ -1,6 +1,6 @@
 // Which postings CodeHired keeps: tech roles in the US or remote from the US. Company boards list
 // every opening worldwide, so the ATS adapters run these rules before normalizing. They are
-// deliberately simple keyword rules; #31 refines them.
+// keyword rules, tuned on real boards (#62).
 
 import usStates from '@codehired/shared/us-states.json' with { type: 'json' }
 
@@ -190,11 +190,69 @@ export function isUsCountry (country: string | null | undefined) {
   return !!country && /^(us|usa|united states( of america)?)$/i.test(country.trim())
 }
 
-// The role nouns of the jobs CodeHired lists
-const TECH_TITLE = /\b(engineer(s|ing)?|developer|programmer|sdet|devops|devsecops|sre|site reliability|architect|(data|machine learning|ml|ai|research|applied|computer) scientists?)\b/i
+// The role nouns of the jobs CodeHired lists. Which engineers and scientists count is decided below.
+const TECH_TITLE = /\b(engineer(s|ing)?|developer|programmer|sdet|devops|devsecops|sre|site reliability|architect|scientists?)\b/i
 
-// Engineering titles that are not software work, and roles that only sit near engineering
-const NON_TECH_TITLE = /\b(sales|solutions?|support|customer|field|account|accounting|finance|legal|counsel|recruit(er|ing)?|sourcer|talent|marketing|program manager|project manager|coordinator|assistant|mechanical|electrical|manufacturing|hardware|civil|structural|structures|materials|composites|mechatronics|chemical|industrial|process|facilities|construction|propulsion|avionics|thermal|optical|rf|analog|asic|fpga|technician)\b/i
+// Roles that only sit near engineering: never tech, whatever else the title says
+const NON_TECH_TITLE = /\b(sales|solutions?|support|customer|field|account|accounting|finance|legal|counsel|recruit(er|ing)?|sourcer|talent|marketing|program manager|project manager|coordinator|assistant|technician)\b/i
+
+// Words that make a title software work anywhere in it: "Firmware Engineer, Avionics",
+// "Site Reliability Engineer, Data Center Infrastructure", "Senior Test Automation Engineer, Robot Platform"
+const SOFTWARE_WORDS = /\b(software|firmware|embedded (software|systems|linux)|developers?|programmers?|sdet|engineer in test|qa|quality assurance|test automation|automation test|dev(sec)?ops|mlops|sre|site reliability|full[- ]?stack|front[- ]?end|back[- ]?end|machine learning|ml|deep learning|computer vision|nlp|llms?|genai|data scien\w*|perception|autonomy|compilers?|kernel|linux|distributed systems|kubernetes|cloud|release|sap|salesforce|servicenow|trust (and|&) safety)\b/i
+
+// Words that make a title software work when they name the role itself, before the team or the
+// program: "Embedded Security Engineer" and "Data Engineer, Manufacturing", but not
+// "Automation and Controls Engineer, AI Satellites" or "Thermal Engineer, AI / HPC Data Centers"
+const SOFTWARE_ROLE_WORDS = /\b(data(?! cent(er|re)s?\b)|databases?|analytics|ai|security|cyber\s?security|platform|infrastructure|network|web|mobile|ios|android|hpc|high performance computing)\b/i
+// "IT Systems Engineer", anywhere in the title; upper case only, so it is not the word "it"
+const IT_ROLE = /\bIT\b/
+const TEAM_OR_PROGRAM = /,|\(|\[|\||:|\s[-–—]\s/
+
+// The other kinds of engineering, which hardware, aerospace, industrial and pharma employers list
+// in the hundreds: "Fluids Engineer (Starship)", "Supplier Quality Engineer", "Sr EMC Engineer"
+const OTHER_ENGINEERING = new RegExp(String.raw`\b(` + [
+  // Disciplines
+  'mechanical', 'electrical', 'manufacturing', 'hardware', 'civil', 'structural', 'structures', 'materials', 'composites',
+  'mechatronics', 'chemical', 'industrial', 'process', 'facilities', 'construction', 'environmental', 'nuclear',
+  'biomedical', 'aerospace', 'automotive', 'propulsion', 'avionics', 'thermal', 'optical', 'optics', 'photonics',
+  'fluids?', 'loads', 'dynamics', 'trajectory', 'gnc', 'guidance', 'propellant', 'launch', 'payload', 'rocket',
+  'spacecraft', 'satellites?', 'weapons', 'energetics', 'radar', 'antennas?', 'rf', 'emc', 'electromagnetic',
+  'signal integrity', 'power', 'plant', 'energy', 'solar', 'battery', 'cells?', 'motors?', 'sensors?', 'hvac', 'piping',
+  'cryogenic', 'vacuum', 'hydraulics?', 'acoustics?', 'aerodynamics', 'aero', 'flight sciences', 'airworthiness',
+  'aircraft', 'turbomachinery', 'chassis', 'steering', 'braking', 'actuation', 'interior', 'electromechanical',
+  'instrumentation', 'radiation', 'low observables', 'explosives?', 'warheads?', 'mission', 'telecommunications',
+  'fiber', 'water', 'mep', 'building systems', 'logistics', 'industrialization', 'commissioning', 'harness', 'ewis',
+  'mechanisms', 'mass properties', 'flight performance', 'nvh', 'vibration', 'homologation', 'vehicle attributes',
+  'aviation', 'certification', 'fire protection', 'pipeline', 'lng', 'lift', 'transmission', 'drug', 'sterile',
+  'body', 'closures?', 'chief engineer',
+  // Chips and boards
+  'analog', 'asic', 'fpga', 'pcb', 'soc', 'silicon', 'semiconductors?', 'mmic', 'rfic', 'circuits?', 'electronics?',
+  'devices?', 'filters?', 'racks?', 'microelectronics', 'pdk', 'eee', 'failure analysis', 'components?',
+  'digital design', 'physical design', 'design verification',
+  // Building, testing and running physical things
+  'systems? engineer(s|ing)?', 'integration', 'test', 'testing', 'validation', 'verification', 'controls?',
+  'automation', 'quality', 'reliability', 'calibration', 'safety', 'compliance', 'regulatory', 'supplier',
+  'sourcing', 'supply chain', 'build', 'tooling', 'project', 'factory', 'welding', 'machining', 'additive',
+  'assembly', 'packaging', 'metrology', 'inspection', 'equipment', 'maintenance', 'repair', 'shift', 'operations',
+  'applications engineer(s|ing)?', 'material flow', 'design criteria', 'configuration design', 'dfm', 'dfa', 'npi', 'mrb',
+  'bom', 'qms', 'sustain(ing|ment)', 'procurement', 'cost', 'recovery'
+].join('|') + String.raw`)\b`, 'i')
+
+// Scientists in a lab, not at a computer: "Principal Research Scientist II" at a drug maker,
+// "Research Scientist – Molecular Diagnostics". The departments may name the industry.
+const LAB_SCIENCE = /\b(pharma\w*|bio\w*|chem\w*|molecular|drugs?|clinical|diagnostics?|immun\w*|oncolog\w*|toxicolog\w*|genetics?|cells?|proteins?|antibod\w*|assays?|vaccines?|formulation|analytical|medicinal|neuroscience|pathology|materials?|polymers?|food|agri\w*|life sciences?)\b/i
+
+// What the title says the work is, for a title with a tech role noun
+function titleIsSoftware (title: string, departments: ReadonlyArray<string | null | undefined>) {
+  const role = title.split(TEAM_OR_PROGRAM)[0]
+  if (SOFTWARE_WORDS.test(title) || IT_ROLE.test(title) || SOFTWARE_ROLE_WORDS.test(role)) return true
+  // "Data Scientist" is caught above; "Research Scientist" is tech unless it is lab science
+  if (/\bscientists?\b/i.test(title)) {
+    return /\b(research|applied|decision|computational|quantitative) scientists?\b/i.test(title) &&
+      ![title, ...departments].some((text) => text && LAB_SCIENCE.test(text))
+  }
+  return !OTHER_ENGINEERING.test(title)
+}
 
 const NON_TECH_DEPARTMENT = /\b(sales|marketing|customer|support|recruiting|talent|people|legal|finance|g&a)\b/i
 
@@ -202,7 +260,7 @@ const NON_TECH_DEPARTMENT = /\b(sales|marketing|customer|support|recruiting|tale
 export function isTechRole ({ title, departments = [] }: { title: string, departments?: ReadonlyArray<string | null | undefined> }) {
   // "Software Engineer, Ads Solutions" is a software engineer, wherever the team sits
   if (/\bsoftware (engineer|developer)/i.test(title) && !/\bsales\b/i.test(title)) return true
-  if (!TECH_TITLE.test(title) || NON_TECH_TITLE.test(title)) return false
+  if (!TECH_TITLE.test(title) || NON_TECH_TITLE.test(title) || !titleIsSoftware(title, departments)) return false
   // "Engineer" in Sales is a sales engineer, whatever the title says; "Software Engineer" is not
   const inNonTechDepartment = departments.some((department) => department && NON_TECH_DEPARTMENT.test(department))
   return !inNonTechDepartment || /\bsoftware\b/i.test(title)
