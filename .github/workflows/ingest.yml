@@ -76,6 +76,7 @@ jobs:
           USAJOBS_API_KEY: ${{ secrets.USAJOBS_API_KEY }}
           # The email the key was issued to: USAJobs requires it as the User-Agent
           USAJOBS_USER_AGENT: ${{ secrets.USAJOBS_USER_AGENT }}
+          JSEARCH_API_KEY: ${{ secrets.JSEARCH_API_KEY }}
           NODE_ENV: production
           # Inputs reach the script through the environment, never pasted into it
           SOURCES: ${{ inputs.sources }}
