@@ -57,3 +57,26 @@
 .active {
   color: var(--color-brand);
 }
+
+.end {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Matches the user menu's height, so the header doesn't shift when you sign in */
+.signIn {
+  height: 40px;
+  padding: 0 16px;
+  font-size: 14px;
+}
+
+@media (max-width: 480px) {
+  .end {
+    gap: 4px;
+  }
+
+  .navLink {
+    padding: 8px 10px;
+  }
+}
