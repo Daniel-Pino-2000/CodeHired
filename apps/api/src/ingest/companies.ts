@@ -2,14 +2,15 @@
 import { z } from 'zod'
 import companiesJson from './companies.json' with { type: 'json' }
 
-export const ATS_PLATFORMS = ['greenhouse', 'lever', 'ashby'] as const
+export const ATS_PLATFORMS = ['greenhouse', 'lever', 'ashby', 'smartrecruiters'] as const
 export type AtsPlatform = (typeof ATS_PLATFORMS)[number]
 
 export const companySchema = z.object({
   // Shown as the job's company, whatever the board calls itself
   name: z.string().trim().min(1).max(120),
   ats: z.enum(ATS_PLATFORMS),
-  // The board's name in the ATS URL: boards.greenhouse.io/{token}, jobs.lever.co/{token}, jobs.ashbyhq.com/{token}
+  // The board's name in the ATS URL: boards.greenhouse.io/{token}, jobs.lever.co/{token}, jobs.ashbyhq.com/{token},
+  // jobs.smartrecruiters.com/{token}
   token: z.string().regex(/^[A-Za-z0-9._-]+$/, 'letters, digits, dots, dashes and underscores only'),
   website: z.url({ protocol: /^https$/ })
 })

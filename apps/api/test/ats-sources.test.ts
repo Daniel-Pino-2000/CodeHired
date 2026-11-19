@@ -10,6 +10,7 @@ import { FIXTURES_DIR } from '../src/ingest/sources/fixture.js'
 import { createGreenhouseSource } from '../src/ingest/sources/greenhouse.js'
 import { resolveSources } from '../src/ingest/sources/index.js'
 import { createLeverSource } from '../src/ingest/sources/lever.js'
+import { createSmartRecruitersSource, smartRecruitersListUrl, smartRecruitersPostingUrl } from '../src/ingest/sources/smartrecruiters.js'
 import type { Source } from '../src/ingest/types.js'
 import { db } from '../src/db/database.js'
 import { runMigrations } from '../src/db/migrations.js'
@@ -77,10 +78,10 @@ describe('companies.json', () => {
     assert.equal(companiesSchema.safeParse([company('lever', 'acme'), company('ashby', 'acme')]).success, true)
   })
 
-  test('a full run includes the three ATS sources, which only list open jobs and rank first', () => {
+  test('a full run includes every ATS source, which only list open jobs and rank first', () => {
     const sources = resolveSources([], { isLocalDatabase: false })
     const ats = sources.filter((source) => ATS_PLATFORMS.some((platform) => platform === source.id))
-    assert.deepEqual(ats.map((source) => source.id), ['greenhouse', 'lever', 'ashby'])
+    assert.deepEqual(ats.map((source) => source.id), ['greenhouse', 'lever', 'ashby', 'smartrecruiters'])
     assert.ok(ats.every((source) => source.listsOnlyOpenJobs && source.priority === 0))
   })
 })
@@ -205,6 +206,93 @@ describe('Ashby source', () => {
     assert.deepEqual([security.salaryMin, security.salaryMax], [211400, 290600])
     assert.equal(security.employmentType, 'full-time')
     assert.equal(security.postedAt, '2026-04-07T17:12:35Z')
+  })
+})
+
+describe('SmartRecruiters source', () => {
+  const serviceNow = company('smartrecruiters', 'ServiceNow', 'ServiceNow')
+  const listUrl = smartRecruitersListUrl(serviceNow, 0)
+
+  async function routes () {
+    const details = JSON.parse(await readFixture('smartrecruiters-postings.json')) as Record<string, unknown>
+    return {
+      [listUrl]: jsonResponse(await readFixture('smartrecruiters-list.json')),
+      ...Object.fromEntries(Object.entries(details).map(([id, posting]) =>
+        [smartRecruitersPostingUrl(serviceNow, id), jsonResponse(JSON.stringify(posting))]))
+    }
+  }
+
+  test('lists US postings only, and fetches the details of the kept ones', async () => {
+    const { fetch, calls } = fakeFetch(await routes())
+    const { logger, infos } = recordingLogger()
+
+    const jobs = await collect(createSmartRecruitersSource({ companies: [serviceNow], http: testHttp(fetch) }), logger)
+
+    assert.equal(listUrl, 'https://api.smartrecruiters.com/v1/companies/ServiceNow/postings?country=us&limit=100&offset=0')
+    // Dropped without a details request: a "Solution ... Engineer" in Support, and a sales role
+    assert.deepEqual(jobs.map((job) => job.title), ['Senior Software Engineer', 'Sr Staff Software Engineer'])
+    assert.equal(calls.length, 3)
+    assert.deepEqual(infos, ['[smartrecruiters] ServiceNow: kept 2 of 4 postings'])
+
+    const [onsite, remote] = jobs
+    assert.equal(onsite.sourceId, 'ServiceNow:744000162575369')
+    assert.equal(onsite.sourceUrl, 'https://jobs.smartrecruiters.com/ServiceNow/744000162575369-senior-software-engineer')
+    assert.equal(onsite.company, 'ServiceNow')
+    assert.deepEqual([onsite.location, onsite.city, onsite.state, onsite.workplace], ['San Diego, CA', 'San Diego', 'CA', 'onsite'])
+    assert.equal(onsite.employmentType, 'full-time')
+    assert.equal(onsite.postedAt, '2026-11-19T17:48:59Z')
+    assert.match(onsite.descriptionHtml ?? '', /^<h3>Company Description<\/h3>/)
+    assert.match(onsite.description, /Job Description/, 'every section is kept under its heading')
+
+    // "Albany, NEW YORK": the state name in capitals
+    assert.deepEqual([remote.location, remote.remote, remote.workplace], ['Remote (Albany, NY)', true, 'remote'])
+  })
+
+  test('pages through a large board, and skips a posting whose details fail', async () => {
+    const posting = (id: number) => ({
+      id: String(id),
+      name: 'Backend Engineer',
+      releasedDate: '2026-11-18T10:00:00.000Z',
+      location: { city: 'Austin', region: 'TX', country: 'us', remote: false, hybrid: true },
+      department: { label: 'Engineering' }
+    })
+    const page = (offset: number, count: number) => jsonResponse(JSON.stringify({
+      offset,
+      limit: 100,
+      totalFound: 150,
+      content: Array.from({ length: count }, (_, index) => posting(offset + index))
+    }))
+    const detailRoutes = Object.fromEntries(Array.from({ length: 150 }, (_, id) => [
+      smartRecruitersPostingUrl(serviceNow, String(id)),
+      jsonResponse(JSON.stringify({
+        ...posting(id),
+        postingUrl: `https://jobs.smartrecruiters.com/ServiceNow/${id}`,
+        jobAd: { sections: { jobDescription: { title: 'Job Description', text: '<p>Build the APIs behind our workflow platform.</p>' } } }
+      }))
+    ]))
+    // Posting 7 was taken down between the list and its details
+    delete detailRoutes[smartRecruitersPostingUrl(serviceNow, '7')]
+    const { fetch, calls } = fakeFetch({
+      [smartRecruitersListUrl(serviceNow, 0)]: page(0, 100),
+      [smartRecruitersListUrl(serviceNow, 100)]: page(100, 50),
+      ...detailRoutes
+    })
+    const { logger, infos } = recordingLogger()
+
+    const jobs = await collect(createSmartRecruitersSource({ companies: [serviceNow], http: testHttp(fetch) }), logger)
+
+    assert.equal(calls.filter((call) => call.url.includes('?country=us')).length, 2)
+    assert.equal(jobs.length, 149)
+    assert.equal(jobs[0].workplace, 'hybrid')
+    assert.deepEqual(infos, ['[smartrecruiters] ServiceNow: kept 149 of 150 postings (1 more without details, skipped)'])
+  })
+
+  test('inspecting a board reads the list only', async () => {
+    const { fetch, calls } = fakeFetch(await routes())
+    const source = createSmartRecruitersSource({ companies: [], http: testHttp(fetch) })
+
+    assert.deepEqual(await source.inspectBoard(serviceNow), { total: 4, kept: 2 })
+    assert.equal(calls.length, 1)
   })
 })
 

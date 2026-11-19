@@ -7,8 +7,8 @@ export const USER_AGENT = 'CodeHired/0.1 (+https://github.com/Daniel-Pino-2000/C
 const RETRYABLE_STATUSES = new Set([408, 425, 429, 500, 502, 503, 504])
 
 export class HttpError extends Error {
-  constructor (readonly status: number, readonly url: string) {
-    super(`GET ${url} responded ${status}`)
+  constructor (readonly status: number, readonly url: string, readonly method = 'GET') {
+    super(`${method} ${url} responded ${status}`)
     this.name = 'HttpError'
   }
 }
@@ -78,20 +78,28 @@ export function createHttpClient ({
     return delay + Math.random() * delay * 0.2
   }
 
-  async function request<T> (url: string, read: (response: Response) => Promise<T>, headers: Record<string, string>) {
+  interface Send {
+    method?: 'GET' | 'POST'
+    headers: Record<string, string>
+    body?: string
+  }
+
+  async function request<T> (url: string, read: (response: Response) => Promise<T>, { method = 'GET', headers, body: payload }: Send) {
     for (let attempt = 0; ; attempt++) {
       let response: Response
       let body: T
       try {
         response = await fetchImpl(url, {
+          method,
           headers: { 'User-Agent': USER_AGENT, ...headers },
+          body: payload,
           signal: AbortSignal.timeout(timeoutMs)
         })
         if (response.ok) body = await read(response)
       } catch (error) {
         // Network error, timeout or a body cut short
         if (attempt >= retries) {
-          throw new Error(`GET ${url} failed after ${attempt + 1} attempts`, { cause: error })
+          throw new Error(`${method} ${url} failed after ${attempt + 1} attempts`, { cause: error })
         }
         await sleep(backoff(attempt))
         continue
@@ -101,18 +109,28 @@ export function createHttpClient ({
       // Free the connection; not awaited, the body is not needed
       response.body?.cancel().catch(() => {})
       if (!RETRYABLE_STATUSES.has(response.status) || attempt >= retries) {
-        throw new HttpError(response.status, url)
+        throw new HttpError(response.status, url, method)
       }
       await sleep(Math.min(maxDelayMs, retryAfterMs(response) ?? backoff(attempt)))
     }
   }
 
+  const readJson = <T>(response: Response) => response.json() as Promise<T>
+
   return {
     getJson<T = unknown> (url: string, headers: Record<string, string> = {}) {
-      return limit(() => request(url, (response) => response.json() as Promise<T>, { Accept: 'application/json', ...headers }))
+      return limit(() => request(url, readJson<T>, { headers: { Accept: 'application/json', ...headers } }))
     },
     getText (url: string, headers: Record<string, string> = {}) {
-      return limit(() => request(url, (response) => response.text(), headers))
+      return limit(() => request(url, (response) => response.text(), { headers }))
+    },
+    // For the APIs that only take a search as a JSON body (Jooble)
+    postJson<T = unknown> (url: string, payload: unknown, headers: Record<string, string> = {}) {
+      return limit(() => request(url, readJson<T>, {
+        method: 'POST',
+        headers: { Accept: 'application/json', 'Content-Type': 'application/json', ...headers },
+        body: JSON.stringify(payload)
+      }))
     }
   }
 }

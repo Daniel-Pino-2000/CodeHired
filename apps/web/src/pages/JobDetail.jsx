@@ -2,6 +2,7 @@ import { Link, useParams } from 'react-router'
 import { useJob } from '../hooks/useJobs.js'
 import {
   employmentTypeLabel,
+  formatDate,
   formatSalary,
   levelLabel,
   sourceLabel,
@@ -10,6 +11,7 @@ import {
   workplaceLabel
 } from '../utils/format.js'
 import { CompanyAvatar } from '../components/CompanyAvatar.jsx'
+import { SourceCredit } from '../components/SourceCredit.jsx'
 import NotFoundPage from './NotFound.jsx'
 import styles from './JobDetail.module.css'
 
@@ -77,6 +79,7 @@ function JobDetail ({ job }) {
           {source && (
             <p className={styles.source}>
               Found on <ExternalLink href={source.url}>{publisher}</ExternalLink>
+              {source.credit && <> <SourceCredit credit={source.credit} className={styles.credit} /></>}
             </p>
           )}
         </div>
@@ -119,6 +122,13 @@ function JobDetail ({ job }) {
               <dt>Contract</dt>
               <dd>{employmentTypeLabel(job.employmentType)}</dd>
             </div>
+            {/* Only some sources state a deadline (USAJobs); the job is no longer listed after it */}
+            {job.closesAt && (
+              <div>
+                <dt>Apply by</dt>
+                <dd><time dateTime={job.closesAt}>{formatDate(job.closesAt)}</time></dd>
+              </div>
+            )}
           </dl>
 
           {job.technologies.length > 0 && (

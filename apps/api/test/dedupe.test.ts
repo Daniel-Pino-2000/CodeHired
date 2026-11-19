@@ -90,7 +90,7 @@ describe('the same job from two sources', () => {
     const detail = await request(app).get(`/jobs/${canonical.id}`)
     assert.equal(detail.body.source.url, 'https://jobs.example.com/board-1')
     assert.deepEqual(detail.body.alsoPostedOn, [
-      { id: 'dedupe-aggregator', name: 'dedupe-aggregator', publisher: null, url: 'https://jobs.example.com/agg-1' }
+      { id: 'dedupe-aggregator', name: 'dedupe-aggregator', publisher: null, url: 'https://jobs.example.com/agg-1', credit: null }
     ])
   })
 
@@ -131,4 +131,27 @@ test('stats counts listed, duplicate and closed jobs, and the database size', as
   assert.ok(stats.closed >= 1)
   assert.equal(stats.total, stats.listed + stats.duplicates + stats.closed)
   assert.ok(stats.bytes === null || stats.bytes > 0)
+})
+
+test('stats per source: listed, hidden as duplicates and inserted in the last 24 hours', async () => {
+  const now = new Date()
+  const aggregator = source('metrics-aggregator', SOURCE_PRIORITY.adzuna, [
+    posting({ id: 'm-agg-1', company: 'Metrics Co' }),
+    posting({ id: 'm-agg-2', company: 'Metrics Only Here' })
+  ])
+  const board = source('metrics-board', SOURCE_PRIORITY.companyAts, [posting({ id: 'm-board-1', company: 'Metrics Co' })])
+  await runIngestion([aggregator, board], { logger: silent, now })
+
+  const stats = await JobModel.stats({ now })
+  const bySource = new Map(stats.sources.map((s) => [s.source, s]))
+  assert.deepEqual(bySource.get('metrics-board'), { source: 'metrics-board', listed: 1, duplicates: 0, newToday: 1 })
+  assert.deepEqual(bySource.get('metrics-aggregator'), { source: 'metrics-aggregator', listed: 1, duplicates: 1, newToday: 2 })
+  assert.equal(stats.sources.reduce((sum, s) => sum + s.listed, 0), stats.listed, 'the per-source counts add up to the totals')
+  assert.equal(stats.sources.reduce((sum, s) => sum + s.duplicates, 0), stats.duplicates)
+  const listed = stats.sources.map((s) => s.listed)
+  assert.deepEqual(listed, [...listed].sort((a, b) => b - a), 'most listed first')
+
+  // A day later the runs no longer count as new, but the jobs are still listed
+  const later = await JobModel.stats({ now: new Date(now.getTime() + 25 * 3600_000) })
+  assert.deepEqual(later.sources.find((s) => s.source === 'metrics-board'), { source: 'metrics-board', listed: 1, duplicates: 0, newToday: 0 })
 })

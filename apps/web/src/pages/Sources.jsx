@@ -57,6 +57,12 @@ export default function SourcesPage () {
         A company that does not want its jobs listed can ask to be removed by{' '}
         <a href='https://github.com/Daniel-Pino-2000/CodeHired/issues'>opening an issue</a>.
       </p>
+      {/* USAJOBS terms: never imply that OPM or an agency endorses CodeHired */}
+      <p className={styles.footnote}>
+        Federal jobs come from USAJOBS, the official job site of the US government. CodeHired is an
+        independent project, not endorsed by the Office of Personnel Management or any federal agency:
+        check each announcement on USAJOBS before you apply.
+      </p>
     </section>
   )
 }

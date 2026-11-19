@@ -16,6 +16,7 @@
     "test": "pnpm -r --if-present test",
     "db:migrate": "pnpm --filter @codehired/api db:migrate",
     "db:seed": "pnpm --filter @codehired/api db:seed",
-    "ingest": "pnpm --filter @codehired/api ingest"
+    "ingest": "pnpm --filter @codehired/api ingest",
+    "companies:check": "pnpm --filter @codehired/api companies:check"
   }
 }

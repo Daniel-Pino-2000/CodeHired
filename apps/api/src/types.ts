@@ -33,6 +33,8 @@ export interface Job {
   createdAt: string
   // The posting date the source gave, when it gave one
   postedAt: string | null
+  // The application deadline the source gave (USAJobs), when it gave one
+  closesAt: string | null
   // Where the job was found, with a link to the original posting; null for jobs created here.
   // Showing it is what the sources' terms ask for (docs/data-sources.md).
   source: JobSource | null
@@ -52,7 +54,7 @@ export interface CompanyRef {
 // GET /companies and GET /companies/:slug
 export interface Company extends CompanyRef {
   website: string | null
-  // The ATS CodeHired reads the company's own board on ('greenhouse', 'lever', 'ashby'), if any
+  // The ATS CodeHired reads the company's own board on ('greenhouse', 'lever', 'ashby', 'smartrecruiters'), if any
   ats: string | null
   // Listed jobs, counted like GET /jobs counts them
   openJobs: number
@@ -73,6 +75,8 @@ export interface JobSource {
   publisher: string | null
   // The original posting, where candidates read the full job and apply
   url: string
+  // A label the source's terms require next to each of its jobs, linked to the source
+  credit: { text: string, url: string } | null
 }
 
 // GET /jobs/:id adds the formatted description and the other places the same opening was found

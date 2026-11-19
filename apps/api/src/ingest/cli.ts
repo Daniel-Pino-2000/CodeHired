@@ -6,10 +6,10 @@ import { JobModel } from '../models/job.js'
 import { IngestionRunModel } from '../models/ingestion-run.js'
 import { runMigrations } from '../db/migrations.js'
 import { parseIngestArgs, USAGE, type IngestArgs } from './args.js'
-import { formatDatabaseLine, formatMarkdownReport, formatNotDueLine, formatSummaryLine } from './report.js'
+import { formatDatabaseLine, formatMarkdownReport, formatNotDueLine, formatSourceLines, formatSummaryLine } from './report.js'
 import { runIngestion } from './runner.js'
 import { splitDueSources, type NotDue } from './schedule.js'
-import { resolveSources } from './sources/index.js'
+import { resolveSources, splitConfiguredSources } from './sources/index.js'
 import type { Source } from './types.js'
 
 let args: IngestArgs
@@ -17,6 +17,14 @@ let sources: readonly Source[]
 try {
   args = parseIngestArgs(process.argv.slice(2))
   sources = resolveSources(args.sourceIds, { isLocalDatabase: CONFIG.IS_LOCAL_DATABASE })
+  const { ready, unconfigured } = splitConfiguredSources(sources)
+  if (args.sourceIds.length > 0 && unconfigured.length > 0) {
+    throw new Error(unconfigured.map(({ source, missing }) => `Source "${source.id}" needs ${missing.join(' and ')}`).join('\n'))
+  }
+  for (const { source, missing } of unconfigured) {
+    console.log(`${source.id}: skipped, set ${missing.join(' and ')} to enable it`)
+  }
+  sources = ready
 } catch (error) {
   console.error(`${(error as Error).message}\n\n${USAGE}`)
   process.exit(2)
@@ -54,7 +62,10 @@ for (const summary of summaries) {
   console.log(formatSummaryLine(summary))
 }
 const database = args.dryRun ? null : await JobModel.stats()
-if (database) console.log(formatDatabaseLine(database))
+if (database) {
+  console.log(formatDatabaseLine(database))
+  for (const line of formatSourceLines(database.sources)) console.log(line)
+}
 const durationMs = Date.now() - started
 console.log(`${args.dryRun ? 'Dry run, nothing written. ' : ''}Done in ${(durationMs / 1000).toFixed(1)}s`)
 

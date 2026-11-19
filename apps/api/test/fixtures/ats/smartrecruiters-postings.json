@@ -1,0 +1,148 @@
+{
+  "744000162575369": {
+    "id": "744000162575369",
+    "name": "Senior Software Engineer",
+    "uuid": "5846db2a-12b5-425b-bc1b-66583d6309e5",
+    "jobId": "c66429e8-9395-4a4f-bf3d-5d3dba0e2875",
+    "jobAdId": "c7e515ec-3f82-43de-8fe3-a2cee03f063e",
+    "defaultJobAd": true,
+    "refNumber": "JB0077454",
+    "company": {
+      "name": "ServiceNow",
+      "identifier": "ServiceNow"
+    },
+    "location": {
+      "city": "San Diego",
+      "region": "California",
+      "country": "us",
+      "address": "4810 Eastgate Mall",
+      "postalCode": "92121",
+      "remote": false,
+      "hybrid": false,
+      "fullLocation": "San Diego, California, United States"
+    },
+    "releasedDate": "2026-11-19T17:48:59.930Z",
+    "postingUrl": "https://jobs.smartrecruiters.com/ServiceNow/744000162575369-senior-software-engineer",
+    "applyUrl": "https://jobs.smartrecruiters.com/ServiceNow/744000162575369-senior-software-engineer?oga=true",
+    "jobAd": {
+      "sections": {
+        "companyDescription": {
+          "title": "Company Description",
+          "text": "<p>It all started when engineer Fred Luddy wrote code that automated a tedious task for his coworker, Phyllis. She cried tears of joy. That moment inspired Fred to build a company that could do that for everyone—freeing people from busywork so they could focus on meaningful work. Today, ServiceNow is the AI control tower for business reinvention. Our ServiceNow AI platform brings together any AI, </p>"
+        },
+        "jobDescription": {
+          "title": "Job Description",
+          "text": "<p>We are seeking a highly motivated and experienced Software Engineer to be a part of a dynamic team focused on developing cutting-edge customer-facing AI Developer products. The ideal candidate will have experience in applied AI, DevX-centered products/frameworks, NodeJS/TypeScript ecosystem, combined with proven development skills.</p><p><strong>   </strong><br>\n<strong>What you get to do in th</p>"
+        },
+        "qualifications": {
+          "title": "Qualifications",
+          "text": "<p><strong>To be successful in this role you have:</strong></p><ul><li>Experience in leveraging or critically thinking about how to integrate AI into work processes, decision-making, or problem-solving. This may include using AI-powered tools, automating workflows, analyzing AI-driven insights, or exploring AI's potential impact on the function or industry.</li><li>4+ years of experience with Java</p>"
+        },
+        "additionalInformation": {
+          "title": "Additional Information",
+          "text": "<p><strong>Work Personas</strong></p><p>We approach our distributed world of work with flexibility and trust. Work personas (flexible, remote, or required in office) are categories that are assigned to ServiceNow employees depending on the nature of their work and their assigned work location. <a href=\"https://careers.servicenow.com/life-at-servicenow#workpersonas\" rel=\"noopener noreferrer\"><u>Lea</p>"
+        }
+      }
+    },
+    "active": true,
+    "visibility": "PUBLIC",
+    "industry": {
+      "id": "it_and_services",
+      "label": "Information Technology And Services"
+    },
+    "function": {
+      "id": "engineering",
+      "label": "Engineering"
+    },
+    "department": {
+      "id": 2294038,
+      "label": "Engineering, Infrastructure and Operations"
+    },
+    "experienceLevel": {
+      "id": "not_applicable",
+      "label": "Not Applicable"
+    },
+    "typeOfEmployment": {
+      "id": "permanent",
+      "label": "Full-time"
+    },
+    "language": {
+      "code": "en",
+      "label": "English",
+      "labelNative": "English (US)"
+    }
+  },
+  "744000162495859": {
+    "id": "744000162495859",
+    "name": "Sr Staff Software Engineer",
+    "uuid": "780eb43c-0ef9-458d-b343-b7c3274dd226",
+    "jobId": "0efa0d9e-c656-430e-a7b9-a2cfb4fca522",
+    "jobAdId": "ddac6b58-dcf5-419e-ad60-1b108e761547",
+    "defaultJobAd": true,
+    "refNumber": "JB0077191",
+    "company": {
+      "name": "ServiceNow",
+      "identifier": "ServiceNow"
+    },
+    "location": {
+      "city": "Albany",
+      "region": "NEW YORK",
+      "country": "us",
+      "address": "Remote",
+      "postalCode": "12201",
+      "remote": true,
+      "hybrid": false,
+      "fullLocation": "Albany, NEW YORK, United States"
+    },
+    "releasedDate": "2026-11-19T11:40:23.223Z",
+    "postingUrl": "https://jobs.smartrecruiters.com/ServiceNow/744000162495859-sr-staff-software-engineer",
+    "applyUrl": "https://jobs.smartrecruiters.com/ServiceNow/744000162495859-sr-staff-software-engineer?oga=true",
+    "jobAd": {
+      "sections": {
+        "companyDescription": {
+          "title": "Company Description",
+          "text": "<p>It all started when engineer Fred Luddy wrote code that automated a tedious task for his coworker, Phyllis. She cried tears of joy. That moment inspired Fred to build a company that could do that for everyone—freeing people from busywork so they could focus on meaningful work. Today, ServiceNow is the AI control tower for business reinvention. Our ServiceNow AI platform brings together any AI, </p>"
+        },
+        "jobDescription": {
+          "title": "Job Description",
+          "text": "<p>About the Role</p><p>As a Sr. Staff SRE at Armis, you’ll set the reliability and infrastructure direction for a high-scale, security-first platform. You’ll own uptime, scalability, and security across our microservices, data stores, and cloud environments, and you’ll lead the technical strategy that shapes how we run them. You’ll have the autonomy to evaluate and adopt new technologies, and you</p>"
+        },
+        "qualifications": {
+          "title": "Qualifications",
+          "text": "<p>&#xa0;</p><ul><li><p>U.S. citizenship</p></li><li><p>7+ years managing Linux servers in global, cloud-based environments</p></li><li><p>5+ years of hands-on AWS infrastructure experience</p></li><li><p>5+ years of Python and Kubernetes in production, including troubleshooting cluster performance, auto-scaling, and service reliability</p></li><li><p>Demonstrated experience leading reliability fo</p>"
+        },
+        "additionalInformation": {
+          "title": "Additional Information",
+          "text": "<p><strong>Work Personas</strong></p><p>We approach our distributed world of work with flexibility and trust. Work personas (flexible, remote, or required in office) are categories that are assigned to ServiceNow employees depending on the nature of their work and their assigned work location. <a href=\"https://careers.servicenow.com/life-at-servicenow#workpersonas\" rel=\"noopener noreferrer\"><u>Lea</p>"
+        }
+      }
+    },
+    "active": true,
+    "visibility": "PUBLIC",
+    "industry": {
+      "id": "it_and_services",
+      "label": "Information Technology And Services"
+    },
+    "function": {
+      "id": "engineering",
+      "label": "Engineering"
+    },
+    "department": {
+      "id": 2294038,
+      "label": "Engineering, Infrastructure and Operations"
+    },
+    "experienceLevel": {
+      "id": "not_applicable",
+      "label": "Not Applicable"
+    },
+    "typeOfEmployment": {
+      "id": "permanent",
+      "label": "Full-time"
+    },
+    "language": {
+      "code": "en",
+      "label": "English",
+      "labelNative": "English (US)"
+    }
+  }
+}

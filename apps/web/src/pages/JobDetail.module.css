@@ -64,6 +64,13 @@
   font-weight: 600;
 }
 
+/* Beats `.source a` above */
+.source .credit {
+  margin-left: 6px;
+  vertical-align: middle;
+  color: var(--color-text);
+}
+
 /* Shown instead of the Apply link on the local demo jobs */
 .sample {
   max-width: 220px;

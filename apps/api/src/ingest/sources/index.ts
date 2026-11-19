@@ -1,11 +1,16 @@
 import type { Source } from '../types.js'
+import { createAdzunaSource } from './adzuna.js'
 import { createAshbySource } from './ashby.js'
 import { createFixtureSource } from './fixture.js'
 import { createGreenhouseSource } from './greenhouse.js'
 import { createHimalayasSource } from './himalayas.js'
 import { createJobicySource } from './jobicy.js'
+import { createJoobleSource } from './jooble.js'
+import { createJSearchSource } from './jsearch.js'
 import { createLeverSource } from './lever.js'
 import { createRemoteOkSource } from './remoteok.js'
+import { createSmartRecruitersSource } from './smartrecruiters.js'
+import { createUsaJobsSource } from './usajobs.js'
 
 // Every source `pnpm ingest` knows about. New adapters are added here.
 export const SOURCES: readonly Source[] = [
@@ -13,10 +18,32 @@ export const SOURCES: readonly Source[] = [
   createGreenhouseSource(),
   createLeverSource(),
   createAshbySource(),
+  createSmartRecruitersSource(),
   createRemoteOkSource(),
   createHimalayasSource(),
-  createJobicySource()
+  createJobicySource(),
+  createAdzunaSource(),
+  createUsaJobsSource(),
+  createJSearchSource(),
+  createJoobleSource()
 ]
+
+// The environment variables a source needs that are unset
+export function missingEnv (source: Source, env: NodeJS.ProcessEnv = process.env) {
+  return (source.requiredEnv ?? []).filter((name) => !env[name]?.trim())
+}
+
+// Sources ready to run, and those skipped for now because a key is missing
+export function splitConfiguredSources (sources: readonly Source[], env: NodeJS.ProcessEnv = process.env) {
+  const ready: Source[] = []
+  const unconfigured: Array<{ source: Source, missing: string[] }> = []
+  for (const source of sources) {
+    const missing = missingEnv(source, env)
+    if (missing.length === 0) ready.push(source)
+    else unconfigured.push({ source, missing })
+  }
+  return { ready, unconfigured }
+}
 
 // The source a stored job came from; undefined for jobs created here (the seed)
 export function getSource (sourceId: string) {

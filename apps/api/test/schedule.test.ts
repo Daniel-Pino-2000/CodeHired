@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { describe, test } from 'node:test'
 import { runMigrations } from '../src/db/migrations.js'
-import { formatMarkdownReport, FREE_STORAGE_BYTES, type DatabaseStats } from '../src/ingest/report.js'
+import { formatMarkdownReport, formatSourceLines, FREE_STORAGE_BYTES, type DatabaseStats } from '../src/ingest/report.js'
 import type { RunSummary } from '../src/ingest/runner.js'
 import { splitDueSources } from '../src/ingest/schedule.js'
 import { getSource } from '../src/ingest/sources/index.js'
@@ -35,7 +35,17 @@ const summary = (overrides: Partial<RunSummary>): RunSummary => ({
   ...overrides
 })
 
-const stats: DatabaseStats = { total: 900, listed: 800, duplicates: 60, closed: 40, bytes: 12 * 1024 ** 2 }
+const stats: DatabaseStats = {
+  total: 900,
+  listed: 800,
+  duplicates: 60,
+  closed: 40,
+  bytes: 12 * 1024 ** 2,
+  sources: [
+    { source: 'greenhouse', listed: 700, duplicates: 0, newToday: 10 },
+    { source: 'adzuna', listed: 100, duplicates: 60, newToday: 25 }
+  ]
+}
 
 describe('splitDueSources', () => {
   const now = new Date('2026-11-12T12:00:00Z')
@@ -61,7 +71,7 @@ describe('splitDueSources', () => {
   })
 
   test('the 6-hourly schedule runs company boards once a day and Jobicy every time', () => {
-    for (const id of ['greenhouse', 'lever', 'ashby']) {
+    for (const id of ['greenhouse', 'lever', 'ashby', 'smartrecruiters']) {
       assert.equal(getSource(id)?.minHoursBetweenRuns, 20, id)
     }
     assert.equal(getSource('jobicy')?.minHoursBetweenRuns, 1)
@@ -110,6 +120,7 @@ describe('formatMarkdownReport', () => {
     assert.match(markdown, /\| `jobicy` \| ❌ failed: HTTP 429 \\\| slow down \| 0 \|/, 'pipes and line breaks cannot break the table')
     assert.match(markdown, /- `lever`: every 20h, next after 2026-11-13T02:00:00Z/)
     assert.match(markdown, /\*\*Database:\*\* 800 jobs listed, 60 duplicates, 40 closed \(900 rows\), 12\.0 MB of the 5120\.0 MB free tier/)
+    assert.match(markdown, /\| Source \| Listed \| New in 24h \| Duplicates \|\n\| --- \| ---: \| ---: \| ---: \|\n\| `greenhouse` \| 700 \| 10 \| 0 \|\n\| `adzuna` \| 100 \| 25 \| 60 \|/)
     assert.doesNotMatch(markdown, /WARNING/)
     assert.match(markdown, /Done in 4\.2s\./)
   })
@@ -122,5 +133,15 @@ describe('formatMarkdownReport', () => {
 
     const full = formatMarkdownReport({ summaries: [summary({})], notDue: [], database: { ...stats, bytes: FREE_STORAGE_BYTES * 0.9 }, dryRun: false, durationMs: 10 })
     assert.match(full, /> \[!WARNING\]\n> The database is above 80% of the free storage\./)
+
+    const empty = formatMarkdownReport({ summaries: [], notDue: [], database: { ...stats, sources: [] }, dryRun: false, durationMs: 10 })
+    assert.doesNotMatch(empty, /Jobs per source/, 'no per-source table for an empty database')
   })
+})
+
+test('formatSourceLines prints one line per source for the log', () => {
+  assert.deepEqual(formatSourceLines(stats.sources), [
+    '  greenhouse: 700 listed, 10 new in 24h, 0 duplicates',
+    '  adzuna: 100 listed, 25 new in 24h, 60 duplicates'
+  ])
 })

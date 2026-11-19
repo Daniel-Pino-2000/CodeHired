@@ -1,4 +1,4 @@
-// What the Greenhouse, Lever and Ashby adapters share: one source per ATS that reads the board of
+// What the Greenhouse, Lever, Ashby and SmartRecruiters adapters share: one source per ATS that reads the board of
 // every company on it in companies.json. A board that fails (renamed token, outage, bad JSON) is
 // logged and skipped, so one company never fails the whole run.
 import type { Company } from '../companies.js'
@@ -34,8 +34,23 @@ interface BoardSourceDefinition<Posting> {
   fetchBoard (http: HttpClient, company: Company): Promise<Posting[]>
   // Whether CodeHired lists it: a tech role in the US or remote from the US
   keep (posting: Posting): boolean
+  // For boards whose list leaves out the description (SmartRecruiters): the full posting, fetched
+  // for the kept ones only. A posting whose details fail is skipped.
+  fetchDetails? (http: HttpClient, company: Company, posting: Posting): Promise<Posting>
   normalize (raw: BoardPosting<Posting>): NormalizedJobInput
 }
+
+// What one board holds, without fetching any details: how `pnpm companies:check` tries a token
+export interface BoardInspection {
+  total: number
+  kept: number
+}
+
+export interface BoardSource<Posting> extends Source<BoardPosting<Posting>> {
+  inspectBoard (company: Company): Promise<BoardInspection>
+}
+
+const errorMessage = (error: unknown) => error instanceof Error ? error.message : String(error)
 
 export function createBoardSource<Posting> ({
   id,
@@ -46,8 +61,18 @@ export function createBoardSource<Posting> ({
   http = createHttpClient(),
   fetchBoard,
   keep,
+  fetchDetails,
   normalize
-}: BoardSourceDefinition<Posting>): Source<BoardPosting<Posting>> {
+}: BoardSourceDefinition<Posting>): BoardSource<Posting> {
+  // The kept postings with their details. Every request is started at once; the HTTP client keeps
+  // only a few in flight.
+  async function withDetails (company: Company, postings: Posting[]) {
+    if (!fetchDetails) return { postings, failed: 0 }
+    const results = await Promise.allSettled(postings.map((posting) => fetchDetails(http, company, posting)))
+    const detailed = results.flatMap((result) => result.status === 'fulfilled' ? [result.value] : [])
+    return { postings: detailed, failed: results.length - detailed.length }
+  }
+
   return {
     id,
     name,
@@ -59,24 +84,28 @@ export function createBoardSource<Posting> ({
       // Every board is requested up front and the HTTP client keeps only a few in flight. Only the
       // kept postings stay in memory while earlier boards are being written.
       const boards = companies.map((company) => fetchBoard(http, company)
-        .then((postings) => ({ company, total: postings.length, kept: postings.filter(keep) }))
+        .then(async (postings) => ({ company, total: postings.length, ...await withDetails(company, postings.filter(keep)) }))
         .catch((error: unknown) => ({ company, error })))
 
       for (const pending of boards) {
         const board = await pending
         const { company } = board
         if ('error' in board) {
-          const message = board.error instanceof Error ? board.error.message : String(board.error)
-          logger.warn(`[${id}] skipped ${company.name} (${company.token}): ${message}`)
+          logger.warn(`[${id}] skipped ${company.name} (${company.token}): ${errorMessage(board.error)}`)
           continue
         }
-        logger.info(`[${id}] ${company.name}: kept ${board.kept.length} of ${board.total} postings`)
-        for (const posting of board.kept) {
+        const failed = board.failed > 0 ? ` (${board.failed} more without details, skipped)` : ''
+        logger.info(`[${id}] ${company.name}: kept ${board.postings.length} of ${board.total} postings${failed}`)
+        for (const posting of board.postings) {
           yield { company, posting }
         }
       }
     },
-    normalize
+    normalize,
+    async inspectBoard (company) {
+      const postings = await fetchBoard(http, company)
+      return { total: postings.length, kept: postings.filter(keep).length }
+    }
   }
 }
 
