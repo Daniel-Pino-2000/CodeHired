@@ -39,6 +39,8 @@ export interface SmartRecruitersPosting {
   } | null
   department?: Labelled | null
   function?: Labelled | null
+  // "Pharmaceuticals", "Automotive": tells a lab scientist from a data scientist
+  industry?: Labelled | null
   // "Full-time", "Part-time", "Contract", "Intern"...
   typeOfEmployment?: Labelled | null
   // Only in the single posting
@@ -100,7 +102,7 @@ function smartRecruitersPlace (posting: SmartRecruitersPosting): UsPlace | null 
   return place ? { ...place, remote } : { city: null, state: null, country: 'US', remote }
 }
 
-const departments = (posting: SmartRecruitersPosting) => [posting.department?.label, posting.function?.label]
+const departments = (posting: SmartRecruitersPosting) => [posting.department?.label, posting.function?.label, posting.industry?.label]
 
 function keep (posting: SmartRecruitersPosting) {
   return isTechRole({ title: posting.name, departments: departments(posting) }) && smartRecruitersPlace(posting) !== null

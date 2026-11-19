@@ -85,6 +85,46 @@ describe('isTechRole', () => {
     }
   })
 
+  // Titles from the SpaceX, Anduril, Bosch and AbbVie boards (#62)
+  test('drops the non-software engineering roles of hardware, industrial and pharma employers', () => {
+    for (const title of [
+      'Fluids Engineer (Starship)', 'Build Engineer, COPVS', 'Sr. Launch Engineer, Propellant Generation',
+      'Sr. Power Plant Engineer', 'Sr. Environmental Engineer', 'Sr. Trajectory Analysis Engineer', 'Sr EMC Engineer',
+      'Senior Controls Engineer', 'Supplier Quality Engineer', 'Reliability Engineer', 'Application Calibration Engineer',
+      'Project Engineer', 'Shift Technical Engineer', 'Senior Scientist I, Engineering', 'Integration & Test Engineer (Falcon)',
+      'Staff Systems Engineer, Air Vehicle Systems', 'Automation and Controls Engineer, AI Satellites (Starmind)',
+      'Senior Thermal Engineer, Expeditionary AI / HPC Data Centers', 'Sr. Data Center Safety Engineer (AI Supercomputer)',
+      'GNC Engineer, ADCS (Starlink)', 'Staff PCB Design Engineer', 'Automation Engineer', 'Test Engineer'
+    ]) {
+      assert.equal(isTechRole({ title }), false, title)
+    }
+  })
+
+  test('keeps the software roles of the same employers, whatever team or program they sit in', () => {
+    for (const title of [
+      'Software Engineer, High Performance Computing', 'Site Reliability Engineer, Kubernetes Platform (Starshield)',
+      'Embedded Security Engineer', 'Firmware Engineer, Avionics', 'Flight Software Engineer (Dragon)',
+      'Senior Firmware Engineer, Manufacturing Test', 'Hardware Test Automation Engineer', 'Data Engineer, Manufacturing',
+      'Sr. Full Stack Engineer, Manufacturing Systems', 'Machine Learning Engineer, Simulation Realism',
+      'Sr. High Performance Computing (HPC) Systems Engineer', 'IT Network Infrastructure Engineer, Data Centers',
+      'Embedded Systems Engineer', 'Software Quality Engineer', 'QA Engineer, Payments', 'Platform Engineer, Starlink',
+      'Data Scientist, Hardware Reliability (Starlink)', 'Senior Data Center Site Reliability Engineer'
+    ]) {
+      assert.equal(isTechRole({ title }), true, title)
+    }
+  })
+
+  test('keeps a research scientist unless the title or the departments name a lab science', () => {
+    assert.equal(isTechRole({ title: 'Research Scientist, Foundation Models' }), true)
+    assert.equal(isTechRole({ title: 'Applied Scientist', departments: ['Research'] }), true)
+    assert.equal(isTechRole({ title: 'Machine Learning Research Scientist, Planning', departments: ['Pharmaceuticals'] }), true)
+    assert.equal(isTechRole({ title: 'Principal Research Scientist I, Foundational Data Science Lead', departments: ['Pharmaceuticals'] }), true)
+    assert.equal(isTechRole({ title: 'Principal Research Scientist II', departments: ['Research', 'Pharmaceuticals'] }), false)
+    assert.equal(isTechRole({ title: 'Research Scientist – Molecular Diagnostics' }), false)
+    assert.equal(isTechRole({ title: 'Principal Research Scientist I, In Vivo Antibody Discovery' }), false)
+    assert.equal(isTechRole({ title: 'Clinical Scientist' }), false)
+  })
+
   test('drops an engineer in a sales department', () => {
     assert.equal(isTechRole({ title: 'Partner Engineer', departments: ['Sales'] }), false)
     assert.equal(isTechRole({ title: 'Partner Engineer', departments: ['Engineering', null] }), true)
