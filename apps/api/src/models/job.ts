@@ -10,6 +10,25 @@ import { sanitizeDescriptionHtml } from '../utils/sanitize.js'
 import { CompanyModel } from './company.js'
 import { LISTED } from './listed.js'
 
+export interface SourceStats {
+  source: string
+  // Open and listed: not closed, not a copy of another source's job
+  listed: number
+  // Open but hidden behind the same opening from a higher-priority source
+  duplicates: number
+  // Inserted by the source's runs in the last 24 hours
+  newToday: number
+}
+
+export interface DatabaseStats {
+  total: number
+  listed: number
+  duplicates: number
+  closed: number
+  bytes: number | null
+  sources: SourceStats[]
+}
+
 interface JobRow {
   id: string
   title: string
@@ -48,6 +67,7 @@ const JOB_COLUMNS = `
 `
 
 const HOUR_MS = 60 * 60 * 1000
+const DAY_MS = 24 * HOUR_MS
 
 // The highest salary a job states: the top of its range, or its only number
 const TOP_SALARY = 'COALESCE(salary_max, salary_min)'
@@ -417,8 +437,8 @@ export class JobModel {
     ], 'write')
   }
 
-  // What the database holds, to keep an eye on the hosting free tier
-  static async stats () {
+  // What the database holds, to keep an eye on the hosting free tier and on each source's share
+  static async stats ({ now = new Date() }: { now?: Date } = {}): Promise<DatabaseStats> {
     const { rows: [counts] } = await db.execute(`
       SELECT COUNT(*) AS total,
              COALESCE(SUM(closed_at IS NULL AND duplicate_of IS NULL), 0) AS listed,
@@ -438,8 +458,39 @@ export class JobModel {
       listed: Number(counts.listed),
       duplicates: Number(counts.duplicates),
       closed: Number(counts.closed),
-      bytes
+      bytes,
+      sources: await JobModel.statsBySource(toIsoSeconds(new Date(now.getTime() - DAY_MS)))
     }
+  }
+
+  // Per source, every source that has open jobs or inserted any since `newSince`, most listed
+  // first: its open jobs that are listed, the ones hidden as copies of another source's listing,
+  // and how many jobs its runs inserted since `newSince` (whether still open or not)
+  static async statsBySource (newSince: string): Promise<SourceStats[]> {
+    const { rows } = await db.execute({
+      sql: `
+        SELECT source, SUM(listed) AS listed, SUM(duplicates) AS duplicates, SUM(inserted) AS inserted
+        FROM (
+          SELECT source,
+                 closed_at IS NULL AND duplicate_of IS NULL AS listed,
+                 closed_at IS NULL AND duplicate_of IS NOT NULL AS duplicates,
+                 0 AS inserted
+          FROM jobs
+          UNION ALL
+          SELECT source, 0, 0, inserted FROM ingestion_runs WHERE started_at >= ?
+        )
+        GROUP BY source
+        HAVING SUM(listed) + SUM(duplicates) + SUM(inserted) > 0
+        ORDER BY SUM(listed) DESC, source
+      `,
+      args: [newSince]
+    })
+    return rows.map((row) => ({
+      source: String(row.source),
+      listed: Number(row.listed),
+      duplicates: Number(row.duplicates),
+      newToday: Number(row.inserted)
+    }))
   }
 
   static async create (job: NewJob & { createdAt?: string, state?: string | null }): Promise<Job> {

@@ -1,14 +1,9 @@
 // What `pnpm ingest` prints, and the Markdown it writes to the GitHub Actions job summary
+import type { DatabaseStats, SourceStats } from '../models/job.js'
 import type { RunSummary } from './runner.js'
 import type { NotDue } from './schedule.js'
 
-export interface DatabaseStats {
-  total: number
-  listed: number
-  duplicates: number
-  closed: number
-  bytes: number | null
-}
+export type { DatabaseStats, SourceStats }
 
 export interface IngestReport {
   summaries: readonly RunSummary[]
@@ -49,6 +44,12 @@ export function formatDatabaseLine (stats: DatabaseStats) {
   return isNearStorageLimit(stats) ? `${line}\nWARNING: the database is above 80% of the free storage` : line
 }
 
+// One line per source with jobs: every source, not only the ones this run fetched
+export function formatSourceLines (sources: readonly SourceStats[]) {
+  return sources.map(({ source, listed, newToday, duplicates }) =>
+    `  ${source}: ${listed} listed, ${newToday} new in 24h, ${duplicates} duplicates`)
+}
+
 // A table cell: pipes would end the cell and line breaks the row
 const cell = (text: string) => text.replaceAll('|', '\\|').replace(/\s*\n\s*/g, ' ')
 
@@ -78,6 +79,19 @@ export function formatMarkdownReport ({ summaries, notDue, database, dryRun, dur
   if (database) {
     lines.push('', `**Database:** ${describeDatabase(database)}`)
     if (isNearStorageLimit(database)) lines.push('', '> [!WARNING]', '> The database is above 80% of the free storage.')
+
+    if (database.sources.length > 0) {
+      lines.push(
+        '',
+        '**Jobs per source** (every source, not only the ones that ran; duplicates are open jobs hidden behind the same opening from a higher-priority source):',
+        '',
+        '| Source | Listed | New in 24h | Duplicates |',
+        '| --- | ---: | ---: | ---: |'
+      )
+      for (const s of database.sources) {
+        lines.push(`| \`${s.source}\` | ${s.listed} | ${s.newToday} | ${s.duplicates} |`)
+      }
+    }
   }
 
   lines.push('', `Done in ${formatSeconds(durationMs)}.`, '')

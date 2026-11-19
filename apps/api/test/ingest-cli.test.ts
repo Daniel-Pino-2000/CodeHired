@@ -66,6 +66,9 @@ describe('pnpm ingest', () => {
     assert.match(markdown, /## Ingestion/)
     assert.match(markdown, /\| `fixture` \| ✅ succeeded \| 5 \| 0 \| 0 \| 5 \| 0 \| 0 \|/)
     assert.match(markdown, /\*\*Database:\*\* \d+ jobs listed/)
+    // 5 listed, all 5 inserted by today's first run, no copies
+    assert.match(markdown, /\| `fixture` \| 5 \| 5 \| 0 \|/)
+    assert.match(stdout, / {2}fixture: 5 listed, 5 new in 24h, 0 duplicates/)
   })
 
   test('exits with an error for an unknown source', async () => {
