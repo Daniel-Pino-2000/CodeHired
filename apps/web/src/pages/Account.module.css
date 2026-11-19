@@ -39,6 +39,12 @@
   font-weight: 500;
 }
 
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
 @media (max-width: 480px) {
   .details div {
     grid-template-columns: 1fr;

@@ -154,7 +154,10 @@ Sources that need a key run once their secrets are added too, and are skipped un
 | `POST` | `/auth/login` | Sign in. Body: `{ email, password }`. `200 { user }`, `401` for a wrong email or password |
 | `POST` | `/auth/logout` | Sign out (clears the session cookie). `204` |
 | `GET` | `/auth/me` | The signed-in user, `{ user }`, or `401` |
-| any | `/me/*` | The signed-in user's own data (favorites, applications…). `401` without a valid session |
+| any | `/me/*` | The signed-in user's own data (saved jobs, applications…). `401` without a valid session |
+| `GET` | `/me/saved-jobs` | The user's saved jobs, most recently saved first: `{ data, total }`. Each is a job like `GET /jobs` returns, plus `savedAt` and `open` (`false` once the job closed or its deadline passed; it stays saved until ingestion deletes the job, 60 days after it closed) |
+| `PUT` | `/me/saved-jobs/:jobId` | Save a job. `204`, also when it is already saved; `404` if there is no such job |
+| `DELETE` | `/me/saved-jobs/:jobId` | Remove a saved job. `204`, also when it wasn't saved |
 
 `GET /jobs` responds with `{ data, total, limit, offset }`. Each job has:
 

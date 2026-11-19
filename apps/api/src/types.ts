@@ -127,6 +127,14 @@ export interface User {
   createdAt: string
 }
 
+// GET /me/saved-jobs: a job the signed-in user saved
+export interface SavedJob extends Job {
+  savedAt: string
+  // False once the job closed or its application deadline passed. Saved jobs stay listed until
+  // ingestion deletes the job (60 days after it closed).
+  open: boolean
+}
+
 export interface Paginated<T> {
   data: T[]
   total: number

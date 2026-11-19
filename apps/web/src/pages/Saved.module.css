@@ -1,0 +1,26 @@
+.page {
+  padding-top: 40px;
+  padding-bottom: 56px;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.header h1 {
+  font-size: clamp(28px, 4vw, 36px);
+}
+
+.count {
+  margin-top: 4px;
+  color: var(--color-text-muted);
+}
+
+.retry {
+  margin-top: 16px;
+}
