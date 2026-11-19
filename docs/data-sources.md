@@ -68,17 +68,27 @@ Aggregators with an official API and a free key. They rank below company boards 
 | Source (`pnpm ingest --source=`) | API | Terms | Attribution rule | Limits |
 | --- | --- | --- | --- | --- |
 | `adzuna` | `GET api.adzuna.com/v1/api/jobs/us/search/{page}?category=it-jobs&results_per_page=50&max_days_old=2&sort_by=date`, with `app_id` and `app_key` (`ADZUNA_APP_ID`, `ADZUNA_APP_KEY`) | [Terms of service](https://developer.adzuna.com/docs/terms_of_service) (reviewed 2026-11-19): publishing Adzuna listings is a permitted use; no resale of the data, no sales prospecting or lead generation, never contact the advertisers, one account per person. The free key is meant for evaluation; commercial use beyond a trial needs a licence. CodeHired is a non-commercial portfolio project | Every advert shown is labelled "Adzuna", at least 116 x 23 pixels, linked to adzuna.com: the "Jobs by Adzuna" badge on each card and job page (`Attribution.credit`). Salary estimates would need "Adzuna Jobsworth" credit, so we drop salaries Adzuna predicted (`salary_is_predicted`) | Defaults: 25 calls a minute, 250 a day, 1,000 a week, 2,500 a month. Our budget (`ADZUNA_BUDGET`): **80 a day**, 900 a week, 2,400 a month, counted in `api_usage` before each call; a run stops when any is reached. One call every 3 seconds, at most 20 pages (1,000 jobs) a run |
+| `jsearch` | JSearch by OpenWeb Ninja: `GET api.openwebninja.com/jsearch/search-v2?query={role} jobs in the United States&num_pages=1&country=us&date_posted=today`, with the header `x-api-key` (`JSEARCH_API_KEY`). It returns Google for Jobs results: postings from LinkedIn, Indeed, ZipRecruiter, Glassdoor, company sites and others | [Terms of service](https://www.openwebninja.com/terms) (last updated 2026-10-14, reviewed 2026-11-19), section 2: the API data may be used, reproduced and commercially exploited in our own products; it may not be resold or redistributed as a standalone data or API product, nor used to build a substitute for the API. The data comes from third-party sites, and we answer for following their terms and the law | None required by OpenWeb Ninja. Each job names the site that published it (`job_publisher`, our `publisher`): "via LinkedIn" on the card, "Apply on LinkedIn" on the job page, linking to `job_apply_link` (our `source_url`), so candidates apply on the original posting | Free plan: **200 requests a month**, a hard limit; each request returns one page of up to 10 jobs and costs one credit. Our budget (`JSEARCH_BUDGET`): **6 a day** and **190 a month**, counted in `api_usage` before each call. One run a day (`minHoursBetweenRuns: 20`) sends one request per query, 6 of the 8 queries in `JSEARCH_QUERIES`, rotated daily. No retries: a retried request would spend a credit the budget did not count |
+
+Adzuna:
 
 - **Snippets only.** Adzuna returns the start of the description. We store it (`snippetOnly`), and the job page sends candidates to `redirect_url` (our `source_url`) to read the rest and apply.
 - **Partial listings.** A run only sees the last 2 days of postings, so Adzuna jobs are closed for their age (45 days), never for missing from a run (`seesOnlyRecentJobs`).
 - **The key stays secret.** It goes in the query string, so error messages are scrubbed of it before they reach a log.
 - If CodeHired is ever used commercially (ads, paid plans, selling leads), Adzuna requires a licence agreement first.
 
+JSearch:
+
+- **Never the job sites themselves.** CodeHired only calls `api.openwebninja.com`. It never sends a request to LinkedIn, Indeed, ZipRecruiter or any other site a listing comes from; candidates follow `job_apply_link` themselves.
+- **Snippets and partial listings.** Google for Jobs descriptions are plain text and sometimes cut short (`snippetOnly`), so the job page links to the original posting. A run only sees the last day's postings for a few queries, so JSearch jobs are closed for their age, never for missing from a run (`seesOnlyRecentJobs`). When Google states when the offer expires (`job_offer_expiration_datetime_utc`), it is stored as `closes_at`.
+- **The key stays secret.** It travels in the `x-api-key` header, never in a URL or a log.
+- **Duplicates.** The same opening often comes from a company board too; JSearch ranks below company boards, USAJobs and Adzuna, so the other copy is listed (see Deduplication in the README).
+
 ## Not enabled
 
 | Source | Why |
 | --- | --- |
-| LinkedIn, Indeed, ZipRecruiter | No public API for this use, and their terms forbid scraping. Their postings mostly come from the same company ATS boards anyway |
+| LinkedIn, Indeed, ZipRecruiter (directly) | No public API for this use, and their terms forbid scraping. Their listings reach CodeHired only through JSearch's Google for Jobs results (above), and mostly come from the same company ATS boards anyway |
 | [Remotive](https://github.com/remotive-com/remote-jobs-api) | Its terms forbid submitting its jobs to third-party websites and treat using the listings to collect signups or emails as a violation. CodeHired plans user accounts and email alerts for new jobs (see the roadmap), so it does not qualify. Jobs are also delayed by 24 hours, and the feed may be fetched only a few times a day. Remotive sells a private API for other uses |
 | [Arbeitnow](https://www.arbeitnow.com/blog/job-board-api) | No terms of use, attribution rules or limits are published, so there is nothing to show that this use is allowed. Its jobs are mostly in Europe and come from ATS boards (Greenhouse among them) that CodeHired can read directly |
 | We Work Remotely | Excluded by #30: its API terms prohibit building job search services on its data |

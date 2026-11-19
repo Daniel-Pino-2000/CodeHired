@@ -5,6 +5,7 @@ import { createFixtureSource } from './fixture.js'
 import { createGreenhouseSource } from './greenhouse.js'
 import { createHimalayasSource } from './himalayas.js'
 import { createJobicySource } from './jobicy.js'
+import { createJSearchSource } from './jsearch.js'
 import { createLeverSource } from './lever.js'
 import { createRemoteOkSource } from './remoteok.js'
 import { createUsaJobsSource } from './usajobs.js'
@@ -19,7 +20,8 @@ export const SOURCES: readonly Source[] = [
   createHimalayasSource(),
   createJobicySource(),
   createAdzunaSource(),
-  createUsaJobsSource()
+  createUsaJobsSource(),
+  createJSearchSource()
 ]
 
 // The environment variables a source needs that are unset
