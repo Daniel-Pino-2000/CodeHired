@@ -71,6 +71,7 @@
   { "name": "Pinterest", "ats": "greenhouse", "token": "pinterest", "website": "https://www.pinterest.com" },
   { "name": "PlanetScale", "ats": "greenhouse", "token": "planetscale", "website": "https://planetscale.com" },
   { "name": "Reddit", "ats": "greenhouse", "token": "reddit", "website": "https://www.reddit.com" },
+  { "name": "Relativity Space", "ats": "greenhouse", "token": "relativity", "website": "https://www.relativityspace.com" },
   { "name": "Riot Games", "ats": "greenhouse", "token": "riotgames", "website": "https://www.riotgames.com" },
   { "name": "Ripple", "ats": "greenhouse", "token": "ripple", "website": "https://ripple.com" },
   { "name": "Robinhood", "ats": "greenhouse", "token": "robinhood", "website": "https://robinhood.com" },
@@ -153,6 +154,7 @@
   { "name": "Semgrep", "ats": "ashby", "token": "semgrep", "website": "https://semgrep.dev" },
   { "name": "Sentry", "ats": "ashby", "token": "sentry", "website": "https://sentry.io" },
   { "name": "Sierra", "ats": "ashby", "token": "sierra", "website": "https://sierra.ai" },
+  { "name": "Skydio", "ats": "ashby", "token": "skydio", "website": "https://www.skydio.com" },
   { "name": "Snyk", "ats": "ashby", "token": "snyk", "website": "https://snyk.io" },
   { "name": "Strava", "ats": "ashby", "token": "strava", "website": "https://www.strava.com" },
   { "name": "Supabase", "ats": "ashby", "token": "supabase", "website": "https://supabase.com" },
@@ -170,5 +172,6 @@
   { "name": "Endava", "ats": "smartrecruiters", "token": "Endava", "website": "https://www.endava.com" },
   { "name": "Experian", "ats": "smartrecruiters", "token": "Experian", "website": "https://www.experian.com" },
   { "name": "Freshworks", "ats": "smartrecruiters", "token": "Freshworks", "website": "https://www.freshworks.com" },
-  { "name": "ServiceNow", "ats": "smartrecruiters", "token": "ServiceNow", "website": "https://www.servicenow.com" }
+  { "name": "ServiceNow", "ats": "smartrecruiters", "token": "ServiceNow", "website": "https://www.servicenow.com" },
+  { "name": "Western Digital", "ats": "smartrecruiters", "token": "WesternDigital", "website": "https://www.westerndigital.com" }
 ]
