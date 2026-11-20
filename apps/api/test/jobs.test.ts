@@ -58,6 +58,22 @@ describe('GET /jobs', () => {
     assert.ok(body.data.every((job) => job.technologies.includes('react')))
   })
 
+  test('filters by several technologies, matching jobs that use any of them', async () => {
+    const wanted = ['react', 'python']
+    const expected = SEED_JOBS.filter((job) => job.technologies.some((slug) => wanted.includes(slug))).length
+    const { body } = await getJobs({ technology: ' React, python ,react,', limit: CONFIG.MAX_PAGE_SIZE })
+
+    assert.ok(expected > SEED_JOBS.filter((job) => job.technologies.includes('react')).length)
+    assert.equal(body.total, expected)
+    assert.ok(body.data.every((job) => job.technologies.some((slug) => wanted.includes(slug))))
+  })
+
+  test('rejects more than 20 technologies', async () => {
+    const { res } = await getJobs({ technology: Array.from({ length: 21 }, (_, index) => `tech${index}`).join(',') })
+
+    assert.equal(res.status, 400)
+  })
+
   test('filters by level', async () => {
     const expected = SEED_JOBS.filter((job) => job.level === 'junior').length
     const { body } = await getJobs({ level: 'junior', limit: CONFIG.MAX_PAGE_SIZE })
@@ -83,6 +99,9 @@ describe('GET /jobs', () => {
 
   test('treats empty filters as not set', async () => {
     const { body } = await getJobs({ text: '', level: '', workplace: '', technology: '' })
+    const { body: commas } = await getJobs({ technology: ' , ' })
+
+    assert.equal(commas.total, SEED_JOBS.length)
 
     assert.equal(body.total, SEED_JOBS.length)
   })

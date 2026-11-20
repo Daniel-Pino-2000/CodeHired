@@ -9,8 +9,8 @@ CodeHired is a web platform that helps developers find and apply for programming
 - 🔍 **Job Search** — search and filter programming jobs by keyword, technology, experience level, workplace, US state, contract, posting date, salary and source, sorted by date or salary. Every filter lives in the URL, so a search can be shared
 - 📄 **Job Listings** — detailed postings with role description, salary, tech stack and company info
 - 🔗 **Apply at the Source** — every job names where it was found and links to the original posting to apply. The [`/sources`](apps/web/src/pages/Sources.jsx) page credits every data source and shows when the jobs were last refreshed
-- 📊 **Application Tracking** — keep track of jobs you've applied to and their status _(planned)_
-- 👤 **User Profiles** — manage your candidate profile and resume _(planned)_
+- 📊 **Application Tracking** — keep track of the jobs you apply to, on CodeHired or anywhere else, with their status, notes and follow-up dates
+- 👤 **Candidate Profile** — your headline, skills, experience, the level and workplace you want, your links and a link to your resume, with a live preview. Your skills, level and workplace pick the **Jobs for you** on the home page
 - 📱 **Responsive Design** — works across desktop, tablet and mobile, in light and dark mode
 
 ## Tech Stack
@@ -145,7 +145,7 @@ Sources that need a key run once their secrets are added too, and are skipped un
 | Method | Endpoint | Description |
 | --- | --- | --- |
 | `GET` | `/health` | Health check |
-| `GET` | `/jobs` | List jobs. Filters (they combine): `text`, `technology`, `level` (`intern`, `junior`, `mid`, `senior`, `staff`, `lead`), `workplace` (`remote`, `hybrid`, `onsite`), `employmentType` (`full-time`, `part-time`, `contract`, `internship`), `postedWithin` (`24h`, `3d`, `7d`, `30d`), `state` (US state code, e.g. `TX`), `minSalary` (yearly USD; matches the top of the range, so jobs without a salary are left out), `hasSalary=true`, `source` (e.g. `greenhouse`), `company` (a company's slug). `sort`: `newest` (default) or `salary_desc` (jobs without a salary last). `limit` (max 50), `offset` |
+| `GET` | `/jobs` | List jobs. Filters (they combine): `text`, `technology` (one, or up to 20 separated by commas: jobs that use any of them), `level` (`intern`, `junior`, `mid`, `senior`, `staff`, `lead`), `workplace` (`remote`, `hybrid`, `onsite`), `employmentType` (`full-time`, `part-time`, `contract`, `internship`), `postedWithin` (`24h`, `3d`, `7d`, `30d`), `state` (US state code, e.g. `TX`), `minSalary` (yearly USD; matches the top of the range, so jobs without a salary are left out), `hasSalary=true`, `source` (e.g. `greenhouse`), `company` (a company's slug). `sort`: `newest` (default) or `salary_desc` (jobs without a salary last). `limit` (max 50), `offset` |
 | `GET` | `/jobs/:id` | Get one job, plus `alsoPostedOn`: the other places the same opening was found |
 | `GET` | `/companies` | Companies with open jobs, the most open jobs first. Query: `limit` (max 100, default 24), `offset` |
 | `GET` | `/companies/:slug` | One company, with its open-job count. Its jobs: `GET /jobs?company=:slug` |
@@ -154,7 +154,7 @@ Sources that need a key run once their secrets are added too, and are skipped un
 | `POST` | `/auth/login` | Sign in. Body: `{ email, password }`. `200 { user }`, `401` for a wrong email or password |
 | `POST` | `/auth/logout` | Sign out (clears the session cookie). `204` |
 | `GET` | `/auth/me` | The signed-in user, `{ user }`, or `401` |
-| any | `/me/*` | The signed-in user's own data (saved jobs, applications…). `401` without a valid session |
+| any | `/me/*` | The signed-in user's own data (saved jobs, applications, profile). `401` without a valid session |
 | `GET` | `/me/saved-jobs` | The user's saved jobs, most recently saved first: `{ data, total }`. Each is a job like `GET /jobs` returns, plus `savedAt` and `open` (`false` once the job closed or its deadline passed; it stays saved until ingestion deletes the job, 60 days after it closed) |
 | `PUT` | `/me/saved-jobs/:jobId` | Save a job. `204`, also when it is already saved; `404` if there is no such job |
 | `DELETE` | `/me/saved-jobs/:jobId` | Remove a saved job. `204`, also when it wasn't saved |
@@ -162,6 +162,8 @@ Sources that need a key run once their secrets are added too, and are skipped un
 | `POST` | `/me/applications` | Track an application. Body: `{ jobId }` for a CodeHired job (its company, title, link and publisher are copied), or `{ company, title, url?, source? }` for a job found elsewhere; both take `status` (`saved`, `applied` (default), `interviewing`, `offer`, `rejected`, `withdrawn`), `notes`, `appliedAt` and `followUpAt` (`YYYY-MM-DD`). `201` with the application; `409 { id }` if that CodeHired job is already tracked; `404` if there is no such job |
 | `PATCH` | `/me/applications/:id` | Change any of `company`, `title`, `url`, `source`, `status`, `notes`, `appliedAt`, `followUpAt` (`""` clears the optional ones). `200` with the application, `404` if it isn't the user's |
 | `DELETE` | `/me/applications/:id` | Stop tracking an application. `204`, also when it wasn't there |
+| `GET` | `/me/profile` | The candidate profile: `{ headline, location, bio, skills, yearsOfExperience, desiredLevel, desiredWorkplace, links: { github, linkedin, portfolio }, resumeUrl, updatedAt }`. Before the first save every field is empty and `updatedAt` is `null` |
+| `PUT` | `/me/profile` | Save the whole profile (fields left out or `""` are cleared). `skills`: up to 20 technology slugs from [`technologies.json`](packages/shared/technologies.json); `yearsOfExperience`: 0 to 60; `desiredLevel` and `desiredWorkplace` as in `GET /jobs`; links must be `http(s)`, `github` on github.com and `linkedin` on linkedin.com. `200` with the profile; `400` with field errors keyed like `links.github` |
 
 `GET /jobs` responds with `{ data, total, limit, offset }`. Each job has:
 

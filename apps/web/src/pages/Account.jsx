@@ -4,7 +4,7 @@ import { formatDate } from '../utils/format.js'
 import styles from './Account.module.css'
 
 // The signed-in user's account. Behind ProtectedRoute, so `user` is always set here.
-// Links to the saved jobs and applications; the profile (#15) will link from here too.
+// Links to the profile, the saved jobs and the applications.
 export default function AccountPage () {
   const user = useAuthStore((state) => state.user)
   const logout = useAuthStore((state) => state.logout)
@@ -37,6 +37,7 @@ export default function AccountPage () {
       </dl>
 
       <div className={styles.actions}>
+        <Link to='/profile' className='button button-secondary'>Profile</Link>
         <Link to='/saved' className='button button-secondary'>Saved jobs</Link>
         <Link to='/applications' className='button button-secondary'>Applications</Link>
         <button type='button' className='button button-secondary' onClick={handleLogout}>Log out</button>

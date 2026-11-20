@@ -90,6 +90,43 @@
   font-size: 24px;
 }
 
+.sectionNote {
+  margin-top: 4px;
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+.sectionNote a {
+  color: var(--color-brand);
+  font-weight: 600;
+}
+
+.forYou {
+  margin-bottom: 48px;
+}
+
+.callout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 48px;
+  padding: 20px 24px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-brand-soft);
+}
+
+.callout h2 {
+  font-size: 20px;
+}
+
+.callout p {
+  margin-top: 4px;
+  color: var(--color-text-muted);
+}
+
 .viewAll {
   color: var(--color-brand);
   font-weight: 600;

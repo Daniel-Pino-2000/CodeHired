@@ -99,7 +99,8 @@ export interface SourceSummary {
 
 export interface JobFilters {
   text?: string
-  technology?: string
+  // Lowercase slugs: jobs that use any of them
+  technology?: string[]
   level?: Level
   workplace?: Workplace
   employmentType?: EmploymentType
@@ -167,4 +168,27 @@ export interface Paginated<T> {
   total: number
   limit: number
   offset: number
+}
+
+// /me/profile: what a candidate tells employers and "Jobs for you" about themselves. Every field
+// is optional; a user who never saved one gets the empty profile, with `updatedAt` null.
+export interface Profile {
+  headline: string | null
+  location: string | null
+  bio: string
+  // Technology slugs (packages/shared/technologies.json), in the order the candidate listed them
+  skills: string[]
+  yearsOfExperience: number | null
+  desiredLevel: Level | null
+  desiredWorkplace: Workplace | null
+  links: ProfileLinks
+  // A link to their resume (Google Drive, Dropbox, a personal site)
+  resumeUrl: string | null
+  updatedAt: string | null
+}
+
+export interface ProfileLinks {
+  github: string | null
+  linkedin: string | null
+  portfolio: string | null
 }

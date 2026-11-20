@@ -146,9 +146,12 @@ export class JobModel {
       where.push('(title LIKE @text OR company LIKE @text OR description_text LIKE @text)')
       args.text = `%${text}%`
     }
-    if (technology) {
-      where.push('EXISTS (SELECT 1 FROM json_each(jobs.technologies) WHERE lower(value) = lower(@technology))')
-      args.technology = technology
+    if (technology?.length) {
+      const names = technology.map((slug, index) => {
+        args[`technology${index}`] = slug
+        return `@technology${index}`
+      })
+      where.push(`EXISTS (SELECT 1 FROM json_each(jobs.technologies) WHERE lower(value) IN (${names.join(', ')}))`)
     }
     if (level) {
       where.push('level = @level')

@@ -4,11 +4,73 @@ import { CompanyAvatar } from '../components/CompanyAvatar.jsx'
 import { JobList } from '../components/JobList.jsx'
 import { TECHNOLOGIES } from '../config.js'
 import { useCompanies, useJobs } from '../hooks/useJobs.js'
+import { useAuthStore } from '../store/authStore.js'
+import { useProfileStore } from '../store/profileStore.js'
+import { levelLabel, technologyLabel, workplaceLabel } from '../utils/format.js'
+import { jobsForYouFilters, jobsForYouPath } from '../utils/profile.js'
 import styles from './Home.module.css'
 
 const POPULAR_TECHNOLOGIES = ['react', 'typescript', 'node', 'python', 'go', 'docker']
 const LATEST_JOBS_COUNT = 5
 const HIRING_COMPANIES_COUNT = 8
+const JOBS_FOR_YOU_COUNT = 5
+
+// "React, TypeScript · Mid-level · Remote": what the jobs were picked by
+function describeFilters ({ technology, level, workplace }) {
+  return [technology && technologyLabel(technology), level && levelLabel(level), workplace && workplaceLabel(workplace)]
+    .filter(Boolean)
+    .join(' · ')
+}
+
+// Jobs that use any of the profile's skills, at its level and workplace, for a signed-in user.
+// A profile without any of those gets a link to fill them in instead.
+function JobsForYou () {
+  const signedIn = useAuthStore((state) => Boolean(state.user))
+  const profile = useProfileStore((state) => state.profile)
+  const status = useProfileStore((state) => state.status)
+  if (!signedIn || status !== 'ready') return null
+
+  const filters = jobsForYouFilters(profile)
+  if (!filters) {
+    return (
+      <section className='container'>
+        <div className={styles.callout}>
+          <div>
+            <h2>Get jobs picked for you</h2>
+            <p>Add your skills, level and workplace to your profile, and the jobs that fit show up here.</p>
+          </div>
+          <Link to='/profile' className='button button-primary'>Fill in your profile</Link>
+        </div>
+      </section>
+    )
+  }
+
+  return <JobsForYouList filters={filters} path={jobsForYouPath(profile)} />
+}
+
+function JobsForYouList ({ filters, path }) {
+  const { jobs, total, loading, error } = useJobs({ ...filters, limit: JOBS_FOR_YOU_COUNT, offset: 0 })
+
+  return (
+    <section className={`container ${styles.forYou}`}>
+      <header className={styles.sectionHeader}>
+        <div>
+          <h2>Jobs for you</h2>
+          <p className={styles.sectionNote}>
+            {describeFilters(filters)} · <Link to='/profile'>Edit profile</Link>
+          </p>
+        </div>
+        {total > JOBS_FOR_YOU_COUNT && <Link to={path} className={styles.viewAll}>All {total} matches →</Link>}
+      </header>
+      <JobList
+        jobs={jobs}
+        loading={loading}
+        error={error}
+        emptyMessage='No open jobs match your profile right now. Try adding more skills, or any level or workplace.'
+      />
+    </section>
+  )
+}
 
 // The companies with the most open jobs. Hidden until there are some, and on errors (the job
 // list above already reports those).
@@ -86,6 +148,8 @@ export default function HomePage () {
           </ul>
         </div>
       </section>
+
+      <JobsForYou />
 
       <section className='container'>
         <header className={styles.sectionHeader}>
