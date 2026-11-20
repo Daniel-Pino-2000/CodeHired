@@ -62,6 +62,7 @@ export function UserMenu ({ user }) {
             <strong>{user.name}</strong>
             <span>{user.email}</span>
           </p>
+          <Link to='/profile' className={styles.item} onClick={() => setOpen(false)}>Profile</Link>
           <Link to='/saved' className={styles.item} onClick={() => setOpen(false)}>Saved jobs</Link>
           <Link to='/applications' className={styles.item} onClick={() => setOpen(false)}>Applications</Link>
           <Link to='/account' className={styles.item} onClick={() => setOpen(false)}>Account</Link>

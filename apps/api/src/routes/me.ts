@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import { ApplicationController } from '../controllers/application.js'
+import { ProfileController } from '../controllers/profile.js'
 import { SavedJobController } from '../controllers/saved-job.js'
 import { requireAuth } from '../middlewares/auth.js'
 
@@ -17,3 +18,6 @@ meRouter.get('/applications', ApplicationController.getAll)
 meRouter.post('/applications', ApplicationController.create)
 meRouter.patch('/applications/:id', ApplicationController.update)
 meRouter.delete('/applications/:id', ApplicationController.remove)
+
+meRouter.get('/profile', ProfileController.get)
+meRouter.put('/profile', ProfileController.save)

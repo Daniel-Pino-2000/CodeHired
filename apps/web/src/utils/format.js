@@ -5,7 +5,10 @@ const findLabel = (options, value) => options.find((option) => option.value === 
 export const levelLabel = (value) => findLabel(LEVELS, value)
 export const workplaceLabel = (value) => findLabel(WORKPLACES, value)
 export const employmentTypeLabel = (value) => findLabel(EMPLOYMENT_TYPES, value)
-export const technologyLabel = (value) => TECHNOLOGY_LABELS[value] ?? value
+// One slug ("node" → "Node.js"), or a list of them as the technology filter holds it
+// ("react,node" → "React, Node.js")
+export const technologyLabel = (value) =>
+  value.split(',').map((slug) => TECHNOLOGY_LABELS[slug.trim()] ?? slug.trim()).filter(Boolean).join(', ')
 
 // Who to name for a posting: the site that published it when the source collects jobs from others
 // (JSearch → "LinkedIn"), otherwise the source itself ("Greenhouse", "Remote OK")

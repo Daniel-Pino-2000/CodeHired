@@ -9,9 +9,17 @@ import {
   US_STATES,
   WORKPLACES
 } from '../config.js'
+import { technologyLabel } from '../utils/format.js'
 import styles from './SearchFilters.module.css'
 
 const TEXT_DEBOUNCE_MS = 300
+
+// "React, TypeScript +3" for a list of technologies, so the menu stays narrow
+function shortTechnologyLabel (value) {
+  const slugs = value.split(',')
+  if (slugs.length <= 2) return technologyLabel(value)
+  return `${technologyLabel(slugs.slice(0, 2).join(','))} +${slugs.length - 2}`
+}
 
 // A labelled <select> whose first option means "not set"
 function Select ({ id, name, label, anyLabel, options, filters, onChange }) {
@@ -57,6 +65,11 @@ export function SearchFilters ({ filters, sources, onChange }) {
 
   const moreCount = MORE_FILTER_KEYS.filter((key) => filters[key]).length
   const sourceOptions = sources.map(({ id: value, name: label }) => ({ value, label }))
+  // A technology the menu doesn't offer (from a link, or a profile's skills from "Jobs for you")
+  // is shown as an extra option, so the menu says what the results are filtered by
+  const technologyOptions = !filters.technology || TECHNOLOGIES.some(({ value }) => value === filters.technology)
+    ? TECHNOLOGIES
+    : [{ value: filters.technology, label: shortTechnologyLabel(filters.technology) }, ...TECHNOLOGIES]
   const selectProps = { id, filters, onChange }
 
   return (
@@ -76,7 +89,7 @@ export function SearchFilters ({ filters, sources, onChange }) {
           />
         </div>
 
-        <Select {...selectProps} name='technology' label='Technology' anyLabel='Any technology' options={TECHNOLOGIES} />
+        <Select {...selectProps} name='technology' label='Technology' anyLabel='Any technology' options={technologyOptions} />
         <Select {...selectProps} name='level' label='Experience level' anyLabel='Any level' options={LEVELS} />
         <Select {...selectProps} name='workplace' label='Workplace' anyLabel='Any workplace' options={WORKPLACES} />
 

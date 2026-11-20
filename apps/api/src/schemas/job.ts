@@ -8,6 +8,9 @@ const emptyToUndefined = (value: unknown) => (value === '' ? undefined : value)
 
 const MAX_SALARY_FILTER = 2_000_000
 
+// As many as a profile can list (schemas/profile.ts)
+export const MAX_TECHNOLOGY_FILTER = 20
+
 // What CompanyModel makes slugs of: lowercase letters and digits, single dashes between words
 export const COMPANY_SLUG = z.string().trim().toLowerCase().max(120).regex(/^[a-z0-9]+(-[a-z0-9]+)*$/)
 
@@ -19,7 +22,16 @@ export const companyFiltersSchema = z.object({
 
 export const jobFiltersSchema = z.object({
   text: z.preprocess(emptyToUndefined, z.string().trim().max(100).optional()),
-  technology: z.preprocess(emptyToUndefined, z.string().trim().max(50).optional()),
+  // One technology, or several separated by commas (`react,typescript`): jobs that use any of them.
+  // "Jobs for you" sends a profile's skills this way.
+  technology: z.preprocess(
+    emptyToUndefined,
+    z.string().max(MAX_TECHNOLOGY_FILTER * 51)
+      .transform((value) => [...new Set(value.split(',').map((slug) => slug.trim().toLowerCase()).filter(Boolean))])
+      .pipe(z.array(z.string().max(50)).max(MAX_TECHNOLOGY_FILTER, `Use at most ${MAX_TECHNOLOGY_FILTER} technologies`))
+      .transform((slugs) => (slugs.length > 0 ? slugs : undefined))
+      .optional()
+  ),
   level: z.preprocess(emptyToUndefined, z.enum(LEVELS).optional()),
   workplace: z.preprocess(emptyToUndefined, z.enum(WORKPLACES).optional()),
   employmentType: z.preprocess(emptyToUndefined, z.enum(EMPLOYMENT_TYPES).optional()),
