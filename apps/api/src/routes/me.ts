@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import { ApplicationController } from '../controllers/application.js'
 import { SavedJobController } from '../controllers/saved-job.js'
 import { requireAuth } from '../middlewares/auth.js'
 
@@ -11,3 +12,8 @@ meRouter.use(requireAuth)
 meRouter.get('/saved-jobs', SavedJobController.getAll)
 meRouter.put('/saved-jobs/:jobId', SavedJobController.save)
 meRouter.delete('/saved-jobs/:jobId', SavedJobController.remove)
+
+meRouter.get('/applications', ApplicationController.getAll)
+meRouter.post('/applications', ApplicationController.create)
+meRouter.patch('/applications/:id', ApplicationController.update)
+meRouter.delete('/applications/:id', ApplicationController.remove)

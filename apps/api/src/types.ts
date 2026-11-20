@@ -135,6 +135,33 @@ export interface SavedJob extends Job {
   open: boolean
 }
 
+// Where an application stands, from "thinking about it" to how it ended
+export const APPLICATION_STATUSES = ['saved', 'applied', 'interviewing', 'offer', 'rejected', 'withdrawn'] as const
+export type ApplicationStatus = (typeof APPLICATION_STATUSES)[number]
+
+// /me/applications: an application the signed-in user tracks, to a CodeHired job or to a job
+// found elsewhere and added by hand
+export interface Application {
+  id: number
+  // The CodeHired job, or null for a manual entry (and once ingestion deleted the job)
+  jobId: string | null
+  company: string
+  title: string
+  // The posting, where they applied
+  url: string | null
+  // Where they applied: "LinkedIn", "Greenhouse", "Company site"...
+  source: string | null
+  status: ApplicationStatus
+  notes: string
+  // Calendar dates, YYYY-MM-DD
+  appliedAt: string | null
+  followUpAt: string | null
+  // Whether the CodeHired job is still open; null for a manual entry
+  open: boolean | null
+  createdAt: string
+  updatedAt: string
+}
+
 export interface Paginated<T> {
   data: T[]
   total: number

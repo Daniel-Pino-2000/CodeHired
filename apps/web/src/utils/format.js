@@ -55,3 +55,10 @@ export function timeAgo (isoDate) {
   if (days > -30) return relativeTime.format(Math.trunc(days / 7), 'week')
   return relativeTime.format(Math.trunc(days / 30), 'month')
 }
+
+// A calendar date from the API (YYYY-MM-DD, no time zone) as "Dec 2, 2026". Read as a local date:
+// `new Date('2026-12-02')` would be midnight UTC, the day before in the Americas.
+export function formatCalendarDate (date) {
+  const [year, month, day] = date.split('-').map(Number)
+  return calendarDate.format(new Date(year, month - 1, day))
+}

@@ -1,0 +1,28 @@
+.form {
+  display: grid;
+  gap: 16px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.notes {
+  height: auto;
+  min-height: 88px;
+  padding-block: 10px;
+  resize: vertical;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.formError {
+  color: var(--color-danger);
+  font-weight: 500;
+}

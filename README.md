@@ -158,6 +158,10 @@ Sources that need a key run once their secrets are added too, and are skipped un
 | `GET` | `/me/saved-jobs` | The user's saved jobs, most recently saved first: `{ data, total }`. Each is a job like `GET /jobs` returns, plus `savedAt` and `open` (`false` once the job closed or its deadline passed; it stays saved until ingestion deletes the job, 60 days after it closed) |
 | `PUT` | `/me/saved-jobs/:jobId` | Save a job. `204`, also when it is already saved; `404` if there is no such job |
 | `DELETE` | `/me/saved-jobs/:jobId` | Remove a saved job. `204`, also when it wasn't saved |
+| `GET` | `/me/applications` | The applications the user tracks, most recently changed first: `{ data, total }`. Each is `{ id, jobId, company, title, url, source, status, notes, appliedAt, followUpAt, open, createdAt, updatedAt }`; `jobId` and `open` are `null` for one added by hand |
+| `POST` | `/me/applications` | Track an application. Body: `{ jobId }` for a CodeHired job (its company, title, link and publisher are copied), or `{ company, title, url?, source? }` for a job found elsewhere; both take `status` (`saved`, `applied` (default), `interviewing`, `offer`, `rejected`, `withdrawn`), `notes`, `appliedAt` and `followUpAt` (`YYYY-MM-DD`). `201` with the application; `409 { id }` if that CodeHired job is already tracked; `404` if there is no such job |
+| `PATCH` | `/me/applications/:id` | Change any of `company`, `title`, `url`, `source`, `status`, `notes`, `appliedAt`, `followUpAt` (`""` clears the optional ones). `200` with the application, `404` if it isn't the user's |
+| `DELETE` | `/me/applications/:id` | Stop tracking an application. `204`, also when it wasn't there |
 
 `GET /jobs` responds with `{ data, total, limit, offset }`. Each job has:
 
