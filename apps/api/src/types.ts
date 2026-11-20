@@ -1,102 +1,45 @@
-export const LEVELS = ['intern', 'junior', 'mid', 'senior', 'staff', 'lead'] as const
-export const WORKPLACES = ['remote', 'hybrid', 'onsite'] as const
-export const EMPLOYMENT_TYPES = ['full-time', 'part-time', 'contract', 'internship'] as const
+import type {
+  ApplicationStatus,
+  EmploymentType,
+  JobSort,
+  Level,
+  PostedWithin,
+  UserRole,
+  Workplace
+} from '@codehired/shared/api'
+
+// What the routes answer with is the contract the web app reads too, so those types live in
+// packages/shared/api.d.ts
+export type * from '@codehired/shared/api'
+
+// The values each union type allows, as lists for Zod and the SQL checks. `allOf<T>()` only
+// accepts a list that names every member of T, so a value added to a type in api.d.ts and
+// forgotten here fails to compile (the list's type becomes `never`).
+const allOf = <T extends string>() =>
+  <const List extends readonly T[]>(list: List & ([T] extends [List[number]] ? unknown : never)): List => list
+
+export const LEVELS = allOf<Level>()(['intern', 'junior', 'mid', 'senior', 'staff', 'lead'])
+export const WORKPLACES = allOf<Workplace>()(['remote', 'hybrid', 'onsite'])
+export const EMPLOYMENT_TYPES = allOf<EmploymentType>()(['full-time', 'part-time', 'contract', 'internship'])
 
 // GET /jobs `postedWithin`, and how far back each one goes
-export const POSTED_WITHIN = ['24h', '3d', '7d', '30d'] as const
+export const POSTED_WITHIN = allOf<PostedWithin>()(['24h', '3d', '7d', '30d'])
 export const POSTED_WITHIN_HOURS: Record<PostedWithin, number> = { '24h': 24, '3d': 72, '7d': 168, '30d': 720 }
 // GET /jobs `sort`
-export const JOB_SORTS = ['newest', 'salary_desc'] as const
+export const JOB_SORTS = allOf<JobSort>()(['newest', 'salary_desc'])
 
-export type PostedWithin = (typeof POSTED_WITHIN)[number]
-export type JobSort = (typeof JOB_SORTS)[number]
-export type Level = (typeof LEVELS)[number]
-export type Workplace = (typeof WORKPLACES)[number]
-export type EmploymentType = (typeof EMPLOYMENT_TYPES)[number]
+export const USER_ROLES = allOf<UserRole>()(['candidate', 'employer'])
 
-export interface Job {
-  id: string
-  title: string
-  company: string
-  location: string
-  workplace: Workplace
-  level: Level
-  employmentType: EmploymentType
-  salaryMin: number | null
-  salaryMax: number | null
-  currency: string
-  technologies: string[]
-  description: string
-  // True when the source only gave a snippet: the full description is on the original posting
-  descriptionIsSnippet: boolean
-  // When the job was posted, or when CodeHired first saw it if the source has no date
-  createdAt: string
-  // The posting date the source gave, when it gave one
-  postedAt: string | null
-  // The application deadline the source gave (USAJobs), when it gave one
-  closesAt: string | null
-  // Where the job was found, with a link to the original posting; null for jobs created here.
-  // Showing it is what the sources' terms ask for (docs/data-sources.md).
-  source: JobSource | null
-  // The company's page on CodeHired. `company` stays the name as the posting wrote it; this is
-  // the company it was matched to ("Acme, Inc." → Acme). Null until the job is linked.
-  companyProfile: CompanyRef | null
-}
+// /me/applications `status`, in the order an application moves through them
+export const APPLICATION_STATUSES = allOf<ApplicationStatus>()(['saved', 'applied', 'interviewing', 'offer', 'rejected', 'withdrawn'])
 
-export interface CompanyRef {
-  id: number
-  name: string
-  // /companies/{slug}
-  slug: string
-  logoUrl: string | null
-}
-
-// GET /companies and GET /companies/:slug
-export interface Company extends CompanyRef {
-  website: string | null
-  // The ATS CodeHired reads the company's own board on ('greenhouse', 'lever', 'ashby', 'smartrecruiters'), if any
-  ats: string | null
-  // Listed jobs, counted like GET /jobs counts them
-  openJobs: number
-}
-
+// GET /companies, parsed from the query
 export interface CompanyFilters {
   limit: number
   offset: number
 }
 
-// One place a job is posted
-export interface JobSource {
-  // `jobs.source`, e.g. 'greenhouse'
-  id: string
-  // Who to credit: "Greenhouse", "Remote OK"
-  name: string
-  // The site that published the job, when the source collects it from others (JSearch → "LinkedIn")
-  publisher: string | null
-  // The original posting, where candidates read the full job and apply
-  url: string
-  // A label the source's terms require next to each of its jobs, linked to the source
-  credit: { text: string, url: string } | null
-}
-
-// GET /jobs/:id adds the formatted description and the other places the same opening was found
-export interface JobDetail extends Job {
-  // The source's description as sanitized HTML (paragraphs, lists, headings, emphasis, links),
-  // safe to insert into the page as is. Null when the source gave plain text only: use `description`
-  descriptionHtml: string | null
-  alsoPostedOn: JobSource[]
-}
-
-// GET /sources: every data source and when its jobs were last refreshed
-export interface SourceSummary {
-  id: string
-  name: string
-  url: string
-  termsUrl: string | null
-  // When the last successful ingestion run of this source finished
-  updatedAt: string | null
-}
-
+// GET /jobs, parsed from the query
 export interface JobFilters {
   text?: string
   // Lowercase slugs: jobs that use any of them
@@ -114,81 +57,4 @@ export interface JobFilters {
   sort?: JobSort
   limit: number
   offset: number
-}
-
-export const USER_ROLES = ['candidate', 'employer'] as const
-export type UserRole = (typeof USER_ROLES)[number]
-
-// A signed-in user, as the auth routes return it. The password hash never leaves the model.
-export interface User {
-  id: number
-  email: string
-  name: string
-  role: UserRole
-  createdAt: string
-}
-
-// GET /me/saved-jobs: a job the signed-in user saved
-export interface SavedJob extends Job {
-  savedAt: string
-  // False once the job closed or its application deadline passed. Saved jobs stay listed until
-  // ingestion deletes the job (60 days after it closed).
-  open: boolean
-}
-
-// Where an application stands, from "thinking about it" to how it ended
-export const APPLICATION_STATUSES = ['saved', 'applied', 'interviewing', 'offer', 'rejected', 'withdrawn'] as const
-export type ApplicationStatus = (typeof APPLICATION_STATUSES)[number]
-
-// /me/applications: an application the signed-in user tracks, to a CodeHired job or to a job
-// found elsewhere and added by hand
-export interface Application {
-  id: number
-  // The CodeHired job, or null for a manual entry (and once ingestion deleted the job)
-  jobId: string | null
-  company: string
-  title: string
-  // The posting, where they applied
-  url: string | null
-  // Where they applied: "LinkedIn", "Greenhouse", "Company site"...
-  source: string | null
-  status: ApplicationStatus
-  notes: string
-  // Calendar dates, YYYY-MM-DD
-  appliedAt: string | null
-  followUpAt: string | null
-  // Whether the CodeHired job is still open; null for a manual entry
-  open: boolean | null
-  createdAt: string
-  updatedAt: string
-}
-
-export interface Paginated<T> {
-  data: T[]
-  total: number
-  limit: number
-  offset: number
-}
-
-// /me/profile: what a candidate tells employers and "Jobs for you" about themselves. Every field
-// is optional; a user who never saved one gets the empty profile, with `updatedAt` null.
-export interface Profile {
-  headline: string | null
-  location: string | null
-  bio: string
-  // Technology slugs (packages/shared/technologies.json), in the order the candidate listed them
-  skills: string[]
-  yearsOfExperience: number | null
-  desiredLevel: Level | null
-  desiredWorkplace: Workplace | null
-  links: ProfileLinks
-  // A link to their resume (Google Drive, Dropbox, a personal site)
-  resumeUrl: string | null
-  updatedAt: string | null
-}
-
-export interface ProfileLinks {
-  github: string | null
-  linkedin: string | null
-  portfolio: string | null
 }

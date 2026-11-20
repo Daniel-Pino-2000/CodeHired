@@ -8,7 +8,7 @@ CodeHired is a web platform that helps developers find and apply for programming
 
 - 🔍 **Job Search** — search and filter programming jobs by keyword, technology, experience level, workplace, US state, contract, posting date, salary and source, sorted by date or salary. Every filter lives in the URL, so a search can be shared
 - 📄 **Job Listings** — detailed postings with role description, salary, tech stack and company info
-- 🔗 **Apply at the Source** — every job names where it was found and links to the original posting to apply. The [`/sources`](apps/web/src/pages/Sources.jsx) page credits every data source and shows when the jobs were last refreshed
+- 🔗 **Apply at the Source** — every job names where it was found and links to the original posting to apply. The [`/sources`](apps/web/src/pages/Sources.tsx) page credits every data source and shows when the jobs were last refreshed
 - 📊 **Application Tracking** — keep track of the jobs you apply to, on CodeHired or anywhere else, with their status, notes and follow-up dates
 - 👤 **Candidate Profile** — your headline, skills, experience, the level and workplace you want, your links and a link to your resume, with a live preview. Your skills, level and workplace pick the **Jobs for you** on the home page
 - 📱 **Responsive Design** — works across desktop, tablet and mobile, in light and dark mode
@@ -17,10 +17,10 @@ CodeHired is a web platform that helps developers find and apply for programming
 
 | Part | Technologies |
 | --- | --- |
-| **Frontend** (`apps/web`) | React 19, React Router, Vite, CSS Modules |
+| **Frontend** (`apps/web`) | React 19, TypeScript, React Router, Vite, Zustand, CSS Modules |
 | **Backend** (`apps/api`) | Node.js, Express 5, TypeScript, Zod |
 | **Database** | SQLite via libSQL (`@libsql/client`): a local file in development, [Turso](https://turso.tech) in production |
-| **Tooling** | pnpm workspaces, ESLint, node:test + Supertest, GitHub Actions |
+| **Tooling** | pnpm workspaces, ESLint + typescript-eslint, node:test + Supertest, GitHub Actions |
 
 ## Getting Started
 
@@ -209,15 +209,16 @@ CodeHired/
 │   │   │   ├── middlewares/
 │   │   │   └── db/           # libSQL client, migrations, seed data
 │   │   └── test/             # API tests (node:test + Supertest)
-│   └── web/                  # React + Vite frontend
+│   └── web/                  # React + TypeScript + Vite frontend
 │       └── src/
 │           ├── components/
 │           ├── pages/
-│           ├── hooks/
+│           ├── hooks/        # useFetch<T> and the hooks built on it
 │           ├── services/     # API client
+│           ├── store/        # Zustand stores: the session, saved jobs, applications, profile
 │           └── utils/
 ├── packages/
-│   └── shared/               # Data both apps use: the technology dictionary
+│   └── shared/               # What both apps use: the API's response types (api.d.ts), the technology dictionary, the US states
 ├── package.json              # Workspace scripts
 └── pnpm-workspace.yaml
 ```
