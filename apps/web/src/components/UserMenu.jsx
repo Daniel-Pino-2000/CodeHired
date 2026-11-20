@@ -63,6 +63,7 @@ export function UserMenu ({ user }) {
             <span>{user.email}</span>
           </p>
           <Link to='/saved' className={styles.item} onClick={() => setOpen(false)}>Saved jobs</Link>
+          <Link to='/applications' className={styles.item} onClick={() => setOpen(false)}>Applications</Link>
           <Link to='/account' className={styles.item} onClick={() => setOpen(false)}>Account</Link>
           <button type='button' className={styles.item} onClick={handleLogout}>Log out</button>
         </div>

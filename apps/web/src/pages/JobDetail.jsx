@@ -1,5 +1,6 @@
 import { Link, useParams } from 'react-router'
 import { useJob } from '../hooks/useJobs.js'
+import { useReturnAfterApply } from '../hooks/useReturnAfterApply.js'
 import {
   employmentTypeLabel,
   formatDate,
@@ -10,6 +11,7 @@ import {
   timeAgo,
   workplaceLabel
 } from '../utils/format.js'
+import { ApplicationPrompt } from '../components/ApplicationPrompt.jsx'
 import { CompanyAvatar } from '../components/CompanyAvatar.jsx'
 import { SaveJobButton } from '../components/SaveJobButton.jsx'
 import { SourceCredit } from '../components/SourceCredit.jsx'
@@ -18,9 +20,9 @@ import styles from './JobDetail.module.css'
 
 // Links to postings on other sites. The sources' terms ask for a plain followed link (no
 // rel="nofollow"), and `noopener` keeps the other site from reaching back into this tab.
-function ExternalLink ({ href, className, children }) {
+function ExternalLink ({ href, className, onClick, children }) {
   return (
-    <a href={href} className={className} target='_blank' rel='noopener noreferrer'>
+    <a href={href} className={className} target='_blank' rel='noopener noreferrer' onClick={onClick}>
       {children}
     </a>
   )
@@ -39,7 +41,8 @@ export default function JobDetailPage () {
       {error && <p role='alert' className={styles.error}>Couldn't load this job: {error.message}</p>}
       {loading && <div className={styles.skeleton} aria-busy='true' aria-label='Loading job' />}
 
-      {job && !loading && <JobDetail job={job} />}
+      {/* Keyed so the "Did you apply?" state never carries over to another job */}
+      {job && !loading && <JobDetail key={job.id} job={job} />}
     </article>
   )
 }
@@ -61,6 +64,7 @@ function Description ({ job }) {
 function JobDetail ({ job }) {
   const { source } = job
   const publisher = source && sourceLabel(source)
+  const applying = useReturnAfterApply()
 
   return (
     <>
@@ -89,10 +93,12 @@ function JobDetail ({ job }) {
           {/* Applications happen on the original posting; jobs created here (the local demo data)
               have none */}
           {source
-            ? <ExternalLink href={source.url} className='button button-primary'>Apply on {publisher} ↗</ExternalLink>
+            ? <ExternalLink href={source.url} className='button button-primary' onClick={applying.onApply}>Apply on {publisher} ↗</ExternalLink>
             : <p className={styles.sample}>Sample job: there is no posting to apply to</p>}
         </div>
       </header>
+
+      <ApplicationPrompt job={job} asking={applying.asking} onDismiss={applying.dismiss} />
 
       <div className={styles.layout}>
         <section className={styles.description}>
