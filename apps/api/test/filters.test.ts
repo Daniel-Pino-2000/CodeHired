@@ -94,7 +94,13 @@ describe('isTechRole', () => {
       'Project Engineer', 'Shift Technical Engineer', 'Senior Scientist I, Engineering', 'Integration & Test Engineer (Falcon)',
       'Staff Systems Engineer, Air Vehicle Systems', 'Automation and Controls Engineer, AI Satellites (Starmind)',
       'Senior Thermal Engineer, Expeditionary AI / HPC Data Centers', 'Sr. Data Center Safety Engineer (AI Supercomputer)',
-      'GNC Engineer, ADCS (Starlink)', 'Staff PCB Design Engineer', 'Automation Engineer', 'Test Engineer'
+      'GNC Engineer, ADCS (Starlink)', 'Staff PCB Design Engineer', 'Automation Engineer', 'Test Engineer',
+      // Relativity Space, Skydio, Continental and Western Digital (#36)
+      'Senior Weld Engineer', 'Senior NDE Engineer', 'Staff COPV Engineer', 'Staff Engine Systems Development Engineer',
+      'Lead, Dynamic Environments Engineering', 'Senior Product Design Engineer',
+      '2027 Internship – Tire Engineering & Product Development (Hoosier Racing Tire)',
+      'Quantum Compute Nanofabrication Engineer', 'Chief Memory Chip Design Engineer & Architect',
+      'HR Business Partner– Product and Engineering', 'Director, Human Resources Business Partner - Engineering and Product'
     ]) {
       assert.equal(isTechRole({ title }), false, title)
     }
@@ -108,7 +114,11 @@ describe('isTechRole', () => {
       'Sr. Full Stack Engineer, Manufacturing Systems', 'Machine Learning Engineer, Simulation Realism',
       'Sr. High Performance Computing (HPC) Systems Engineer', 'IT Network Infrastructure Engineer, Data Centers',
       'Embedded Systems Engineer', 'Software Quality Engineer', 'QA Engineer, Payments', 'Platform Engineer, Starlink',
-      'Data Scientist, Hardware Reliability (Starlink)', 'Senior Data Center Site Reliability Engineer'
+      'Data Scientist, Hardware Reliability (Starlink)', 'Senior Data Center Site Reliability Engineer',
+      'Senior Robotics Software Engineer, Grinding', 'Staff HIL Engineer', 'Senior Software Engineer, Hardware In Loop (HIL)',
+      'Autonomy Engineer - Deep Learning Model Acceleration', 'Senior Manager, Servo Firmware Engineering',
+      'Senior Flight Test Engineer - Software Automation', 'Senior Data & Control Systems Engineer',
+      'Research Engineer, Chip Design RL', 'Research Engineer, AI for Chip Design'
     ]) {
       assert.equal(isTechRole({ title }), true, title)
     }

@@ -194,7 +194,7 @@ export function isUsCountry (country: string | null | undefined) {
 const TECH_TITLE = /\b(engineer(s|ing)?|developer|programmer|sdet|devops|devsecops|sre|site reliability|architect|scientists?)\b/i
 
 // Roles that only sit near engineering: never tech, whatever else the title says
-const NON_TECH_TITLE = /\b(sales|solutions?|support|customer|field|account|accounting|finance|legal|counsel|recruit(er|ing)?|sourcer|talent|marketing|program manager|project manager|coordinator|assistant|technician)\b/i
+const NON_TECH_TITLE = /\b(sales|solutions?|support|customer|field|account|accounting|finance|legal|counsel|recruit(er|ing)?|sourcer|talent|marketing|program manager|project manager|coordinator|assistant|technician|human resources|business partner)\b/i
 
 // Words that make a title software work anywhere in it: "Firmware Engineer, Avionics",
 // "Site Reliability Engineer, Data Center Infrastructure", "Senior Test Automation Engineer, Robot Platform"
@@ -224,15 +224,15 @@ const OTHER_ENGINEERING = new RegExp(String.raw`\b(` + [
   'fiber', 'water', 'mep', 'building systems', 'logistics', 'industrialization', 'commissioning', 'harness', 'ewis',
   'mechanisms', 'mass properties', 'flight performance', 'nvh', 'vibration', 'homologation', 'vehicle attributes',
   'aviation', 'certification', 'fire protection', 'pipeline', 'lng', 'lift', 'transmission', 'drug', 'sterile',
-  'body', 'closures?', 'chief engineer',
+  'body', 'closures?', 'chief engineer', 'engine systems', 'dynamic environments', 'copv', 'tires?', 'product design',
   // Chips and boards
   'analog', 'asic', 'fpga', 'pcb', 'soc', 'silicon', 'semiconductors?', 'mmic', 'rfic', 'circuits?', 'electronics?',
   'devices?', 'filters?', 'racks?', 'microelectronics', 'pdk', 'eee', 'failure analysis', 'components?',
-  'digital design', 'physical design', 'design verification',
+  'digital design', 'physical design', 'design verification', 'chip design engineer', 'wafers?', '(nano)?fabrication',
   // Building, testing and running physical things
   'systems? engineer(s|ing)?', 'integration', 'test', 'testing', 'validation', 'verification', 'controls?',
   'automation', 'quality', 'reliability', 'calibration', 'safety', 'compliance', 'regulatory', 'supplier',
-  'sourcing', 'supply chain', 'build', 'tooling', 'project', 'factory', 'welding', 'machining', 'additive',
+  'sourcing', 'supply chain', 'build', 'tooling', 'project', 'factory', 'weld', 'welding', 'nde', 'ndt', 'machining', 'additive',
   'assembly', 'packaging', 'metrology', 'inspection', 'equipment', 'maintenance', 'repair', 'shift', 'operations',
   'applications engineer(s|ing)?', 'material flow', 'design criteria', 'configuration design', 'dfm', 'dfa', 'npi', 'mrb',
   'bom', 'qms', 'sustain(ing|ment)', 'procurement', 'cost', 'recovery'
